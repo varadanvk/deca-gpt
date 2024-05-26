@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duolingo Learn Tab Clone</title>
+   <link rel="stylesheet" type="text/css" href="marketing.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">DECAlingo</div>
+            <nav>
+                <ul>
+                    <li class="active"><a href="index.html"><img src="icons/learn.png" alt="">Learn</a></li>
+                    <li><a href="VocabMarketing.html"><img src="icons/letters.png" alt="">Vocab</a></li>
+                    <li><a href="#"><img src="icons/leaderboards.png" alt="">Leaderboards</a></li>
+                    <li><a href="/profile.html"><img src="icons/profile.png" alt="">Profile</a></li>
+                    <li><a href="#"><img src="icons/more.png" alt="">More</a></li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header>
+                <div class="section-info">
+                    <span class="section">SECTION 1, UNIT 1</span>
+                    <h1>Intro To Marketing!</h1>
+                </div>
+            </header>
+            <section class="lessons">
+                <div class="lesson active">
+                    <div class="lesson-icon"></div>
+                    <button class="start-button">Start</button>
+                </div>
+                <div class="lesson locked">
+                    <div class="lesson-icon"><img src="icons/locked.png" alt="Locked"></div>
+                </div>
+                <div class="lesson three">
+                    <div class="lesson-icon"><img src="icons/locked.png" alt="Three"></div>
+                </div>
+                <div class="lesson four">
+                    <div class="lesson-icon"><img src="icons/locked.png" alt="Four"></div>
+                </div>
+                <img class="mascot" class src="Mascot.png" alt="Mascot">
+            </section>
+            <aside class="side-info">
+                <div class="leaderboards">
+                    <h2>Unlock Leaderboards!</h2>
+                    <p>Complete 10 more lessons to start competing</p>
+                </div>
+                <div class="daily-quests">
+                    <h2>Daily Quests</h2>
+                    <p>Earn 10 XP</p>
+                    <progress value="0" max="10"></progress>
+                    <a href="#">View All</a>
+                </div>
+                <div class="profile">
+                    <button class="create-profile">Create a profile</button>
+                    <button class="sign-in">Sign In</button>
+                </div>
+            </aside>
+        </main>
+    </div>
+    <div style="background-color:#2d2f33" class="leaderboard">
+        <div style="margin-top:20px" class="medals">
+         <button style="margin-left: 10px" class="but" id = "first"></button>
+         <button style="margin-left:50px" class="but" id ="second"></button>
+         <button style="margin-left:50px" class="but" id ="third"></button>
+        </div>
+          <div class="gold-league-container">
+              <h1 class="title">Bronze League</h1>
+              <div class="card">
+                  <p class="text">Complete a lesson to join this week's leaderboard</p>
+                  <button class="lesson-button">START A LESSON</button>
+              </div>
+              <div class="user-info">
+                  <p class="user-name">Sid - 100XP</p>
+              </div>
+            <div class="user-info">
+            <p class="user-name">James - 80XP</p>
+               </div>
+            <div class="user">
+              <p iclass="user-name" id = "username">User - 0XP</p>
+                 </div>
+          </div>
+    </div>
+</body>
+</html>
