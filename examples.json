@@ -1,0 +1,26 @@
+[
+    {
+        "case_study": {
+            "title": "Introducing a New Coffee Brand",
+            "description": "A startup is launching a new organic coffee line and needs a strong marketing strategy.",
+            "categories": ["marketing", "branding", "product launch"]
+        },
+        "performance_indicators": [
+            "Develop marketing strategies to attract customers.",
+            "Understand consumer behavior to increase sales.",
+            "Utilize social media for brand awareness and engagement."
+        ]
+    },
+    {
+        "case_study": {
+            "title": "Boosting Sales for a Tech Company",
+            "description": "A software company is struggling with low customer retention. You must create a sales and pricing strategy.",
+            "categories": ["sales", "pricing", "customer engagement"]
+        },
+        "performance_indicators": [
+            "Develop a pricing strategy for a competitive market.",
+            "Implement customer relationship management (CRM) strategies.",
+            "Identify trends in consumer demand to adjust business strategies."
+        ]
+    }
+]
