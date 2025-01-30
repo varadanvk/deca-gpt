@@ -1,1 +1,8 @@
+{
+    "events": [
+        {"id": "marketing", "name": "Marketing & Communications"},
+        {"id": "finance", "name": "Financial Analysis"},
+        {"id": "hospitality", "name": "Hospitality & Tourism"}
+    ]
+}
 
