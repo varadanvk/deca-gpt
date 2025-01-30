@@ -1,16 +1,52 @@
-
-  [
+[
     {
-      "id": 1,
-      "description": "Explain the role of promotion as a marketing function."
+        "id": 1,
+        "description": "Develop marketing strategies to attract customers.",
+        "categories": ["marketing", "customer acquisition", "strategy"]
     },
     {
-      "id": 2,
-      "description": "Describe marketing functions and related activities."
+        "id": 2,
+        "description": "Analyze financial statements to assess business health.",
+        "categories": ["finance", "accounting", "financial analysis"]
     },
     {
-      "id": 3,
-      "description": "Explain the types of promotion."
+        "id": 3,
+        "description": "Evaluate the effectiveness of promotional campaigns.",
+        "categories": ["marketing", "advertising", "promotion"]
+    },
+    {
+        "id": 4,
+        "description": "Create a budget for a new product launch.",
+        "categories": ["finance", "budgeting", "product launch"]
+    },
+    {
+        "id": 5,
+        "description": "Understand consumer behavior to increase sales.",
+        "categories": ["consumer behavior", "sales", "marketing"]
+    },
+    {
+        "id": 6,
+        "description": "Implement customer relationship management (CRM) strategies.",
+        "categories": ["customer service", "CRM", "business management"]
+    },
+    {
+        "id": 7,
+        "description": "Develop a pricing strategy for a competitive market.",
+        "categories": ["pricing", "competition", "business strategy"]
+    },
+    {
+        "id": 8,
+        "description": "Monitor supply chain efficiency and reduce costs.",
+        "categories": ["supply chain", "logistics", "cost reduction"]
+    },
+    {
+        "id": 9,
+        "description": "Utilize social media for brand awareness and engagement.",
+        "categories": ["social media", "branding", "customer engagement"]
+    },
+    {
+        "id": 10,
+        "description": "Identify trends in consumer demand to adjust business strategies.",
+        "categories": ["market trends", "consumer behavior", "business strategy"]
     }
-  ]
-
+]
