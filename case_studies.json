@@ -1,14 +1,32 @@
-
-   [
+[
     {
-      "id": 1,
-      "title": "Knowledge Network Spelling Bee",
-      "description": "Promote the Spelling Bee Championship and its move to More Knowledge streaming service."
+        "id": 1,
+        "title": "Launching a New Energy Drink",
+        "description": "Your company is launching a new energy drink in a competitive market. Your task is to create a marketing strategy, set a competitive price, and analyze potential sales channels.",
+        "categories": ["marketing", "pricing", "product launch", "consumer behavior"]
     },
     {
-      "id": 2,
-      "title": "Super Bowl Generation Z Viewership",
-      "description": "Increase Generation Z viewership for the Super Bowl broadcast on GBN."
+        "id": 2,
+        "title": "Expanding an E-Commerce Business",
+        "description": "An online fashion retailer is looking to expand into international markets. Your role is to assess financial feasibility, market trends, and create a promotional strategy.",
+        "categories": ["finance", "market trends", "promotion", "business strategy"]
+    },
+    {
+        "id": 3,
+        "title": "Rebranding a Fast Food Chain",
+        "description": "A fast food company is losing customers due to outdated branding. You must create a new marketing campaign, improve customer engagement, and analyze the competition.",
+        "categories": ["branding", "marketing", "customer engagement", "competition"]
+    },
+    {
+        "id": 4,
+        "title": "Reducing Supply Chain Costs",
+        "description": "A retail store is facing increased costs in its supply chain. You must find ways to optimize logistics, reduce expenses, and maintain product quality.",
+        "categories": ["supply chain", "cost reduction", "logistics"]
+    },
+    {
+        "id": 5,
+        "title": "Increasing Sales Through Social Media",
+        "description": "A new clothing brand wants to boost sales by leveraging social media influencers. You need to identify the right platforms, develop engagement strategies, and measure success.",
+        "categories": ["social media", "sales", "branding", "customer engagement"]
     }
-  ]
-
+]
