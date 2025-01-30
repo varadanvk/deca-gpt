@@ -26,7 +26,7 @@ def generate_ai_case_study(existing_cases):
     example_cases = "\n\n".join([f"Title: {c['title']}\nDescription: {c['description']}" for c in existing_cases[:5]])
 
     prompt = f"""
-    You are an AI that generates business case studies for DECA practice.
+    You are an AI that generates business case studies for DECA roleplay practice. 
 
     Here are some example case studies:
     {example_cases}
