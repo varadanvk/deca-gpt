@@ -19,6 +19,7 @@
             padding: 20px;
             box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
+            position: relative;
         }
         .chat-log {
             list-style: none;
@@ -57,26 +58,52 @@
             bottom: 20px;
             transition: width 0.3s ease;
         }
-        .chat-box input {
+        .chat-box textarea {
             border: none;
             outline: none;
             font-size: 16px;
             width: 100%;
+            min-height: 30px;
+            max-height: 150px;
+            overflow-y: auto;
             transition: width 0.3s ease;
+            resize: none;
+            padding-left: 10px;
         }
-        .chat-box input:focus {
+        .chat-box textarea:focus {
             width: 120%;
         }
         .send-button {
-            width: 20px;
-            height: 20px;
+            width: 30px;
+            height: 30px;
             background-color: black;
             border-radius: 50%;
             cursor: pointer;
             transition: transform 0.2s ease;
+            margin-left: 10px;
         }
         .send-button:active {
             transform: scale(0.9);
+        }
+        .upload-button {
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .upload-button::before {
+            content: "📁";
+            font-size: 18px;
+            color: black;
         }
         .message-container {
             width: 800px;
@@ -146,16 +173,31 @@
         .new-chat:hover {
             background: #f4f4f4;
         }
+
+        .arrow-button {
+            width: 30px;
+            height: 30px;
+            background-color: black;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin-left: 10px;
+            position: relative;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .arrow-button::before {
+            content: "↑";
+            color: white;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <h2>Past Chats</h2>
-        <ul class="chat-log">
-            <li>Chat 1</li>
-            <li>Chat 2</li>
-            <li>Chat 3</li>
-        </ul>
+        <ul class="chat-log" id="chat-log"></ul>
         <div class="new-chat" onclick="startNewChat()">Start New Chat</div>
     </div>
 
@@ -168,8 +210,9 @@
         <div class="message-container" id="message-container" style="display: none;"></div>
 
         <div class="chat-box" style="display: none;">
-            <input type="text" id="chat-input" placeholder="Message DecaGPT">
-            <div class="send-button" onclick="sendMessage()"></div>
+            <div class="upload-button" onclick="uploadFile()"></div>
+            <textarea id="chat-input" placeholder="Message DecaGPT" oninput="adjustHeight()" rows="1"></textarea>
+            <div class="arrow-button" onclick="sendMessage()"></div>
         </div>
     </div>
 
@@ -180,12 +223,43 @@
             }
         });
 
+        // Start new chat by clearing old messages
         function startNewChat() {
-            document.getElementById("loading-page").style.display = "block";
-            document.getElementById("message-container").style.display = "none";
+            let chatLog = document.getElementById("chat-log");
+            let messageContainer = document.getElementById("message-container");
+            let loadingPage = document.getElementById("loading-page");
+
+            // Move current messages to the sidebar chat log
+            let messages = document.querySelectorAll(".message");
+            messages.forEach(msg => {
+                let chatLogItem = document.createElement("li");
+                chatLogItem.textContent = msg.textContent;
+                chatLogItem.onclick = function() {
+                    loadPastChat(msg.textContent);
+                };
+                chatLog.appendChild(chatLogItem);
+            });
+
+            // Clear the message container and start a new chat
+            messageContainer.innerHTML = "";
+            loadingPage.style.display = "block";
+            messageContainer.style.display = "none";
             document.querySelector(".chat-box").style.display = "none";
         }
 
+        // Load past chat when clicked from the sidebar
+        function loadPastChat(chatText) {
+            let messageContainer = document.getElementById("message-container");
+            messageContainer.innerHTML = "";
+            let pastMessage = document.createElement("div");
+            pastMessage.classList.add("message");
+            pastMessage.textContent = chatText;
+            messageContainer.appendChild(pastMessage);
+            messageContainer.style.display = "block";
+            document.querySelector(".chat-box").style.display = "flex";
+        }
+
+        // Start chat after initial message entered
         function startChat() {
             let initialMessage = document.getElementById("initial-message").value.trim();
             if (initialMessage !== "") {
@@ -201,61 +275,87 @@
                 userMessageElement.classList.add("message", "user");
                 userMessageElement.textContent = initialMessage;
                 messageContainer.appendChild(userMessageElement);
+
+                // Show DecaGPT loading message
+                let loadingElement = document.createElement("div");
+                loadingElement.classList.add("message");
+                loadingElement.innerHTML = '<span class="loading"></span> DecaGPT is typing...';
+                messageContainer.appendChild(loadingElement);
+
+                // Simulate backend response after a delay
+                setTimeout(function() {
+                    loadingElement.remove();  // Remove loading
+                    let botMessageElement = document.createElement("div");
+                    botMessageElement.classList.add("message");
+                    botMessageElement.textContent = "This is DecaGPT's response.";
+                    messageContainer.appendChild(botMessageElement);
+                }, 3000);  // Simulating a 3 second delay
             }
         }
 
+        // Adjust textarea height based on content
+        document.getElementById("chat-input").addEventListener("input", function() {
+            adjustHeight();
+        });
+
+        function adjustHeight() {
+            let input = document.getElementById("chat-input");
+            input.style.height = "auto";
+            input.style.height = (input.scrollHeight) + "px";
+        }
+
+        // Send message on pressing Enter key
         document.getElementById("chat-input").addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
+            if (event.key === "Enter" && !event.shiftKey) {
                 sendMessage();
             }
         });
 
-        function loadMessages() {
-            let messageContainer = document.getElementById("message-container");
-            let messages = JSON.parse(localStorage.getItem("chatMessages")) || [];
-            messageContainer.innerHTML = "";
-            messages.forEach(msg => {
-                let msgElement = document.createElement("div");
-                msgElement.classList.add("message");
-                if (msg.user) msgElement.classList.add("user");
-                msgElement.textContent = msg.text;
-                messageContainer.appendChild(msgElement);
-            });
-        }
-
+        // Send message when arrow button is clicked
         function sendMessage() {
             let inputField = document.getElementById("chat-input");
             let messageContainer = document.getElementById("message-container");
-            let userMessage = inputField.value.trim();
 
+            let userMessage = inputField.value.trim();
             if (userMessage !== "") {
+                // Display the user's message
                 let userMessageElement = document.createElement("div");
                 userMessageElement.classList.add("message", "user");
                 userMessageElement.textContent = userMessage;
                 messageContainer.appendChild(userMessageElement);
 
-                let messages = JSON.parse(localStorage.getItem("chatMessages")) || [];
-                messages.push({ user: true, text: userMessage });
-                localStorage.setItem("chatMessages", JSON.stringify(messages));
+                // Clear the input field
                 inputField.value = "";
+                adjustHeight();  // Adjust textarea height
 
-                let loadingDots = document.createElement("div");
-                loadingDots.classList.add("loading");
-                messageContainer.appendChild(loadingDots);
+                // Show DecaGPT loading message
+                let loadingElement = document.createElement("div");
+                loadingElement.classList.add("message");
+                loadingElement.innerHTML = '<span class="loading"></span> DecaGPT is typing...';
+                messageContainer.appendChild(loadingElement);
 
-                setTimeout(() => {
-                    loadingDots.remove();
+                // Simulate backend response after a delay
+                setTimeout(function() {
+                    loadingElement.remove();  // Remove loading
                     let botMessageElement = document.createElement("div");
                     botMessageElement.classList.add("message");
-                    botMessageElement.textContent = "We have not connected the back-end yet.";
+                    botMessageElement.textContent = "This is DecaGPT's response.";
                     messageContainer.appendChild(botMessageElement);
-                    messages.push({ user: false, text: "We have not connected the back-end yet." });
-                    localStorage.setItem("chatMessages", JSON.stringify(messages));
-                }, 1000);
+                }, 3000);  // Simulating a 3 second delay
             }
         }
 
-        window.onload = loadMessages;
+        // Simulate file upload functionality
+        function uploadFile() {
+            let fileInput = document.createElement("input");
+            fileInput.type = "file";
+            fileInput.accept = "application/json";
+            fileInput.onchange = function() {
+                let file = fileInput.files[0];
+                alert(`File selected: ${file.name}`);
+            };
+            fileInput.click();
+        }
     </script>
 </body>
 </html>
