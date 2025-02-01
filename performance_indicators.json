@@ -1,4 +1,9 @@
 {
+    "entrepreneurship": [
+        "PI 1 for Entrepreneurship",
+        "PI 2 for Entrepreneurship",
+        "PI 3 for Entrepreneurship"
+    ],
     "marketing": [
         "Develop a marketing strategy based on consumer trends.",
         "Use digital advertising to target specific audiences.",
@@ -8,6 +13,21 @@
         "Evaluate financial statements to assess business health.",
         "Create a budget plan for a startup business.",
         "Analyze investment risks and returns."
+    ],
+     " personal finance": [
+        "Evaluate financial statements to assess business health.",
+        "Create a budget plan for a startup business.",
+        "Analyze investment risks and returns."
+    ],
+    "business_management": [
+        "PI 1 for Business Management",
+        "PI 2 for Business Management",
+        "PI 3 for Business Management"
+    ],
+    "principles": [
+        "PI 1 for Principles",
+        "PI 2 for Principles",
+        "PI 3 for Principles"
     ],
     "hospitality": [
         "Enhance customer service to improve guest satisfaction.",
