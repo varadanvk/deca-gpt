@@ -133,10 +133,12 @@
             background: black;
             border-radius: 50%;
             animation: blink 1s infinite;
+            margin: 0 3px;
         }
         @keyframes blink {
             0%, 100% { opacity: 0.2; }
-            50% { opacity: 1; }
+            33% { opacity: 1; }
+            66% { opacity: 1; }
         }
 
         /* New chat page styles */
@@ -279,82 +281,21 @@
                 // Show DecaGPT loading message
                 let loadingElement = document.createElement("div");
                 loadingElement.classList.add("message");
-                loadingElement.innerHTML = '<span class="loading"></span> DecaGPT is typing...';
+                loadingElement.innerHTML = '<span class="loading"></span><span class="loading"></span><span class="loading"></span> DecaGPT is typing...';
                 messageContainer.appendChild(loadingElement);
 
                 // Simulate backend response after a delay
-                setTimeout(function() {
-                    loadingElement.remove();  // Remove loading
-                    let botMessageElement = document.createElement("div");
-                    botMessageElement.classList.add("message");
-                    botMessageElement.textContent = "This is DecaGPT's response.";
-                    messageContainer.appendChild(botMessageElement);
-                }, 3000);  // Simulating a 3 second delay
             }
         }
 
-        // Adjust textarea height based on content
-        document.getElementById("chat-input").addEventListener("input", function() {
-            adjustHeight();
-        });
-
-        function adjustHeight() {
-            let input = document.getElementById("chat-input");
-            input.style.height = "auto";
-            input.style.height = (input.scrollHeight) + "px";
-        }
-
-        // Send message on pressing Enter key
-        document.getElementById("chat-input").addEventListener("keypress", function(event) {
-            if (event.key === "Enter" && !event.shiftKey) {
-                sendMessage();
-            }
-        });
-
-        // Send message when arrow button is clicked
         function sendMessage() {
-            let inputField = document.getElementById("chat-input");
             let messageContainer = document.getElementById("message-container");
-
-            let userMessage = inputField.value.trim();
-            if (userMessage !== "") {
-                // Display the user's message
-                let userMessageElement = document.createElement("div");
-                userMessageElement.classList.add("message", "user");
-                userMessageElement.textContent = userMessage;
-                messageContainer.appendChild(userMessageElement);
-
-                // Clear the input field
-                inputField.value = "";
-                adjustHeight();  // Adjust textarea height
-
-                // Show DecaGPT loading message
-                let loadingElement = document.createElement("div");
-                loadingElement.classList.add("message");
-                loadingElement.innerHTML = '<span class="loading"></span> DecaGPT is typing...';
-                messageContainer.appendChild(loadingElement);
-
-                // Simulate backend response after a delay
-                setTimeout(function() {
-                    loadingElement.remove();  // Remove loading
-                    let botMessageElement = document.createElement("div");
-                    botMessageElement.classList.add("message");
-                    botMessageElement.textContent = "This is DecaGPT's response.";
-                    messageContainer.appendChild(botMessageElement);
-                }, 3000);  // Simulating a 3 second delay
-            }
-        }
-
-        // Simulate file upload functionality
-        function uploadFile() {
-            let fileInput = document.createElement("input");
-            fileInput.type = "file";
-            fileInput.accept = "application/json";
-            fileInput.onchange = function() {
-                let file = fileInput.files[0];
-                alert(`File selected: ${file.name}`);
-            };
-            fileInput.click();
+            let chatInput = document.getElementById("chat-input");
+            let userMessageElement = document.createElement("div");
+            userMessageElement.classList.add("message", "user");
+            userMessageElement.textContent = chatInput.value;
+            messageContainer.appendChild(userMessageElement);
+            chatInput.value = "";
         }
     </script>
 </body>
