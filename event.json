@@ -23,8 +23,11 @@
         {"id": "MTDM", "name": "Marketing Management Team Decision Making"},
         {"id": "STDM", "name": "Sports And Entertainment Marketing Team Decision Making"},
         {"id": "TTDM", "name": "Travel And Tourism Team Decision Making"},
-        {"id": "PBM", "name": "Principles of Business Management and Administration"}
-        
+        {"id": "PBM", "name": "Principles of Business Management and Administration"},
+        {"id": "PEN", "name": "Principles of Entrepreneurship"},
+        {"id": "PFN", "name": "Principles of Finance"},
+        {"id": "PHT", "name": "Principles of Hospitality"},
+        {"id": "PMK", "name": "Principles of Marketing"}
     ]
 }
 
