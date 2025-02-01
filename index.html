@@ -3,350 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DECA AI Chatbot</title>
+    <title>DecaGPT UI</title>
     <style>
-        /* General Styles */
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
             display: flex;
+            justify-content: center;
+            align-items: center;
             height: 100vh;
-            background: #f5f5f5;
-        }
-
-        /* Sidebar Styles */
-        .sidebar {
-            width: 250px;
-            background: #f9f9f9;
-            border-right: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .new-chat-button {
-            background: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 20px;
-            transition: background 0.3s ease;
-        }
-
-        .new-chat-button:hover {
-            background: #005bb5;
-        }
-
-        .sidebar h3 {
-            font-size: 14px;
-            color: #666;
-            margin: 10px 0;
-        }
-
-        .past-conversations {
-            flex-grow: 1;
-            overflow-y: auto;
-        }
-
-        .past-conversation {
-            padding: 10px;
-            margin: 5px 0;
-            background: #fff;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            font-size: 14px;
-            color: #333;
-            border: 1px solid #e0e0e0;
-        }
-
-        .past-conversation:hover {
-            background: #f0f0f0;
-        }
-
-        /* Chat Container Styles */
-        .chat-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            background: #fff;
-        }
-
-        .chat-header {
-            padding: 20px;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 18px;
-            font-weight: 600;
-            background: #fff;
-            color: #333;
-        }
-
-        .chat-box {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: #fff;
-        }
-
-        .chat-message {
-            max-width: 70%;
-            padding: 10px 15px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            word-wrap: break-word;
-            position: relative;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .user-message {
-            background: #007bff;
-            color: #fff;
-            align-self: flex-end;
-            margin-left: auto;
-        }
-
-        .ai-message {
-            background: #f0f0f0;
-            color: #333;
-            align-self: flex-start;
-            margin-right: auto;
-        }
-
-        /* Thinking Animation */
-        .thinking {
-            display: inline-block;
-            position: relative;
-            width: 80px;
-            height: 20px;
-        }
-
-        .thinking span {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: #007bff;
-            border-radius: 50%;
-            animation: thinking 1.4s infinite ease-in-out;
-        }
-
-        .thinking span:nth-child(1) {
-            left: 0;
-            animation-delay: 0s;
-        }
-
-        .thinking span:nth-child(2) {
-            left: 20px;
-            animation-delay: 0.2s;
-        }
-
-        .thinking span:nth-child(3) {
-            left: 40px;
-            animation-delay: 0.4s;
-        }
-
-        @keyframes thinking {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
-
-        /* Input Box Styles */
-        .input-box {
-            display: flex;
-            align-items: flex-end;
-            padding: 10px;
-            border-top: 1px solid #e0e0e0;
-            background: #fff;
-        }
-
-        .input-box textarea {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #e0e0e0;
-            border-radius: 20px;
-            margin-right: 10px;
-            resize: none;
+            background-color: white;
+            margin: 0;
             font-family: Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
-            max-height: 150px;
-            overflow-y: auto;
-            background: #f9f9f9;
         }
-
-        .input-box textarea:focus {
-            outline: none;
-            border-color: #007bff;
+        .container {
+            text-align: center;
         }
-
-        .input-box button {
+        h1 {
+            font-size: 20px;
+            font-weight: bold;
+            color: black;
+        }
+        .chat-box {
+            display: flex;
+            align-items: center;
+            background: white;
             padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            position: relative;
+            margin-top: 20px;
+        }
+        .chat-box input {
             border: none;
+            outline: none;
+            font-size: 14px;
+            width: 100%;
+        }
+        .icon-button {
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            background: #007bff;
-            color: #fff;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
+            background-color: lightgray;
+            margin-right: 5px;
         }
-
-        .input-box button:hover {
-            background: #005bb5;
-        }
-
-        .file-upload {
-            margin-right: 10px;
-            cursor: pointer;
-        }
-
-        .file-upload input {
-            display: none;
-        }
-
-        .file-upload label {
-            padding: 10px;
-            background: #f0f0f0;
+        .send-button {
+            width: 14px;
+            height: 14px;
+            background-color: black;
             border-radius: 50%;
             cursor: pointer;
-            transition: background 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-        }
-
-        .file-upload label:hover {
-            background: #e0e0e0;
-        }
-
-        /* Scrollbar Styles */
-        .chat-box::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .chat-box::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
-        }
-
-        .chat-box::-webkit-scrollbar-thumb {
-            background: #ccc;
-            border-radius: 4px;
-        }
-
-        .chat-box::-webkit-scrollbar-thumb:hover {
-            background: #999;
         }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo">DECA AI</div>
-        <button class="new-chat-button" onclick="startNewChat()">New Chat</button>
-        <h3>Today</h3>
-        <div class="past-conversations">
-            <!-- Past conversations will appear here after clicking "New Chat" -->
+    <div class="container">
+        <h1>What can I help with?</h1>
+        <div class="chat-box">
+            <div class="icon-button"></div>
+            <div class="icon-button"></div>
+            <input type="text" placeholder="Message DecaGPT">
+            <div class="send-button"></div>
         </div>
     </div>
-
-    <!-- Chat Container -->
-    <div class="chat-container">
-        <div class="chat-header">New Chat</div>
-        <div id="chatBox" class="chat-box"></div>
-        <div class="input-box">
-            <div class="file-upload">
-                <input type="file" id="fileInput" />
-                <label for="fileInput">📎</label>
-            </div>
-            <textarea id="userInput" placeholder="Type your message..." rows="1"></textarea>
-            <button onclick="sendMessage()">➜</button>
-        </div>
-    </div>
-
-    <script>
-        const chatBox = document.getElementById('chatBox');
-        const userInput = document.getElementById('userInput');
-        const pastConversations = document.querySelector('.past-conversations');
-
-        // Function to append a message to the chat box
-        function appendMessage(message, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('chat-message');
-            messageDiv.classList.add(sender === 'user' ? 'user-message' : 'ai-message');
-            messageDiv.innerText = message;
-            chatBox.appendChild(messageDiv);
-            chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the latest message
-        }
-
-        // Function to show thinking animation
-        function showThinkingAnimation() {
-            const thinkingDiv = document.createElement('div');
-            thinkingDiv.classList.add('chat-message', 'ai-message');
-            thinkingDiv.innerHTML = '<div class="thinking"><span></span><span></span><span></span></div>';
-            chatBox.appendChild(thinkingDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            return thinkingDiv;
-        }
-
-        // Function to start a new chat
-        function startNewChat() {
-            chatBox.innerHTML = ''; // Clear the chat box
-            appendMessage("New chat started. How can I assist you today?", 'ai');
-
-            // Add a new conversation log
-            const conversationDiv = document.createElement('div');
-            conversationDiv.classList.add('past-conversation');
-            conversationDiv.innerText = `Chat ${pastConversations.children.length + 1}`;
-            pastConversations.appendChild(conversationDiv);
-        }
-
-        // Function to send a message
-        async function sendMessage() {
-            const message = userInput.value.trim();
-            if (message === "") return; // Ignore empty messages
-
-            appendMessage(message, 'user');
-            userInput.value = ''; // Clear the input box
-            userInput.style.height = 'auto'; // Reset textarea height
-
-            // Show thinking animation
-            const thinkingDiv = showThinkingAnimation();
-
-            // Simulate AI response with a delay
-            setTimeout(() => {
-                chatBox.removeChild(thinkingDiv); // Remove thinking animation
-                appendMessage("havnet connected back end yet.", 'ai');
-            }, 2000); // Simulate a 2-second delay
-        }
-
-        // Auto-resize textarea
-        userInput.addEventListener('input', () => {
-            userInput.style.height = 'auto';
-            userInput.style.height = `${Math.min(userInput.scrollHeight, 150)}px`;
-        });
-
-        // Initialize the chat
-        window.onload = startNewChat;
-    </script>
 </body>
 </html>
