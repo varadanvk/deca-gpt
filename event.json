@@ -14,7 +14,7 @@
         {"id": "RFSM", "name": "Restaurant And Food Service Management Series", "cluster": "Hospitality"},
         {"id": "RMS", "name": "Retail Merchandising Series", "cluster": "Marketing"},
         {"id": "SEM", "name": "Sports and Entertainment Marketing Series", "cluster": "Marketing"},
-        {"id": "PFL", "name": "Personal Financial Literacy", "cluster": "Finance"},
+        {"id": "PFL", "name": "Personal Financial Literacy", "cluster": "Personal Finance"},
         {"id": "BLTDM", "name": "Business Law and Ethics Team Decision Making", "cluster": "Business Management"},
         {"id": "BTDM", "name": "Buying and Merchandising Team Decision Making", "cluster": "Marketing"},
         {"id": "ETDM", "name": "Entrepreneurship Team Decision Making", "cluster": "Entrepreneurship"},
