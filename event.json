@@ -1,8 +1,30 @@
 {
     "events": [
-        {"id": "marketing", "name": "Marketing & Communications"},
-        {"id": "finance", "name": "Financial Analysis"},
-        {"id": "hospitality", "name": "Hospitality & Tourism"}
+        {"id": "ACT", "name": "Accounting Applications Series"},
+        {"id": "AAM", "name": "Apparel And Accessories Marketing Series"},
+        {"id": "ASM", "name": "Automotive Service Marketing Series"},
+        {"id": "BFS", "name": "Business Finance Series"},
+        {"id": "BSM", "name": "Business Services Marketing Series"},
+        {"id": "ENT", "name": "Entrepreneurship Series"},
+        {"id": "FMS", "name": "Food Marketing Series"},
+        {"id": "HLM", "name": "Hotel Lodging Management Series"},
+        {"id": "HRM", "name": "Human Resource Management Series"},
+        {"id": "MCS", "name": "Marketing Communications Series"},
+        {"id": "QSRM", "name": "Quick Serve Restraunt Management Series"},
+        {"id": "RFSM", "name": "Restraunt And Food Service Management Series"},
+        {"id": "RMS", "name": "Retail Merchandising Series"},
+        {"id": "SEM", "name": "Sports and Entertainment Marketing Series"},
+        {"id": "PFL", "name": "Personal Financial Literacy"},
+        {"id": "BLTDM", "name": "Business Law and Ethics Team Decision Making"},
+        {"id": "BTDM", "name": "Buying and Merchandising Team Decision Making"},
+        {"id": "ETDM", "name": "Entrepreneurship Team Decision Making"},
+        {"id": "FTDM", "name": "Financial Services Team Decision Making"},
+        {"id": "HTDM", "name": "Hospitality Services Team Decision Making"},
+        {"id": "MTDM", "name": "Marketing Management Team Decision Making"},
+        {"id": "STDM", "name": "Sports And Entertainment Marketing Team Decision Making"},
+        {"id": "TTDM", "name": "Travel And Tourism Team Decision Making"},
+        {"id": "PBM", "name": "Principles of Business Management and Administration"}
+        
     ]
 }
 
