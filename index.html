@@ -7,20 +7,43 @@
     <style>
         body {
             display: flex;
-            justify-content: center;
-            align-items: center;
             height: 100vh;
             background-color: white;
             margin: 0;
             font-family: Arial, sans-serif;
+            position: relative;
         }
-        .container {
-            text-align: center;
+        .sidebar {
+            width: 250px;
+            background: #f8f8f8;
+            padding: 20px;
+            box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
         }
-        h1 {
-            font-size: 20px;
-            font-weight: bold;
-            color: black;
+        .chat-log {
+            list-style: none;
+            padding: 0;
+        }
+        .chat-log li {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            background: white;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .chat-log li:hover {
+            background: #e0e0e0;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
         }
         .chat-box {
             display: flex;
@@ -29,41 +52,210 @@
             padding: 10px;
             border-radius: 15px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            position: relative;
-            margin-top: 20px;
+            width: 800px;
+            position: fixed;
+            bottom: 20px;
+            transition: width 0.3s ease;
         }
         .chat-box input {
             border: none;
             outline: none;
-            font-size: 14px;
+            font-size: 16px;
             width: 100%;
+            transition: width 0.3s ease;
         }
-        .icon-button {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: lightgray;
-            margin-right: 5px;
+        .chat-box input:focus {
+            width: 120%;
         }
         .send-button {
-            width: 14px;
-            height: 14px;
+            width: 20px;
+            height: 20px;
             background-color: black;
             border-radius: 50%;
             cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .send-button:active {
+            transform: scale(0.9);
+        }
+        .message-container {
+            width: 800px;
+            max-height: 500px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 80px;
+        }
+        .message {
+            background: rgba(217, 217, 217, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: fit-content;
+            max-width: 70%;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .message.user {
+            background: rgba(204, 229, 255, 0.7);
+            align-self: flex-end;
+        }
+        .loading {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: black;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        /* New chat page styles */
+        .loading-page {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+        }
+        .loading-page input {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+        }
+
+        /* New chat button with rounded rectangle and shadow */
+        .new-chat {
+            background: #fff;
+            border-radius: 12px;
+            padding: 10px 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+        .new-chat:hover {
+            background: #f4f4f4;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>What can I help with?</h1>
-        <div class="chat-box">
-            <div class="icon-button"></div>
-            <div class="icon-button"></div>
-            <input type="text" placeholder="Message DecaGPT">
-            <div class="send-button"></div>
+    <div class="sidebar">
+        <h2>Past Chats</h2>
+        <ul class="chat-log">
+            <li>Chat 1</li>
+            <li>Chat 2</li>
+            <li>Chat 3</li>
+        </ul>
+        <div class="new-chat" onclick="startNewChat()">Start New Chat</div>
+    </div>
+
+    <div class="main-content">
+        <div id="loading-page" class="loading-page">
+            <p>How can I help you?</p>
+            <input type="text" id="initial-message" placeholder="Type your question here">
+        </div>
+
+        <div class="message-container" id="message-container" style="display: none;"></div>
+
+        <div class="chat-box" style="display: none;">
+            <input type="text" id="chat-input" placeholder="Message DecaGPT">
+            <div class="send-button" onclick="sendMessage()"></div>
         </div>
     </div>
+
+    <script>
+        document.getElementById("initial-message").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                startChat();
+            }
+        });
+
+        function startNewChat() {
+            document.getElementById("loading-page").style.display = "block";
+            document.getElementById("message-container").style.display = "none";
+            document.querySelector(".chat-box").style.display = "none";
+        }
+
+        function startChat() {
+            let initialMessage = document.getElementById("initial-message").value.trim();
+            if (initialMessage !== "") {
+                let messageContainer = document.getElementById("message-container");
+                let loadingPage = document.getElementById("loading-page");
+
+                loadingPage.style.display = "none";
+                messageContainer.style.display = "block";
+                document.querySelector(".chat-box").style.display = "flex";
+
+                // Display the user's initial message
+                let userMessageElement = document.createElement("div");
+                userMessageElement.classList.add("message", "user");
+                userMessageElement.textContent = initialMessage;
+                messageContainer.appendChild(userMessageElement);
+            }
+        }
+
+        document.getElementById("chat-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+
+        function loadMessages() {
+            let messageContainer = document.getElementById("message-container");
+            let messages = JSON.parse(localStorage.getItem("chatMessages")) || [];
+            messageContainer.innerHTML = "";
+            messages.forEach(msg => {
+                let msgElement = document.createElement("div");
+                msgElement.classList.add("message");
+                if (msg.user) msgElement.classList.add("user");
+                msgElement.textContent = msg.text;
+                messageContainer.appendChild(msgElement);
+            });
+        }
+
+        function sendMessage() {
+            let inputField = document.getElementById("chat-input");
+            let messageContainer = document.getElementById("message-container");
+            let userMessage = inputField.value.trim();
+
+            if (userMessage !== "") {
+                let userMessageElement = document.createElement("div");
+                userMessageElement.classList.add("message", "user");
+                userMessageElement.textContent = userMessage;
+                messageContainer.appendChild(userMessageElement);
+
+                let messages = JSON.parse(localStorage.getItem("chatMessages")) || [];
+                messages.push({ user: true, text: userMessage });
+                localStorage.setItem("chatMessages", JSON.stringify(messages));
+                inputField.value = "";
+
+                let loadingDots = document.createElement("div");
+                loadingDots.classList.add("loading");
+                messageContainer.appendChild(loadingDots);
+
+                setTimeout(() => {
+                    loadingDots.remove();
+                    let botMessageElement = document.createElement("div");
+                    botMessageElement.classList.add("message");
+                    botMessageElement.textContent = "We have not connected the back-end yet.";
+                    messageContainer.appendChild(botMessageElement);
+                    messages.push({ user: false, text: "We have not connected the back-end yet." });
+                    localStorage.setItem("chatMessages", JSON.stringify(messages));
+                }, 1000);
+            }
+        }
+
+        window.onload = loadMessages;
+    </script>
 </body>
 </html>
