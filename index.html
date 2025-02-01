@@ -127,6 +127,43 @@
             margin-right: auto;
         }
 
+        /* Thinking Animation */
+        .thinking {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 20px;
+        }
+
+        .thinking span {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #007bff;
+            border-radius: 50%;
+            animation: thinking 1.4s infinite ease-in-out;
+        }
+
+        .thinking span:nth-child(1) {
+            left: 0;
+            animation-delay: 0s;
+        }
+
+        .thinking span:nth-child(2) {
+            left: 20px;
+            animation-delay: 0.2s;
+        }
+
+        .thinking span:nth-child(3) {
+            left: 40px;
+            animation-delay: 0.4s;
+        }
+
+        @keyframes thinking {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
         /* Input Box Styles */
         .input-box {
             display: flex;
@@ -228,9 +265,7 @@
         <button class="new-chat-button" onclick="startNewChat()">New Chat</button>
         <h3>Today</h3>
         <div class="past-conversations">
-            <div class="past-conversation">Chat 1</div>
-            <div class="past-conversation">Chat 2</div>
-            <div class="past-conversation">Chat 3</div>
+            <!-- Past conversations will appear here after clicking "New Chat" -->
         </div>
     </div>
 
@@ -251,6 +286,7 @@
     <script>
         const chatBox = document.getElementById('chatBox');
         const userInput = document.getElementById('userInput');
+        const pastConversations = document.querySelector('.past-conversations');
 
         // Function to append a message to the chat box
         function appendMessage(message, sender) {
@@ -262,10 +298,26 @@
             chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the latest message
         }
 
+        // Function to show thinking animation
+        function showThinkingAnimation() {
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.classList.add('chat-message', 'ai-message');
+            thinkingDiv.innerHTML = '<div class="thinking"><span></span><span></span><span></span></div>';
+            chatBox.appendChild(thinkingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return thinkingDiv;
+        }
+
         // Function to start a new chat
         function startNewChat() {
             chatBox.innerHTML = ''; // Clear the chat box
             appendMessage("New chat started. How can I assist you today?", 'ai');
+
+            // Add a new conversation log
+            const conversationDiv = document.createElement('div');
+            conversationDiv.classList.add('past-conversation');
+            conversationDiv.innerText = `Chat ${pastConversations.children.length + 1}`;
+            pastConversations.appendChild(conversationDiv);
         }
 
         // Function to send a message
@@ -277,10 +329,14 @@
             userInput.value = ''; // Clear the input box
             userInput.style.height = 'auto'; // Reset textarea height
 
+            // Show thinking animation
+            const thinkingDiv = showThinkingAnimation();
+
             // Simulate AI response with a delay
             setTimeout(() => {
+                chatBox.removeChild(thinkingDiv); // Remove thinking animation
                 appendMessage("This is a simulated response.", 'ai');
-            }, 1000);
+            }, 2000); // Simulate a 2-second delay
         }
 
         // Auto-resize textarea
