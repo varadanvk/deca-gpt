@@ -11,34 +11,57 @@ export async function generateRoleplay(eventId: string) {
 
   const clusterPIs = performanceIndicators[event.cluster as keyof typeof performanceIndicators] || []
 
-  const prompt = `Create a DECA roleplay scenario for ${event.name} (${event.id}) in the ${event.cluster} cluster.
-  Format the response as a detailed roleplay scenario following this exact structure:
+  const prompt = `You are a JSON generator. Output only pure JSON without any explanation, markdown, or code blocks.
   
-  1. Event details should include:
-     - Event ID and name
-     - Career cluster
-     - Instructional area
+  Generate a DECA roleplay scenario with these requirements:
+  - Event: ${event.name} (${event.id})
+  - Cluster: ${event.cluster}
+  - Must include all 21st Century Skills: ${twentyFirstCenturySkills.join(", ")}
+  - Must use these Performance Indicators: ${clusterPIs.join(", ")}
   
-  2. Include these exact 21st Century Skills:
-  ${twentyFirstCenturySkills.join("\n")}
+  The scenario should be realistic, challenging, and business-focused.
   
-  3. Use these performance indicators for ${event.cluster}:
-  ${clusterPIs.join("\n")}
-  
-  4. Create a detailed scenario that includes:
-     - The participant's role (e.g., owner, manager, consultant)
-     - Business context and background
-     - Specific task or problem to solve
-  
-  Format as JSON matching the RoleplayScenario type.
-  Make the scenario realistic, challenging, and relevant to current business trends.`
+  Return ONLY valid JSON matching this exact structure, nothing else:
+  {
+    "eventId": "${eventId}",
+    "eventName": "${event.name}",
+    "cluster": "${event.cluster}",
+    "instructionalArea": "string",
+    "twentyFirstCenturySkills": ${JSON.stringify(twentyFirstCenturySkills)},
+    "performanceIndicators": ${JSON.stringify(clusterPIs)},
+    "situation": {
+      "role": "string",
+      "context": "string",
+      "task": "string"
+    }
+  }`
 
-  const { text } = await generateText({
-    model: openaiConfig("gpt-3.5-turbo"),
-    prompt,
-  })
+  try {
+    const { text } = await generateText({
+      model: openaiConfig("llama-3.3-70b"),
+      prompt,
+      temperature: 0.7,
+      max_tokens: 1000,
+    })
 
-  return JSON.parse(text) as RoleplayScenario
+    // Clean and validate the response
+    const cleanedText = text.replace(/```json|```/g, '').trim()
+    
+    try {
+      const parsed = JSON.parse(cleanedText) as RoleplayScenario
+      // Validate required fields
+      if (!parsed.eventId || !parsed.situation) {
+        throw new Error('Missing required fields in response')
+      }
+      return parsed
+    } catch (parseError) {
+      console.error('Invalid JSON response:', cleanedText)
+      throw new Error('Failed to parse roleplay scenario')
+    }
+  } catch (error) {
+    console.error('Generation error:', error)
+    throw new Error('Failed to generate roleplay scenario')
+  }
 }
 
 export async function evaluateResponse(eventId: string, scenario: RoleplayScenario, response: string) {

@@ -1,12 +1,13 @@
 import { createOpenAI } from "@ai-sdk/openai"
 
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error("Missing OPENAI_API_KEY environment variable")
+if (!process.env.CEREBRAS_API_KEY) {
+  throw new Error("Missing CEREBRAS_API_KEY environment variable")
 }
 
 export const openaiConfig = createOpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: "https://api.openai.com/v1",
+  apiKey: process.env.CEREBRAS_API_KEY,
+  baseURL: "https://api.cerebras.ai/v1",
   compatibility: "strict",
 })
 
+console.log(openaiConfig)
