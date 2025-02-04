@@ -171,7 +171,7 @@ export default function DECARoleplay() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="text-center">
-                <div className="text-5xl font-bold text-primary mb-2">{feedback.totalScore}</div>
+                <div className="text-5xl font-bold text-primary mb-2">{feedback.totalScore}/100</div>
                 <div className="text-gray-600">Total Score</div>
               </div>
 
