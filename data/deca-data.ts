@@ -74,7 +74,6 @@ Entrepreneurship: [
 “Recognize/Reward others for their efforts and contributions (EI:014) (SU)",
 “Determine stakeholder expectations (EI:113) (MN)",
 “Establish strategic relationships with others (EI:114) (MN)",
-
 “Share best practices with key individuals and groups (EI:115) (MN)",
 “Leverage business relationships (EI:116) (MN)", 
 “Describe the nature of entrepreneurship (EN:039) (SP)",
