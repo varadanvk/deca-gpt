@@ -280,39 +280,51 @@ Entrepreneurship: [
 ],
 
   
-  
-  
-  
-  
-  
   Marketing: [
-    "Develop a marketing strategy based on consumer trends.",
-    "Use digital advertising to target specific audiences.",
-    "Analyze competitor marketing strategies to improve branding.",
-    "Analyze competitor marketing strategies to improve branding.",
-    "Analyze competitor marketing strategies to improve branding.",
-    "Analyze competitor marketing strategies to improve branding.",
-    "Analyze competitor marketing strategies to improve branding.",
+  "Explain the need for professional and ethical standards in marketing (PD:137) (SP)", 
+  "Explain employment opportunities in marketing (PD:024) (CS)",
+  "Explain the nature and scope of the product/service management function (PM:001) (SP)",
+  "Identify the impact of product life cycles on marketing decisions (PM:024) (SP)",
+  "Describe the use of technology in the product/service management function (PM:039) (SP)",
+  "Explain business ethics in product/service management (PM:040) (SP)",
+  "Identify product opportunities (PM:134) (SP)",
+  "Identify methods/techniques to generate a product idea (PM:127) (SP)",
+  "Generate product ideas (PM:128) (SP)",
   ],
+  
   Finance: [
-    "Evaluate financial statements to assess business health.",
-    "Create a budget plan for a startup business.",
-    "Analyze investment risks and returns.",
-    "Analyze investment risks and returns.",
-    "Analyze investment risks and returns.",
-    "Analyze investment risks and returns.",
-    "Analyze investment risks and returns.",
+  "Explain the need for professional and ethical standards in marketing (PD:137) (SP)", 
+  "Explain employment opportunities in marketing (PD:024) (CS)",
+  "Explain the nature and scope of the product/service management function (PM:001) (SP)",
+  "Identify the impact of product life cycles on marketing decisions (PM:024) (SP)",
+  "Describe the use of technology in the product/service management function (PM:039) (SP)",
+  "Explain business ethics in product/service management (PM:040) (SP)",
+  "Identify product opportunities (PM:134) (SP)",
+  "Identify methods/techniques to generate a product idea (PM:127) (SP)",
+  "Generate product ideas (PM:128) (SP)",
   ],
   Personal_finance: [
-    "Evaluate financial statements to assess business health.",
-    "Create a budget plan for a startup business.",
-    "Analyze investment risks and returns.",
-    "Analyze investment risks and returns.",
-    "Analyze investment risks and returns.",
-    "Analyze investment risks and returns.",
-    "Analyze investment risks and returns.",
+  "Explain the need for professional and ethical standards in marketing (PD:137) (SP)", 
+  "Explain employment opportunities in marketing (PD:024) (CS)",
+  "Explain the nature and scope of the product/service management function (PM:001) (SP)",
+  "Identify the impact of product life cycles on marketing decisions (PM:024) (SP)",
+  "Describe the use of technology in the product/service management function (PM:039) (SP)",
+  "Explain business ethics in product/service management (PM:040) (SP)",
+  "Identify product opportunities (PM:134) (SP)",
+  "Identify methods/techniques to generate a product idea (PM:127) (SP)",
+  "Generate product ideas (PM:128) (SP)",
   ],
-  Business_management: ["PI 1 for Business Management", "PI 2 for Business Management", "PI 3 for Business Management", "PI 3 for Business Management", "PI 3 for Business Management", "PI 3 for Business Management", "PI 3 for Business Management"],
+  Business_management: [
+  "Explain the need for professional and ethical standards in marketing (PD:137) (SP)", 
+  "Explain employment opportunities in marketing (PD:024) (CS)",
+  "Explain the nature and scope of the product/service management function (PM:001) (SP)",
+  "Identify the impact of product life cycles on marketing decisions (PM:024) (SP)",
+  "Describe the use of technology in the product/service management function (PM:039) (SP)",
+  "Explain business ethics in product/service management (PM:040) (SP)",
+  "Identify product opportunities (PM:134) (SP)",
+  "Identify methods/techniques to generate a product idea (PM:127) (SP)",
+  "Generate product ideas (PM:128) (SP)",
+    ]
   
   Principles: [
 "Comply with the spirit and intent of laws and regulations (BL:163) (CS)",
@@ -689,13 +701,15 @@ Entrepreneurship: [
     
     
     Hospitality: [
-    "Enhance customer service to improve guest satisfaction.",
-    "Develop a pricing strategy for seasonal tourism.",
-    "Implement sustainability practices in hotel operations.",
-    "Implement sustainability practices in hotel operations.",
-    "Implement sustainability practices in hotel operations.",
-    "Implement sustainability practices in hotel operations.",
-    "Implement sustainability practices in hotel operations.",
+  "Explain the need for professional and ethical standards in marketing (PD:137) (SP)", 
+  "Explain employment opportunities in marketing (PD:024) (CS)",
+  "Explain the nature and scope of the product/service management function (PM:001) (SP)",
+  "Identify the impact of product life cycles on marketing decisions (PM:024) (SP)",
+  "Describe the use of technology in the product/service management function (PM:039) (SP)",
+  "Explain business ethics in product/service management (PM:040) (SP)",
+  "Identify product opportunities (PM:134) (SP)",
+  "Identify methods/techniques to generate a product idea (PM:127) (SP)",
+  "Generate product ideas (PM:128) (SP)",
   ],
 } as const
 
