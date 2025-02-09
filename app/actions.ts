@@ -18,12 +18,12 @@ export async function generateRoleplay(eventId: string) {
   Event: ${event.name} (${event.id})
   Cluster: ${event.cluster}
   Must include all 21st Century Skills: ${twentyFirstCenturySkills.join(", ")}
-  Must use these Performance Indicators: ${clusterPIs.sort(() => 0.5 - Math.random()).slice(0, event.numPIs).join(", ")}
+  Must use these Performance Indicators: ${[...clusterPIs].sort(() => 0.5 - Math.random()).slice(0, event.numPIs).join(", ")}
   
   The scenario should closely follow this format:
   
   1. **EVENT SITUATION**  
-     - Describe the participant’s role in relation to the business.  
+     - Describe the participant's role in relation to the business.  
      - Introduce the company, its industry, and key operations.  
   
   2. **BUSINESS CONTEXT**  
@@ -44,7 +44,7 @@ export async function generateRoleplay(eventId: string) {
 EDUCATION PLUS sells a wide variety of merchandise in store and online for classroom and homeschool educators, daycare providers and parents. There are no other physical stores in the area that sell this type of merchandise. The store opened last month with sales that exceeded expectations. Online sales have also been successful but have not surpassed goals.
 Your business partner (judge) read that 87% of consumers say their purchasing decision making is influenced by real customer reviews. In addition, 56% of consumers report they would not buy a product at all without checking online customer reviews and ratings. Your business partner (judge) feels that EDUCATION PLUS would benefit from having online reviews and ratings of the business and its products.
 Your business partner (judge) has asked you to determine how to get both online and in-person customers to leave online reviews of products and the store.
-You will present your ideas to your business partner (judge) in a role-play to take place in the business partner’s (judge’s) office. The business partner (judge) will begin the role-play by greeting you and asking to hear your ideas. After you have presented your ideas and have answered the business partner’s (judge’s) questions, the business partner (judge) will conclude the role-play by thanking you for your work."
+You will present your ideas to your business partner (judge) in a role-play to take place in the business partner's (judge's) office. The business partner (judge) will begin the role-play by greeting you and asking to hear your ideas. After you have presented your ideas and have answered the business partner's (judge's) questions, the business partner (judge) will conclude the role-play by thanking you for your work."
   
   Return ONLY valid JSON in this exact structure, nothing else: 
   {
@@ -53,8 +53,12 @@ You will present your ideas to your business partner (judge) in a role-play to t
     "cluster": "${event.cluster}",
     "instructionalArea": "string",
     "twentyFirstCenturySkills": ${JSON.stringify(twentyFirstCenturySkills)},
-    "performanceIndicators": ${JSON.stringify(clusterPIs.sort(() => 0.5 - Math.random()).slice(0, event.numPIs))},
-    "situation": "string"
+    "performanceIndicators": ${JSON.stringify([...clusterPIs].sort(() => 0.5 - Math.random()).slice(0, event.numPIs))},
+    "situation": {
+      "role": "string",
+      "context": "string",
+      "task": "string"
+    }
   }`
   
 
@@ -63,9 +67,10 @@ You will present your ideas to your business partner (judge) in a role-play to t
     const { text } = await generateText({
       model: openaiConfig("llama-3.3-70b"),
       prompt,
-      temperature: 0.7,
-      max_tokens: 1000,
+      temperature: 0.7
     })
+
+    console.log(text)
 
     // Clean and validate the response
     const cleanedText = text.replace(/```json|```/g, '').trim()
@@ -128,9 +133,11 @@ export async function evaluateResponse(eventId: string, scenario: RoleplayScenar
   }`
 
   const { text } = await generateText({
-    model: openaiConfig("gpt-3.5-turbo"),
+    model: openaiConfig("llama-3.3-70b"),
     prompt,
   })
+
+  console.log(text)
 
   return JSON.parse(text)
 }

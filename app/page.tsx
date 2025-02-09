@@ -13,7 +13,7 @@ import type { RoleplayScenario } from "../types/deca"
 
 function groupEventsByCluster(events: typeof decaEvents) {
   return events.reduce(
-    (acc, event) => {
+    (acc: Record<string, typeof decaEvents[number][]>, event) => {
       const cluster = event.cluster
       if (!acc[cluster]) {
         acc[cluster] = []
@@ -21,7 +21,7 @@ function groupEventsByCluster(events: typeof decaEvents) {
       acc[cluster].push(event)
       return acc
     },
-    {} as Record<string, typeof decaEvents>,
+    {},
   )
 }
 

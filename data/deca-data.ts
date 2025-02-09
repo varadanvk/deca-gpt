@@ -34,8 +34,8 @@ export const performanceIndicators = {
 Entrepreneurship: [ 
 "Describe methods used to protect intellectual property (BL:051) (SP)",
 "Describe legal issues affecting businesses (BL:001) (SP)",
-"Identify the basic torts relating to business enterprises (BL:069) (SP)”,
-"Describe the nature of legally binding contracts (BL:002) (SP)”,
+"Identify the basic torts relating to business enterprises (BL:069) (SP)",
+"Describe the nature of legally binding contracts (BL:002) (SP)",
 "Explain the nature of human resources regulations (BL:007) (SU)", 
 "Explain the nature of workplace regulations (including OSHA, ADA) (BL:008) (SU)",
 "Explain types of business ownership (BL:003) (CS)",
@@ -261,7 +261,7 @@ Entrepreneurship: [
 "Evaluate customer experience (PM:138) (MN)",
 "Explain the concept of product mix (PM:003) (SP)",
 "Plan product mix (PM:006) (MN)",
-"Determine services to provide customers (PM:036) (MN
+"Determine services to provide customers (PM:036) (MN)",
 "Identify internal and external service standards (PM:273) (MN)", 
 "Build corporate brands (PM:126) (ON)",
 "Explain the role of customer service in positioning/image (PM:013) (MN)",
@@ -325,7 +325,7 @@ Entrepreneurship: [
   "Identify methods/techniques to generate a product idea (PM:127) (SP)",
   "Generate product ideas (PM:128) (SP)",
     ]
-  
+, 
   Principles: [
  "Explain the need for professional and ethical standards in marketing (PD:137) (SP)", 
   "Explain employment opportunities in marketing (PD:024) (CS)",
