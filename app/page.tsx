@@ -43,7 +43,7 @@ export default function DECARoleplay() {
 
   const handleSubmitRecording = async () => {
     if (!audioUrl || !roleplay) return
-
+    //TODO: Transcribe audio
     const feedback = await evaluateResponse(selectedEventId, roleplay, "Audio response transcript would go here")
     setFeedback(feedback)
     setStep(3)

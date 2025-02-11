@@ -4,6 +4,8 @@ import { generateText } from "ai"
 import { openaiConfig } from "../config/openai"
 import { decaEvents, performanceIndicators, twentyFirstCenturySkills } from "../data/deca-data"
 import type { RoleplayScenario } from "../types/deca"
+import { transcribeConfig } from "../config/transcribe"
+import fs from "fs"
 
 export async function generateRoleplay(eventId: string) {
   const event = decaEvents.find((e) => e.id === eventId)
@@ -91,6 +93,14 @@ You will present your ideas to your business partner (judge) in a role-play to t
     throw new Error('Failed to generate roleplay scenario')
   }
 }
+
+export async function transcribeAudio(audio: File) {
+//WHY IS BRO USING THE AI SDK WHEN WE CAN JUST USE THE OPENAI API?
+// TODO: Implement my own config of the openai api (with its own api key b/c cerebras provider is for the original config)
+// TODO: Build out whisper architecture - @page.tsx @ to figure out where tf audio input comes from - should just be able to call it normally
+// TODO: Once audio is transcribed, pass it into the evaluateResponse Function
+}
+
 
 export async function evaluateResponse(eventId: string, scenario: RoleplayScenario, response: string) {
   const prompt = `Evaluate this DECA roleplay response following the official DECA evaluation criteria.
