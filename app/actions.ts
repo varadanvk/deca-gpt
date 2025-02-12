@@ -254,7 +254,7 @@ Important:
     const { text } = await generateText({
       model: openaiConfig("llama-3.3-70b"),
       prompt,
-      temperature: 0.3
+      temperature: 0.9
     })
 
     // Improved JSON parsing
