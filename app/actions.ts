@@ -93,28 +93,84 @@ You will present your ideas to your business partner (judge) in a role-play to t
     throw new Error('Failed to generate roleplay scenario')
   }
 }
-export async function transcribeAudio(audioBlob: Blob) {
-  try {
-    // Create a File object from the Blob
-    const audioFile = new File([audioBlob], "recording.webm", { type: audioBlob.type })
 
+export async function processAudioResponse(formData: FormData) {
+  try {
+    const audioFile = formData.get('audio') as File
+    const eventId = formData.get('eventId') as string
+    const performanceIndicators = JSON.parse(formData.get('performanceIndicators') as string)
+    const twentyFirstCenturySkills = JSON.parse(formData.get('twentyFirstCenturySkills') as string)
+    const situation = JSON.parse(formData.get('situation') as string)
+
+    // Split audio into 3MB chunks
+    const CHUNK_SIZE = 3 * 1024 * 1024 // 3MB in bytes
+    const audioBuffer = Buffer.from(await audioFile.arrayBuffer())
+    const chunks: Buffer[] = []
+    
+    for (let i = 0; i < audioBuffer.length; i += CHUNK_SIZE) {
+      chunks.push(audioBuffer.slice(i, Math.min(i + CHUNK_SIZE, audioBuffer.length)))
+    }
+
+    console.log(`Processing ${chunks.length} chunks...`)
+
+    // Process each chunk in parallel
+    const transcriptionPromises: Promise<string>[] = chunks.map(async (chunk, index) => {
+      const chunkBlob = new Blob([chunk], { type: 'audio/webm' })
+      const chunkFile = new File([chunkBlob], `chunk_${index}.webm`, { type: 'audio/webm' })
+      
+      console.log(`Transcribing chunk ${index + 1}/${chunks.length}`)
+      return transcribeAudio(chunkFile, {
+        prompt: "This is a DECA roleplay response about business and marketing concepts.",
+        previousText: index > 0 ? transcriptionResults[index - 1] : undefined
+      })
+    })
+
+    // Wait for all transcriptions
+    const transcriptionResults = await Promise.all(transcriptionPromises)
+    const finalTranscript = transcriptionResults.join(' ')
+    console.log("Combined transcript:", finalTranscript)
+
+    // Generate evaluation
+    const feedback = await evaluateResponse(eventId, {
+      eventId,
+      eventName: "",
+      cluster: "",
+      instructionalArea: "",
+      twentyFirstCenturySkills,
+      performanceIndicators,
+      situation
+    }, finalTranscript)
+
+    return feedback
+  } catch (error) {
+    console.error("Error in processAudioResponse:", error)
+    throw error
+  }
+}
+
+export async function transcribeAudio(
+  audioFile: File, 
+  options?: { 
+    prompt?: string
+    previousText?: string 
+  }
+) {
+  try {
     const transcription = await transcribeClient.audio.transcriptions.create({
       file: audioFile,
       model: "whisper-1",
       response_format: "text",
       temperature: 0.3,
-      language: "en"
+      language: "en",
+      prompt: options?.prompt + (options?.previousText ? ` ${options.previousText}` : "")
     })
 
-    console.log("Transcription completed:", transcription)
     return transcription
-
   } catch (error) {
     console.error("Error transcribing audio:", error)
-    throw new Error("Failed to transcribe audio")
+    throw error
   }
 }
-
 
 export async function evaluateResponse(eventId: string, scenario: RoleplayScenario, response: string) {
   const prompt = `You are a highly experienced DECA judge tasked with evaluating a participant's roleplay response. Follow these steps:
@@ -193,38 +249,6 @@ Important:
   } catch (error) {
     console.error('Evaluation error:', error)
     throw new Error('Failed to generate evaluation')
-  }
-}
-
-export async function processAudioResponse(formData: FormData) {
-  try {
-    const audioFile = formData.get('audio') as File
-    const eventId = formData.get('eventId') as string
-    const performanceIndicators = JSON.parse(formData.get('performanceIndicators') as string)
-    const twentyFirstCenturySkills = JSON.parse(formData.get('twentyFirstCenturySkills') as string)
-    const situation = JSON.parse(formData.get('situation') as string)
-
-    // Verify audio duration
-    const audioBuffer = Buffer.from(await audioFile.arrayBuffer())
-    if (audioBuffer.byteLength > 2_000_000) { // ~2 minutes of Opus audio
-      throw new Error("Audio too long - please keep under 2 minutes")
-    }
-
-    const transcript = await transcribeAudio(audioFile)
-    const feedback = await evaluateResponse(eventId, {
-      eventId,
-      eventName: "",
-      cluster: "",
-      instructionalArea: "",
-      twentyFirstCenturySkills,
-      performanceIndicators,
-      situation
-    }, transcript)
-
-    return feedback
-  } catch (error) {
-    console.error("Error in processAudioResponse:", error)
-    throw new Error("Failed to process audio response")
   }
 }
 

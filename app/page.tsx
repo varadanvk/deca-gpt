@@ -47,9 +47,11 @@ export default function DECARoleplay() {
 
     try {
       setIsSubmitting(true)
+      console.log("Original audio size:", audioBlob.size)
+
       // Compress audio to Opus format
       const compressedBlob = await new Promise<Blob>(async (resolve) => {
-        const audioContext = new AudioContext()
+        const audioContext = new AudioContext({ sampleRate: 16000 })
         const arrayBuffer = await audioBlob.arrayBuffer()
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
         
@@ -60,21 +62,21 @@ export default function DECARoleplay() {
         
         const mediaRecorder = new MediaRecorder(dest.stream, {
           mimeType: 'audio/webm;codecs=opus',
-          audioBitsPerSecond: 16000 // 16kbps for speech
+          audioBitsPerSecond: 16000
         })
         
         const chunks: Blob[] = []
         mediaRecorder.ondataavailable = (e) => chunks.push(e.data)
-        mediaRecorder.onstop = () => resolve(new Blob(chunks, { type: 'audio/ogg' }))
+        mediaRecorder.onstop = () => resolve(new Blob(chunks, { type: 'audio/webm' }))
         
         mediaRecorder.start()
         source.start(0)
         setTimeout(() => mediaRecorder.stop(), audioBuffer.duration * 1000)
       })
 
-      // Create FormData instead of base64
+      // Create FormData with compressed audio
       const formData = new FormData()
-      formData.append('audio', compressedBlob, 'recording.ogg')
+      formData.append('audio', compressedBlob, 'recording.webm')
       formData.append('eventId', selectedEventId)
       formData.append('performanceIndicators', JSON.stringify(roleplay.performanceIndicators))
       formData.append('twentyFirstCenturySkills', JSON.stringify(roleplay.twentyFirstCenturySkills))
@@ -85,7 +87,7 @@ export default function DECARoleplay() {
       setStep(3)
     } catch (error) {
       console.error("Error processing recording:", error)
-      alert("Failed to process recording. Please keep responses under 2 minutes")
+      alert("Failed to process recording. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
