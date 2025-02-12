@@ -96,14 +96,30 @@ You will present your ideas to your business partner (judge) in a role-play to t
 
 export async function processAudioResponse(formData: FormData) {
   try {
+    // Handle final evaluation case
+    const transcript = formData.get('transcript')
+    if (transcript) {
+      return evaluateResponse(
+        formData.get('eventId') as string,
+        {
+          eventId: formData.get('eventId') as string,
+          eventName: formData.get('eventName') as string || "",
+          cluster: formData.get('cluster') as string || "",
+          instructionalArea: formData.get('instructionalArea') as string || "",
+          performanceIndicators: JSON.parse(formData.get('performanceIndicators') as string),
+          twentyFirstCenturySkills: JSON.parse(formData.get('twentyFirstCenturySkills') as string),
+          situation: JSON.parse(formData.get('situation') as string)
+        },
+        transcript as string
+      )
+    }
+
+    // Handle audio transcription
     const audioFile = formData.get('audio') as File
-    const eventId = formData.get('eventId') as string
-    const performanceIndicators = JSON.parse(formData.get('performanceIndicators') as string)
-    const twentyFirstCenturySkills = JSON.parse(formData.get('twentyFirstCenturySkills') as string)
-    const situation = JSON.parse(formData.get('situation') as string)
+    if (!audioFile) throw new Error('No audio file provided')
 
     // Split audio into 3MB chunks
-    const CHUNK_SIZE = 3 * 1024 * 1024 // 3MB in bytes
+    const CHUNK_SIZE = 3 * 1024 * 1024
     const audioBuffer = Buffer.from(await audioFile.arrayBuffer())
     const chunks: Buffer[] = []
     
@@ -114,34 +130,38 @@ export async function processAudioResponse(formData: FormData) {
     console.log(`Processing ${chunks.length} chunks...`)
 
     // Process each chunk in parallel
-    const transcriptionPromises: Promise<string>[] = chunks.map(async (chunk, index) => {
+    const transcriptionPromises = chunks.map(async (chunk, index) => {
       const chunkBlob = new Blob([chunk], { type: 'audio/webm' })
       const chunkFile = new File([chunkBlob], `chunk_${index}.webm`, { type: 'audio/webm' })
       
       console.log(`Transcribing chunk ${index + 1}/${chunks.length}`)
-      return transcribeAudio(chunkFile, {
-        prompt: "This is a DECA roleplay response about business and marketing concepts.",
-        previousText: index > 0 ? transcriptionResults[index - 1] : undefined
+      const transcription = await transcribeAudio(chunkFile, {
+        prompt: "This is a DECA roleplay response about business and marketing concepts."
       })
+      return { transcript: transcription, chunkIndex: index }
     })
 
-    // Wait for all transcriptions
-    const transcriptionResults = await Promise.all(transcriptionPromises)
-    const finalTranscript = transcriptionResults.join(' ')
-    console.log("Combined transcript:", finalTranscript)
+    // Wait for all transcriptions and combine in order
+    const results = await Promise.all(transcriptionPromises)
+    const orderedTranscripts = results
+      .sort((a, b) => a.chunkIndex - b.chunkIndex)
+      .map(r => r.transcript)
+      .join(' ')
 
-    // Generate evaluation
-    const feedback = await evaluateResponse(eventId, {
-      eventId,
-      eventName: "",
-      cluster: "",
-      instructionalArea: "",
-      twentyFirstCenturySkills,
-      performanceIndicators,
-      situation
-    }, finalTranscript)
-
-    return feedback
+    // Evaluate the combined transcript
+    return evaluateResponse(
+      formData.get('eventId') as string,
+      {
+        eventId: formData.get('eventId') as string,
+        eventName: "",
+        cluster: "",
+        instructionalArea: "",
+        performanceIndicators: JSON.parse(formData.get('performanceIndicators') as string),
+        twentyFirstCenturySkills: JSON.parse(formData.get('twentyFirstCenturySkills') as string),
+        situation: JSON.parse(formData.get('situation') as string)
+      },
+      orderedTranscripts
+    )
   } catch (error) {
     console.error("Error in processAudioResponse:", error)
     throw error
@@ -158,7 +178,7 @@ export async function transcribeAudio(
   try {
     const transcription = await transcribeClient.audio.transcriptions.create({
       file: audioFile,
-      model: "whisper-1",
+      model: "distil-whisper-large-v3-en",
       response_format: "text",
       temperature: 0.3,
       language: "en",

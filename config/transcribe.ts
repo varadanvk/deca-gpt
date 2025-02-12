@@ -5,5 +5,6 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 export const transcribeClient = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: "https://api.groq.com/openai/v1",
+  apiKey: process.env.GROQ_API_KEY,
 })

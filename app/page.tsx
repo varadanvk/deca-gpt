@@ -32,6 +32,8 @@ export default function DECARoleplay() {
   const [feedback, setFeedback] = useState<any>(null)
   const { isRecording, audioUrl, audioBlob, startRecording, stopRecording } = useAudioRecorder()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [transcriptionStatus, setTranscriptionStatus] = useState('')
 
   const handleSubmitEvent = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -47,49 +49,27 @@ export default function DECARoleplay() {
 
     try {
       setIsSubmitting(true)
-      console.log("Original audio size:", audioBlob.size)
+      setTranscriptionStatus('Processing audio...')
 
-      // Compress audio to Opus format
-      const compressedBlob = await new Promise<Blob>(async (resolve) => {
-        const audioContext = new AudioContext({ sampleRate: 16000 })
-        const arrayBuffer = await audioBlob.arrayBuffer()
-        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
-        
-        const dest = audioContext.createMediaStreamDestination()
-        const source = audioContext.createBufferSource()
-        source.buffer = audioBuffer
-        source.connect(dest)
-        
-        const mediaRecorder = new MediaRecorder(dest.stream, {
-          mimeType: 'audio/webm;codecs=opus',
-          audioBitsPerSecond: 16000
-        })
-        
-        const chunks: Blob[] = []
-        mediaRecorder.ondataavailable = (e) => chunks.push(e.data)
-        mediaRecorder.onstop = () => resolve(new Blob(chunks, { type: 'audio/webm' }))
-        
-        mediaRecorder.start()
-        source.start(0)
-        setTimeout(() => mediaRecorder.stop(), audioBuffer.duration * 1000)
-      })
-
-      // Create FormData with compressed audio
+      // Create FormData with raw audio
       const formData = new FormData()
-      formData.append('audio', compressedBlob, 'recording.webm')
+      formData.append('audio', audioBlob, 'recording.webm')
       formData.append('eventId', selectedEventId)
       formData.append('performanceIndicators', JSON.stringify(roleplay.performanceIndicators))
       formData.append('twentyFirstCenturySkills', JSON.stringify(roleplay.twentyFirstCenturySkills))
       formData.append('situation', JSON.stringify(roleplay.situation))
 
-      const feedback = await processAudioResponse(formData)
-      setFeedback(feedback)
+      setTranscriptionStatus('Transcribing audio...')
+      const result = await processAudioResponse(formData)
+      
+      setFeedback(result)
       setStep(3)
     } catch (error) {
       console.error("Error processing recording:", error)
       alert("Failed to process recording. Please try again.")
     } finally {
       setIsSubmitting(false)
+      setTranscriptionStatus('')
     }
   }
 
@@ -216,6 +196,18 @@ export default function DECARoleplay() {
                   </div>
                 )}
               </div>
+
+              {isSubmitting && (
+                <div className="space-y-2 text-center">
+                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div 
+                      className="bg-primary h-2.5 rounded-full transition-all duration-300" 
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                  <p className="text-sm text-gray-600">{transcriptionStatus}</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
@@ -232,45 +224,53 @@ export default function DECARoleplay() {
                 <div className="text-gray-600">Total Score</div>
               </div>
 
-              <div>
-                <h3 className="font-semibold mb-2">Performance Indicators</h3>
-                {feedback.performanceIndicators.map((pi: any, i: number) => (
-                  <div key={i} className="mb-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium">{pi.indicator}</span>
-                      <span className="text-primary font-bold">{pi.score}/14</span>
+              {feedback.performanceIndicators && (
+                <div>
+                  <h3 className="font-semibold mb-2">Performance Indicators</h3>
+                  {feedback.performanceIndicators.map((pi: any, i: number) => (
+                    <div key={i} className="mb-4 p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium">{pi.indicator}</span>
+                        <span className="text-primary font-bold">{pi.score}/14</span>
+                      </div>
+                      <p className="text-gray-600">{pi.feedback}</p>
                     </div>
-                    <p className="text-gray-600">{pi.feedback}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <h3 className="font-semibold mb-2">21st Century Skills</h3>
-                {feedback.twentyFirstCenturySkills.map((skill: any, i: number) => (
-                  <div key={i} className="mb-4 p-4 bg-gray-50 rounded-lg">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="font-medium">{skill.skill}</span>
-                      <span className="text-primary font-bold">{skill.score}/6</span>
-                    </div>
-                    <p className="text-gray-600">{skill.feedback}</p>
-                  </div>
-                ))}
-              </div>
-
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-semibold mb-2">Overall Impression</h3>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-medium">Score</span>
-                  <span className="text-primary font-bold">{feedback.overallImpression.score}/6</span>
+                  ))}
                 </div>
-                <p className="text-gray-600">{feedback.overallImpression.feedback}</p>
-              </div>
+              )}
 
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <h3 className="font-semibold mb-2">General Feedback</h3>
-                <p className="text-gray-600">{feedback.generalFeedback}</p>
-              </div>
+              {feedback.twentyFirstCenturySkills && (
+                <div>
+                  <h3 className="font-semibold mb-2">21st Century Skills</h3>
+                  {feedback.twentyFirstCenturySkills.map((skill: any, i: number) => (
+                    <div key={i} className="mb-4 p-4 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium">{skill.skill}</span>
+                        <span className="text-primary font-bold">{skill.score}/6</span>
+                      </div>
+                      <p className="text-gray-600">{skill.feedback}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {feedback.overallImpression && (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-semibold mb-2">Overall Impression</h3>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">Score</span>
+                    <span className="text-primary font-bold">{feedback.overallImpression.score}/6</span>
+                  </div>
+                  <p className="text-gray-600">{feedback.overallImpression.feedback}</p>
+                </div>
+              )}
+
+              {feedback.generalFeedback && (
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-semibold mb-2">General Feedback</h3>
+                  <p className="text-gray-600">{feedback.generalFeedback}</p>
+                </div>
+              )}
 
               <Button
                 onClick={() => {
