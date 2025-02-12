@@ -31,6 +31,7 @@ export default function DECARoleplay() {
   const [roleplay, setRoleplay] = useState<RoleplayScenario | null>(null)
   const [feedback, setFeedback] = useState<any>(null)
   const { isRecording, audioUrl, audioBlob, startRecording, stopRecording } = useAudioRecorder()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmitEvent = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,42 +43,51 @@ export default function DECARoleplay() {
   }
 
   const handleSubmitRecording = async () => {
-    if (!audioBlob || !roleplay || !selectedEventId) {
-      console.log("Missing required data:", { 
-        audioBlob: !!audioBlob, 
-        roleplay: !!roleplay,
-        selectedEventId: !!selectedEventId 
-      })
-      return
-    }
+    if (!audioBlob || !roleplay || !selectedEventId) return
 
     try {
-      // Convert blob to base64 for transmission
-      const reader = new FileReader()
-      const base64Promise = new Promise<string>((resolve) => {
-        reader.onloadend = () => {
-          const base64String = reader.result as string
-          const base64Data = base64String.split(',')[1]
-          resolve(base64Data)
-        }
+      setIsSubmitting(true)
+      // Compress audio to Opus format
+      const compressedBlob = await new Promise<Blob>(async (resolve) => {
+        const audioContext = new AudioContext()
+        const arrayBuffer = await audioBlob.arrayBuffer()
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+        
+        const dest = audioContext.createMediaStreamDestination()
+        const source = audioContext.createBufferSource()
+        source.buffer = audioBuffer
+        source.connect(dest)
+        
+        const mediaRecorder = new MediaRecorder(dest.stream, {
+          mimeType: 'audio/webm;codecs=opus',
+          audioBitsPerSecond: 16000 // 16kbps for speech
+        })
+        
+        const chunks: Blob[] = []
+        mediaRecorder.ondataavailable = (e) => chunks.push(e.data)
+        mediaRecorder.onstop = () => resolve(new Blob(chunks, { type: 'audio/ogg' }))
+        
+        mediaRecorder.start()
+        source.start(0)
+        setTimeout(() => mediaRecorder.stop(), audioBuffer.duration * 1000)
       })
-      reader.readAsDataURL(audioBlob)
-      
-      const base64Audio = await base64Promise
 
-      const feedback = await processAudioResponse({
-        eventId: selectedEventId,
-        base64Audio,
-        performanceIndicators: roleplay.performanceIndicators,
-        twentyFirstCenturySkills: roleplay.twentyFirstCenturySkills,
-        situation: roleplay.situation
-      })
-      
+      // Create FormData instead of base64
+      const formData = new FormData()
+      formData.append('audio', compressedBlob, 'recording.ogg')
+      formData.append('eventId', selectedEventId)
+      formData.append('performanceIndicators', JSON.stringify(roleplay.performanceIndicators))
+      formData.append('twentyFirstCenturySkills', JSON.stringify(roleplay.twentyFirstCenturySkills))
+      formData.append('situation', JSON.stringify(roleplay.situation))
+
+      const feedback = await processAudioResponse(formData)
       setFeedback(feedback)
       setStep(3)
     } catch (error) {
       console.error("Error processing recording:", error)
-      alert("Failed to process recording. Please try again.")
+      alert("Failed to process recording. Please keep responses under 2 minutes")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -187,7 +197,20 @@ export default function DECARoleplay() {
                 {audioUrl && (
                   <div className="flex justify-center gap-4">
                     <audio controls src={audioUrl} className="w-full" />
-                    <Button onClick={handleSubmitRecording}>Submit Response</Button>
+                    <Button 
+                      onClick={handleSubmitRecording}
+                      disabled={isSubmitting || !audioUrl}
+                      className="flex items-center gap-2"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+                          Processing Response...
+                        </>
+                      ) : (
+                        "Submit Response"
+                      )}
+                    </Button>
                   </div>
                 )}
               </div>

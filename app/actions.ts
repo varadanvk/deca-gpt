@@ -196,38 +196,31 @@ Important:
   }
 }
 
-export async function processAudioResponse(params: {
-  eventId: string
-  base64Audio: string
-  performanceIndicators: string[]
-  twentyFirstCenturySkills: string[]
-  situation: {
-    role: string
-    context: string
-    task: string
-  }
-}) {
+export async function processAudioResponse(formData: FormData) {
   try {
-    // Convert base64 to Blob
-    const binaryStr = Buffer.from(params.base64Audio, 'base64')
-    const audioBlob = new Blob([binaryStr], { type: 'audio/webm' })
-    
-    // First transcribe the audio
-    const transcript = await transcribeAudio(audioBlob)
-    console.log("Transcription result:", transcript)
+    const audioFile = formData.get('audio') as File
+    const eventId = formData.get('eventId') as string
+    const performanceIndicators = JSON.parse(formData.get('performanceIndicators') as string)
+    const twentyFirstCenturySkills = JSON.parse(formData.get('twentyFirstCenturySkills') as string)
+    const situation = JSON.parse(formData.get('situation') as string)
 
-    // Then evaluate the transcribed response
-    const feedback = await evaluateResponse(params.eventId, {
-      eventId: params.eventId,
+    // Verify audio duration
+    const audioBuffer = Buffer.from(await audioFile.arrayBuffer())
+    if (audioBuffer.byteLength > 2_000_000) { // ~2 minutes of Opus audio
+      throw new Error("Audio too long - please keep under 2 minutes")
+    }
+
+    const transcript = await transcribeAudio(audioFile)
+    const feedback = await evaluateResponse(eventId, {
+      eventId,
       eventName: "",
       cluster: "",
       instructionalArea: "",
-      twentyFirstCenturySkills: params.twentyFirstCenturySkills,
-      performanceIndicators: params.performanceIndicators,
-      situation: params.situation
+      twentyFirstCenturySkills,
+      performanceIndicators,
+      situation
     }, transcript)
-    console.log("Evaluation feedback:", feedback)
-    
+
     return feedback
   } catch (error) {
     console.error("Error in processAudioResponse:", error)
