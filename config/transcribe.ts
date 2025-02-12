@@ -4,8 +4,6 @@ if (!process.env.OPENAI_API_KEY) {
   throw new Error("Missing OPENAI_API_KEY environment variable")
 }
 
-export const transcribeConfig = new OpenAI({
+export const transcribeClient = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 })
-
-console.log(transcribeConfig)

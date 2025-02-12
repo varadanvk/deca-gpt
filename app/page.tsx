@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label"
 import { Mic, Square, ArrowRight } from "lucide-react"
 import { useAudioRecorder } from "../hooks/useAudioRecorder"
-import { generateRoleplay, evaluateResponse } from "./actions"
+import { generateRoleplay, evaluateResponse, transcribeAudio, processAudioResponse } from "./actions"
 import { decaEvents } from "../data/deca-data"
 import type { RoleplayScenario } from "../types/deca"
 
@@ -30,7 +30,7 @@ export default function DECARoleplay() {
   const [selectedEventId, setSelectedEventId] = useState("")
   const [roleplay, setRoleplay] = useState<RoleplayScenario | null>(null)
   const [feedback, setFeedback] = useState<any>(null)
-  const { isRecording, audioUrl, startRecording, stopRecording } = useAudioRecorder()
+  const { isRecording, audioUrl, audioBlob, startRecording, stopRecording } = useAudioRecorder()
 
   const handleSubmitEvent = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,13 +42,43 @@ export default function DECARoleplay() {
   }
 
   const handleSubmitRecording = async () => {
-    if (!audioUrl || !roleplay) return
-    //TODO: Transcribe audio
-    const feedback = await evaluateResponse(selectedEventId, roleplay, "Audio response transcript would go here")
-    setFeedback(feedback)
-    setStep(3)
+    if (!audioBlob || !roleplay || !selectedEventId) {
+      console.log("Missing required data:", { 
+        audioBlob: !!audioBlob, 
+        roleplay: !!roleplay,
+        selectedEventId: !!selectedEventId 
+      })
+      return
+    }
 
-// comment to depl
+    try {
+      // Convert blob to base64 for transmission
+      const reader = new FileReader()
+      const base64Promise = new Promise<string>((resolve) => {
+        reader.onloadend = () => {
+          const base64String = reader.result as string
+          const base64Data = base64String.split(',')[1]
+          resolve(base64Data)
+        }
+      })
+      reader.readAsDataURL(audioBlob)
+      
+      const base64Audio = await base64Promise
+
+      const feedback = await processAudioResponse({
+        eventId: selectedEventId,
+        base64Audio,
+        performanceIndicators: roleplay.performanceIndicators,
+        twentyFirstCenturySkills: roleplay.twentyFirstCenturySkills,
+        situation: roleplay.situation
+      })
+      
+      setFeedback(feedback)
+      setStep(3)
+    } catch (error) {
+      console.error("Error processing recording:", error)
+      alert("Failed to process recording. Please try again.")
+    }
   }
 
   const groupedEvents = groupEventsByCluster(decaEvents)

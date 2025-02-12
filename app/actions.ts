@@ -4,7 +4,7 @@ import { generateText } from "ai"
 import { openaiConfig } from "../config/openai"
 import { decaEvents, performanceIndicators, twentyFirstCenturySkills } from "../data/deca-data"
 import type { RoleplayScenario } from "../types/deca"
-import { transcribeConfig } from "../config/transcribe"
+import { transcribeClient } from "../config/transcribe"
 import fs from "fs"
 
 export async function generateRoleplay(eventId: string) {
@@ -93,62 +93,146 @@ You will present your ideas to your business partner (judge) in a role-play to t
     throw new Error('Failed to generate roleplay scenario')
   }
 }
+export async function transcribeAudio(audioBlob: Blob) {
+  try {
+    // Create a File object from the Blob
+    const audioFile = new File([audioBlob], "recording.webm", { type: audioBlob.type })
 
-export async function transcribeAudio(audio: File) {
-//WHY IS BRO USING THE AI SDK WHEN WE CAN JUST USE THE OPENAI API?
-// TODO: Implement my own config of the openai api (with its own api key b/c cerebras provider is for the original config)
-// TODO: Build out whisper architecture - @page.tsx @ to figure out where tf audio input comes from - should just be able to call it normally
-// TODO: Once audio is transcribed, pass it into the evaluateResponse Function
+    const transcription = await transcribeClient.audio.transcriptions.create({
+      file: audioFile,
+      model: "whisper-1",
+      response_format: "text",
+      temperature: 0.3,
+      language: "en"
+    })
+
+    console.log("Transcription completed:", transcription)
+    return transcription
+
+  } catch (error) {
+    console.error("Error transcribing audio:", error)
+    throw new Error("Failed to transcribe audio")
+  }
 }
 
 
 export async function evaluateResponse(eventId: string, scenario: RoleplayScenario, response: string) {
-  const prompt = `Evaluate this DECA roleplay response following the official DECA evaluation criteria.
-  
-  Event: ${scenario.eventName} (${eventId})
-  Scenario: ${scenario.situation.context}
-  Task: ${scenario.situation.task}
-  
-  Performance Indicators to evaluate:
-  ${scenario.performanceIndicators.join("\n")}
-  
-  21st Century Skills to evaluate:
-  ${scenario.twentyFirstCenturySkills.join("\n")}
-  
-  Participant's Response:
-  ${response}
-  
-  Provide a detailed evaluation following this format:
-  {
-    "performanceIndicators": [
-      {
-        "indicator": "string",
-        "score": number (0-14),
-        "feedback": "string"
-      }
-    ],
-    "twentyFirstCenturySkills": [
-      {
-        "skill": "string",
-        "score": number (0-6),
-        "feedback": "string"
-      }
-    ],
-    "overallImpression": {
+  const prompt = `You are a highly experienced DECA judge tasked with evaluating a participant's roleplay response. Follow these steps:
+
+<evaluation_instructions>
+1. Analyze the response against each performance indicator and 21st century skill
+2. Quote relevant response segments for each criterion
+3. Assign scores with detailed feedback
+4. Provide overall impression and total score
+</evaluation_instructions>
+
+<event_details>
+Event: ${scenario.eventName} (${eventId})
+Scenario: ${scenario.situation.context}
+Task: ${scenario.situation.task}
+</event_details>
+
+<performance_indicators>
+${scenario.performanceIndicators.join("\n")}
+</performance_indicators>
+
+<twenty_first_century_skills>
+${scenario.twentyFirstCenturySkills.join("\n")}
+</twenty_first_century_skills>
+
+<participant_response>
+${response}
+</participant_response>
+
+Return ONLY valid JSON in this exact structure:
+{
+  "performanceIndicators": [
+    {
+      "indicator": "string",
+      "score": number (0-14),
+      "feedback": "string"
+    }
+  ],
+  "twentyFirstCenturySkills": [
+    {
+      "skill": "string",
       "score": number (0-6),
       "feedback": "string"
-    },
-    "totalScore": number,
-    "generalFeedback": "string"
-  }`
-
-  const { text } = await generateText({
-    model: openaiConfig("llama-3.3-70b"),
-    prompt,
-  })
-
-  console.log(text)
-
-  return JSON.parse(text)
+    }
+  ],
+  "overallImpression": {
+    "score": number (0-6),
+    "feedback": "string"
+  },
+  "totalScore": number,
+  "generalFeedback": "string"
 }
+
+Important: 
+- Do NOT include any XML tags or analysis in the JSON
+- Ensure proper JSON syntax
+- Maintain score ranges exactly
+- Begin with { and end with }`
+
+  try {
+    const { text } = await generateText({
+      model: openaiConfig("llama-3.3-70b"),
+      prompt,
+      temperature: 0.3
+    })
+
+    // Improved JSON parsing
+    const jsonStart = text.indexOf('{')
+    const jsonEnd = text.lastIndexOf('}') + 1
+    const jsonString = text.slice(jsonStart, jsonEnd)
+        .replace(/```json|```/g, '')
+        .replace(/^[^{]*/, '')
+        .trim()
+
+    return JSON.parse(jsonString)
+  } catch (error) {
+    console.error('Evaluation error:', error)
+    throw new Error('Failed to generate evaluation')
+  }
+}
+
+export async function processAudioResponse(params: {
+  eventId: string
+  base64Audio: string
+  performanceIndicators: string[]
+  twentyFirstCenturySkills: string[]
+  situation: {
+    role: string
+    context: string
+    task: string
+  }
+}) {
+  try {
+    // Convert base64 to Blob
+    const binaryStr = Buffer.from(params.base64Audio, 'base64')
+    const audioBlob = new Blob([binaryStr], { type: 'audio/webm' })
+    
+    // First transcribe the audio
+    const transcript = await transcribeAudio(audioBlob)
+    console.log("Transcription result:", transcript)
+
+    // Then evaluate the transcribed response
+    const feedback = await evaluateResponse(params.eventId, {
+      eventId: params.eventId,
+      eventName: "",
+      cluster: "",
+      instructionalArea: "",
+      twentyFirstCenturySkills: params.twentyFirstCenturySkills,
+      performanceIndicators: params.performanceIndicators,
+      situation: params.situation
+    }, transcript)
+    console.log("Evaluation feedback:", feedback)
+    
+    return feedback
+  } catch (error) {
+    console.error("Error in processAudioResponse:", error)
+    throw new Error("Failed to process audio response")
+  }
+}
+
 

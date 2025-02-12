@@ -10,4 +10,3 @@ export const openaiConfig = createOpenAI({
   compatibility: "strict",
 })
 
-console.log(openaiConfig)
