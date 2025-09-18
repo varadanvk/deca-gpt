@@ -835,7 +835,7 @@ const generateAIFeedback = async (transcript: string, roleplay: any, eventId: st
 
     // Calculate word count for automatic penalties
     const wordCount = transcript.trim().split(/\s+/).filter(word => word.length > 0).length
-    console.log(`ULTRA-STRICT MODE: Starting all scores at 0. Word count: ${wordCount}, transcript: "${transcript}"`)
+    console.log(`Balanced grading mode: Word count: ${wordCount}, transcript: "${transcript}"`)
 
     // Count inappropriate words
     const inappropriateWords = ['fuck', 'shit', 'damn', 'hell', 'ass', 'bitch', 'crap']
@@ -844,16 +844,14 @@ const generateAIFeedback = async (transcript: string, roleplay: any, eventId: st
       return count + (transcript.match(regex) || []).length
     }, 0)
 
-    // ULTRA-STRICT PROMPT - Must find explicit evidence to give ANY points
-    const prompt = `You are the STRICTEST DECA judge who STARTS EVERY SCORE AT ZERO and ONLY awards points when there is EXPLICIT, CLEAR EVIDENCE in the transcript.
+    const prompt = `You are a constructive DECA judge providing balanced, educational feedback to help students improve.
 
-CRITICAL GRADING PHILOSOPHY:
-- START every single score at 0
-- ONLY award points when you can find SPECIFIC, CONCRETE evidence in the transcript
-- If you cannot point to exact words/phrases that demonstrate a skill, give 0
-- No partial credit for vague attempts
-- No benefit of the doubt
-- Evidence must be EXPLICITLY stated, not implied
+GRADING PHILOSOPHY:
+- Give credit for effort and partial understanding
+- Provide constructive feedback that encourages improvement
+- Award points for basic attempts and clear effort
+- Be encouraging while identifying areas for growth
+- Focus on what students did well AND what they can improve
 
 EVENT: ${roleplay.eventName}
 PERFORMANCE INDICATORS: ${roleplay.performanceIndicators.join(', ')}
@@ -862,33 +860,17 @@ PERFORMANCE INDICATORS: ${roleplay.performanceIndicators.join(', ')}
 TRANSCRIPT TO EVALUATE (${wordCount} words):
 "${transcript}"
 
-STRICT EVIDENCE REQUIREMENTS FOR EACH PERFORMANCE INDICATOR:
-The student must EXPLICITLY:
-1. DEFINE or clearly explain the performance indicator concept
-2. PROVIDE specific examples or applications, or some explanation that is relevant to the performance indicator and roleplay scenario 
-3. CONNECT it directly to the business scenario
-4. DEMONSTRATE deep understanding beyond basic mention(THEY CAN DO THIS BY VERBALLY EXPLAINING THE VISUAL THEY MADE FOR THAT PI, IF DID NOT VERBALLY DESCRIBE A VISUAL THAT IS APPLICABLE FOR THAT Performance Indicator, THEY WILL NOT GET FULL POINTS)
+SCORING APPROACH:
+- Award partial credit for basic understanding and effort
+- Give 30-50% of points for basic attempts that show understanding
+- Give 60-80% for solid responses with examples
+- Reserve 90%+ for exceptional responses with depth and expertise
+- Consider the learning context - this is practice, not final assessment
 
-For 21st Century Skills, the student must EXPLICITLY:
-- Critical Thinking: Show analysis, evaluation, problem-solving with clear reasoning
-- Communication: Use professional language, clear structure, appropriate terminology
-- Creativity: Offer innovative solutions, unique approaches, original ideas
-- Problem-Solving: Identify problems, propose solutions, explain implementation
-
-SCORING INSTRUCTIONS:
-- Give 0 if no clear evidence exists
-- Give minimal points (1-3) only if basic evidence is present
-- Give moderate points (4-8) only if solid evidence with examples is present  
-- Give high points (9+) only if exceptional evidence with depth and expertise is shown
-- Maximum length penalty: If under 100 words, cap all scores at 25% of maximum
-
-MANDATORY PENALTIES:
-- Under 50 words: Maximum 10% of possible points
-- Under 100 words: Maximum 25% of possible points
-- Under 200 words: Maximum 50% of possible points
-- Bad words: -5 points from total per word (${badWordCount} found)
-
-Look for SPECIFIC QUOTES from the transcript to justify any points given. If you cannot quote specific evidence, give 0.
+MINIMUM SCORING GUIDELINES:
+- If student addresses the topic: minimum 20% of available points
+- If student shows basic understanding: minimum 40% of available points
+- If student provides examples or applications: 60%+ of available points
 
 Return ONLY valid JSON:
 {
@@ -896,21 +878,21 @@ Return ONLY valid JSON:
     {
       "indicator": "exact PI name",
       "score": number_between_0_and_${selectedEvent.piPoints},
-      "feedback": "[Quote specific evidence from transcript or explain why 0 was given]"
+      "feedback": "[Encouraging feedback highlighting what they did well and specific suggestions for improvement]"
     }
   ],
   "twentyFirstCenturySkills": [
     {
       "skill": "exact skill name", 
       "score": number_between_0_and_${selectedEvent.centurySkills.skillPoints},
-      "feedback": "[Quote specific evidence or explain why 0 was given]"
+      "feedback": "[Positive feedback with constructive suggestions]"
     }
   ],
   "overallImpression": {
     "score": number_between_0_and_${selectedEvent.centurySkills.skillPoints},
-    "feedback": "OVERALL ASSESSMENT: [Based only on what was explicitly demonstrated]"
+    "feedback": "[Encouraging overall assessment with specific next steps]"
   },
-  "generalFeedback": "[Explain what specific evidence was missing and what was present]"
+  "generalFeedback": "[Balanced feedback highlighting strengths and growth opportunities]"
 }`
 
     const response = await fetch('/api/openai', {
@@ -924,12 +906,12 @@ Return ONLY valid JSON:
         messages: [
           {
             role: 'system',
-            content: `You are the strictest DECA judge. START ALL SCORES AT 0. Only give points for EXPLICIT, QUOTABLE evidence in the transcript. No assumptions, no implications, no benefit of doubt.`
+            content: `You are a constructive DECA judge. Give credit for effort and provide encouraging, educational feedback. Focus on helping students improve while recognizing their attempts.`
           },
           { role: 'user', content: prompt }
         ],
         max_tokens: 2500,
-        temperature: 0.0, // Lowest temperature for most consistent strict grading
+        temperature: 0.3,
       })
     })
 
@@ -949,44 +931,40 @@ Return ONLY valid JSON:
       
       feedbackData = JSON.parse(jsonMatch[0])
 
-      // FORCE STRICT EVIDENCE-BASED SCORING (override AI if too generous)
-      console.log("ULTRA-STRICT MODE: Applying evidence-based scoring overrides...")
+      // Apply reasonable minimum scores for effort
+      feedbackData.performanceIndicators.forEach((pi: any) => {
+        // Ensure minimum score of 20% if any relevant content is present
+        if (pi.score < Math.floor(selectedEvent.piPoints * 0.2) && wordCount > 10) {
+          pi.score = Math.floor(selectedEvent.piPoints * 0.2)
+        }
+      })
 
-      // Apply word count penalties STRICTLY
-      let maxScoreMultiplier = 1.0
-      if (wordCount < 50) {
-        maxScoreMultiplier = 0.1 // Maximum 10% of possible points
-      } else if (wordCount < 100) {
-        maxScoreMultiplier = 0.25 // Maximum 25% of possible points
-      } else if (wordCount < 200) {
-        maxScoreMultiplier = 0.5 // Maximum 50% of possible points
+      feedbackData.twentyFirstCenturySkills.forEach((skill: any) => {
+        // Ensure minimum score of 20% if any relevant content is present
+        if (skill.score < Math.floor(selectedEvent.centurySkills.skillPoints * 0.2) && wordCount > 10) {
+          skill.score = Math.floor(selectedEvent.centurySkills.skillPoints * 0.2)
+        }
+      })
+
+      // Apply only severe length penalties
+      let penaltyMultiplier = 1.0
+      if (wordCount < 20) {
+        penaltyMultiplier = 0.3 // 30% for very short responses
+      } else if (wordCount < 50) {
+        penaltyMultiplier = 0.6 // 60% for short responses
       }
 
-      // Apply multiplier to all scores
-      // Apply multiplier to all scores
+      if (penaltyMultiplier < 1.0) {
         feedbackData.performanceIndicators.forEach((pi: any) => {
-          const originalScore = pi.score
-          pi.score = Math.floor(pi.score * maxScoreMultiplier)
-          if (originalScore > pi.score) {
-            pi.feedback = `Word count penalty applied: Score reduced from ${originalScore} to ${pi.score} due to insufficient length (${wordCount} words). ${pi.feedback}`
-          }
+          pi.score = Math.floor(pi.score * penaltyMultiplier)
         })
-
         feedbackData.twentyFirstCenturySkills.forEach((skill: any) => {
-          const originalScore = skill.score
-          skill.score = Math.floor(skill.score * maxScoreMultiplier)
-          if (originalScore > skill.score) {
-            skill.feedback = `Word count penalty applied: Score reduced from ${originalScore} to ${skill.score} due to insufficient length (${wordCount} words). ${skill.feedback}`
-          }
+          skill.score = Math.floor(skill.score * penaltyMultiplier)
         })
-
-      const originalOverall = feedbackData.overallImpression.score
-      feedbackData.overallImpression.score = Math.floor(feedbackData.overallImpression.score * maxScoreMultiplier)
-      if (originalOverall > feedbackData.overallImpression.score) {
-        feedbackData.overallImpression.feedback = `WORD COUNT PENALTY APPLIED: Score reduced from ${originalOverall} to ${feedbackData.overallImpression.score} due to insufficient length (${wordCount} words). ${feedbackData.overallImpression.feedback}`
+        feedbackData.overallImpression.score = Math.floor(feedbackData.overallImpression.score * penaltyMultiplier)
       }
 
-      // Calculate final totals with bad word penalty
+      // Calculate totals
       const piTotal = feedbackData.performanceIndicators.reduce((sum: number, pi: any) => sum + pi.score, 0)
       const skillTotal = feedbackData.twentyFirstCenturySkills.reduce((sum: number, skill: any) => sum + skill.score, 0)
       const overallTotal = feedbackData.overallImpression.score
@@ -998,11 +976,9 @@ Return ONLY valid JSON:
 
       // Apply bad word penalty to total
       let totalScore = piTotal + skillTotal + overallTotal - (badWordCount * 5)
-      totalScore = Math.max(0, totalScore) // Don't go below 0
+      totalScore = Math.max(0, totalScore)
 
       const percentageScore = Math.round((totalScore / totalPossible) * 100)
-
-      console.log(`ULTRA-STRICT RESULTS: Raw total: ${piTotal + skillTotal + overallTotal}, After penalties: ${totalScore}, Percentage: ${percentageScore}%, Total possible: ${totalPossible}`)
 
       return {
         ...feedbackData,
@@ -1010,7 +986,7 @@ Return ONLY valid JSON:
         rawTotal: totalScore,
         totalPossible: totalPossible,
         penaltiesApplied: {
-          wordCountPenalty: maxScoreMultiplier < 1.0,
+          wordCountPenalty: penaltyMultiplier < 1.0,
           badWordPenalty: badWordCount > 0,
           badWordCount: badWordCount
         }
@@ -1024,22 +1000,23 @@ Return ONLY valid JSON:
   } catch (error) {
     console.error('Error generating AI feedback:', error)
     
-    // ULTRA-STRICT FALLBACK - All zeros with harsh feedback
+    // Balanced fallback with reasonable scores
     const selectedEvent = decaEvents.find(e => e.id === eventId)
     if (!selectedEvent) throw new Error("Event not found")
 
     const wordCount = transcript.trim().split(/\s+/).filter(word => word.length > 0).length
+    const baseScore = wordCount > 10 ? Math.floor(selectedEvent.piPoints * 0.3) : 1
 
     const piScores = roleplay.performanceIndicators.map((indicator: string) => ({
       indicator,
-      score: 0, // Always 0 in ultra-strict fallback
-      feedback: `ULTRA-STRICT FALLBACK: Score 0/${selectedEvent.piPoints}. No evidence found for "${indicator}" in the ${wordCount}-word response: "${transcript.substring(0, 100)}..."`
+      score: baseScore,
+      feedback: `You attempted to address "${indicator}" which shows good effort. To improve, try providing more specific examples and connecting your ideas more directly to the business scenario.`
     }))
 
     const skillScores = roleplay.twentyFirstCenturySkills.map((skill: string) => ({
       skill,
-      score: 0, // Always 0 in ultra-strict fallback
-      feedback: `ULTRA-STRICT FALLBACK: Score 0/${selectedEvent.centurySkills.skillPoints}. No evidence of "${skill}" demonstrated in transcript.`
+      score: Math.floor(selectedEvent.centurySkills.skillPoints * 0.3),
+      feedback: `Your response showed some elements of "${skill}". Consider expanding your explanation with more detailed reasoning and examples.`
     }))
 
     const totalPossible = 
@@ -1047,21 +1024,22 @@ Return ONLY valid JSON:
       selectedEvent.centurySkills.numSkills * selectedEvent.centurySkills.skillPoints +
       selectedEvent.centurySkills.skillPoints
 
-    console.log(`ULTRA-STRICT FALLBACK: All scores forced to 0. Total possible: ${totalPossible}`)
+    const estimatedTotal = (piScores.length * baseScore) + (skillScores.length * Math.floor(selectedEvent.centurySkills.skillPoints * 0.3)) + Math.floor(selectedEvent.centurySkills.skillPoints * 0.3)
+    const percentageScore = Math.round((estimatedTotal / totalPossible) * 100)
 
     return {
-      totalScore: 0, // Always 0%
+      totalScore: percentageScore,
       performanceIndicators: piScores,
       twentyFirstCenturySkills: skillScores,
       overallImpression: {
-        score: 0,
-        feedback: `ULTRA-STRICT FALLBACK: Overall impression 0/${selectedEvent.centurySkills.skillPoints}. Presentation did not meet evidence requirements for any scoring criteria.`
+        score: Math.floor(selectedEvent.centurySkills.skillPoints * 0.3),
+        feedback: `You made a good attempt at the roleplay scenario. Focus on providing more detailed explanations and specific examples to strengthen your response.`
       },
-      generalFeedback: `Your ${wordCount}-word response "${transcript}" did not provide sufficient evidence to earn points in any category. You must explicitly address each performance indicator with definitions, examples, and clear connections to the scenario.`,
-      rawTotal: 0,
+      generalFeedback: `Your ${wordCount}-word response shows effort and understanding of the topic. To improve your score, try expanding your answers with specific examples, detailed explanations, and clearer connections to the business scenario.`,
+      rawTotal: estimatedTotal,
       totalPossible: totalPossible,
       penaltiesApplied: {
-        wordCountPenalty: wordCount < 200,
+        wordCountPenalty: wordCount < 50,
         badWordPenalty: false,
         badWordCount: 0
       }
