@@ -1,9 +1,36 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowRight } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
+import { ReactNode } from "react";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+
+type CardProps = {
+  children: ReactNode;
+  className?: string;
+};
+
+const Card = ({ children, className = "" }: CardProps) => (
+  <div className={`bg-white rounded-lg border shadow-sm ${className}`}>
+    {children}
+  </div>
+);
+
+type CardSectionProps = {
+  children: ReactNode;
+  className?: string;
+};
+
+const CardHeader = ({ children }: { children: ReactNode }) => (
+  <div className="p-6 pb-4">{children}</div>
+);
+
+const CardTitle = ({ children, className = "" }: CardSectionProps) => (
+  <h3 className={`text-xl font-semibold ${className}`}>{children}</h3>
+);
+
+const CardContent = ({ children }: { children: ReactNode }) => (
+  <div className="p-6 pt-0">{children}</div>
+);
 
 export default function Homepage() {
   return (
@@ -21,15 +48,14 @@ export default function Homepage() {
               </p>
             </div>
 
-            {/* Try It Out button section */}
+            {/* Try It Out button section with rotating gradient */}
             <div className="flex justify-center my-12">
               <div className="relative group">
-                {/* Static capsule-shaped background with rotating gradient inside */}
                 <div
                   className="absolute rounded-full"
                   style={{
                     width: 'calc(100% + 16px)',
-                    height: 'calc(100% + 16px)', 
+                    height: 'calc(100% + 16px)',
                     top: '-8px',
                     left: '-8px',
                     background: 'linear-gradient(45deg, #2563eb, #14b8a6, #9333ea, #2563eb)',
@@ -37,8 +63,6 @@ export default function Homepage() {
                     animation: 'rotateColors 3s linear infinite'
                   }}
                 />
-
-                {/* Actual button */}
                 <Link
                   href="/practice"
                   className="relative z-10 px-8 py-4 text-lg font-semibold text-white bg-black rounded-full transition-transform duration-300 hover:scale-110 group flex items-center gap-2"
@@ -47,13 +71,12 @@ export default function Homepage() {
                 </Link>
               </div>
 
-              {/* CSS for rotating gradient animation */}
               <style jsx>{`
                 @keyframes rotateColors {
-                  0% { 
+                  0% {
                     filter: blur(12px) hue-rotate(0deg);
                   }
-                  100% { 
+                  100% {
                     filter: blur(12px) hue-rotate(360deg);
                   }
                 }
@@ -63,10 +86,14 @@ export default function Homepage() {
             <div className="grid md:grid-cols-3 gap-8 mt-16">
               <Card className="hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <CardTitle className="text-blue-600">AI-Generated Scenarios</CardTitle>
+                  <CardTitle className="text-blue-600">
+                    AI-Generated Scenarios
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">Get realistic DECA roleplay scenarios tailored to your chosen event</p>
+                  <p className="text-gray-600">
+                    Get realistic DECA roleplay scenarios tailored to your chosen event
+                  </p>
                 </CardContent>
               </Card>
 
@@ -75,7 +102,9 @@ export default function Homepage() {
                   <CardTitle className="text-purple-600">Voice Practice</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">Practice speaking naturally with our voice recording feature</p>
+                  <p className="text-gray-600">
+                    Practice speaking naturally with our voice recording feature
+                  </p>
                 </CardContent>
               </Card>
 
@@ -84,7 +113,9 @@ export default function Homepage() {
                   <CardTitle className="text-blue-600">Detailed Feedback</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">Receive comprehensive scoring and improvement suggestions</p>
+                  <p className="text-gray-600">
+                    Receive comprehensive scoring and improvement suggestions
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -92,24 +123,34 @@ export default function Homepage() {
         </div>
       </main>
 
-      {/* Footer sticks to bottom if page is short */}
+      {/* Footer with scrolling credits */}
       <footer className="bg-gray-100 border-t py-8 text-center">
         <div className="flex flex-col items-center space-y-4 px-4">
-          <Image
-            src="/avhs-logo.jpg"
-            alt="Amador Valley High School Logo"
-            width={80}
-            height={80}
-            className="rounded-lg"
-          />
           <p className="text-gray-700 font-semibold">
             Made by Amador Valley High School DECA
           </p>
-          <p className="text-gray-600 max-w-3xl">
-            Rikhil Damarla • Siddarth Karthik • Chak (Jeremy) Li • Varadan Kalkunte • Aarush Tahiliani
-          </p>
+          <div className="w-full overflow-hidden">
+            <div className="animate-scroll whitespace-nowrap">
+              <span className="text-gray-600 inline-block">
+                Rikhil Damarla • Siddarth Karthik • Chak (Jeremy) Li • Varadan Kalkunte • Aarush Tahiliani • Rikhil Damarla • Siddarth Karthik • Chak (Jeremy) Li • Varadan Kalkunte • Aarush Tahiliani • Rikhil Damarla • Siddarth Karthik • Chak (Jeremy) Li •
+              </span>
+            </div>
+          </div>
         </div>
+        <style jsx>{`
+          @keyframes scroll {
+            0% {
+              transform: translateX(0);
+            }
+            100% {
+              transform: translateX(-50%);
+            }
+          }
+          .animate-scroll {
+            animation: scroll 15s linear infinite;
+          }
+        `}</style>
       </footer>
     </div>
-  )
+  );
 }

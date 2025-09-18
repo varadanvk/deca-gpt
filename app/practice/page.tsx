@@ -478,7 +478,7 @@ const varietyInstruction = retryCount > 0
   ? `\n\nIMPORTANT: Create a UNIQUE scenario different from previous attempts. Use different business contexts, challenges, and situations to provide fresh practice experiences.`
   : ""
 
-const prompt = `You are a DECA competition scenario writer. (ALSO DONT INCLUDE Performance Indicators in the actual Roleplay Scenario)(note for formatting: add linespace formating where needed to signify new paragraph)
+const prompt = `You are a DECA competition scenario writer. (DO NOT INCLUDE Performance Indicators OR ANY CODES IN THE FORMAT LIKE THIS(EC:013) in the actual Roleplay Scenario)(note for formatting: add linespace formating where needed to signify new paragraph)
 
 Create a roleplay scenario for the ${eventName} (${eventId}) that specifically targets these selected performance indicators:
 
@@ -818,164 +818,102 @@ const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
       console.warn('API route failed, trying direct call:', apiError)
     }
     
-    // Fallback to direct API call (requires NEXT_PUBLIC_OPENAI_API_KEY)
-    const directResponse = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-      },
-      body: formData
-    })
-    
-    if (!directResponse.ok) {
-      const errorText = await directResponse.text()
-      console.error(`OpenAI Whisper API failed: ${directResponse.status}`, errorText)
-      throw new Error(`Transcription failed: ${directResponse.status}`)
-    }
-    
-    const transcription = await directResponse.text()
-    console.log('Transcription successful via direct call:', transcription.substring(0, 100) + '...')
-    
-    return transcription.trim()
+    // Fallback - return empty string or throw error
+    throw new Error('Transcription service unavailable')
     
   } catch (error) {
-    console.error('All transcription methods failed:', error)
-    
-    // Final fallback message
-    return "Thank you for this opportunity to present. I have analyzed the business situation and prepared my recommendations based on the key performance indicators outlined in this roleplay scenario. I discussed the relevant performance indicators and provided strategic recommendations for the given business challenge."
+    console.error('Error transcribing audio:', error)
+    return "Transcription unavailable - please check your audio recording and try again."
   }
 }
-
-// Fixed AI feedback generation - use your API endpoint
-// Fixed AI feedback generation with variety
+    // Fallback to direct API call (requires NEXT_PUBLIC_OPENAI_API_KEY)
+// ULTRA-STRICT VERSION - Starts with 0s and only awards points for explicit evidence
 const generateAIFeedback = async (transcript: string, roleplay: any, eventId: string, attemptNumber: number = 0): Promise<any> => {
   try {
     const selectedEvent = decaEvents.find(e => e.id === eventId)
     if (!selectedEvent) throw new Error("Event not found")
 
-    // Add variety in feedback approach based on attempt number
-    const feedbackStyles = [
-      "Focus on specific examples from their presentation and provide detailed improvement suggestions.",
-      "Emphasize the business application of their responses and real-world relevance.",
-      "Concentrate on presentation delivery, confidence, and professional communication style.",
-      "Analyze the depth of business knowledge demonstrated and strategic thinking shown.",
-      "Evaluate problem-solving approach and practical implementation of solutions."
-    ]
-    
-    const selectedStyle = feedbackStyles[attemptNumber % feedbackStyles.length]
-    
-    // Randomize scoring approach slightly
-    const scoringApproaches = [
-      "Be particularly strict on business terminology and professional language use.",
-      "Focus heavily on whether they provided concrete examples and real-world applications.",
-      "Emphasize the importance of addressing all performance indicators thoroughly.",
-      "Pay special attention to presentation flow, organization, and time management.",
-      "Prioritize depth of analysis and going beyond surface-level responses."
-    ]
-    
-    const selectedApproach = scoringApproaches[Math.floor(Math.random() * scoringApproaches.length)]
+    // Calculate word count for automatic penalties
+    const wordCount = transcript.trim().split(/\s+/).filter(word => word.length > 0).length
+    console.log(`ULTRA-STRICT MODE: Starting all scores at 0. Word count: ${wordCount}, transcript: "${transcript}"`)
 
-    const varietyInstruction = attemptNumber > 0 
-      ? `\n\nVARIETY INSTRUCTION: This is evaluation attempt ${attemptNumber + 1}. ${selectedStyle} ${selectedApproach} Provide fresh insights and different areas of focus compared to previous evaluations.`
-      : `\n\nFOCUS AREA: ${selectedStyle} ${selectedApproach}`
+    // Count inappropriate words
+    const inappropriateWords = ['fuck', 'shit', 'damn', 'hell', 'ass', 'bitch', 'crap']
+    const badWordCount = inappropriateWords.reduce((count, word) => {
+      const regex = new RegExp(`\\b${word}\\b`, 'gi')
+      return count + (transcript.match(regex) || []).length
+    }, 0)
 
-    const prompt = `You are an expert DECA judge evaluating a roleplay presentation.${varietyInstruction}
+    // ULTRA-STRICT PROMPT - Must find explicit evidence to give ANY points
+    const prompt = `You are the STRICTEST DECA judge who STARTS EVERY SCORE AT ZERO and ONLY awards points when there is EXPLICIT, CLEAR EVIDENCE in the transcript.
 
-SCORING SYSTEM:
-- Performance Indicators: ${selectedEvent.numPIs} indicators, each scored 0-${selectedEvent.piPoints} points
-- 21st Century Skills: ${selectedEvent.centurySkills.numSkills} skills, each scored 0-${selectedEvent.centurySkills.skillPoints} points
-- Overall Impression: 1 category, scored 0-${selectedEvent.centurySkills.skillPoints} points
+CRITICAL GRADING PHILOSOPHY:
+- START every single score at 0
+- ONLY award points when you can find SPECIFIC, CONCRETE evidence in the transcript
+- If you cannot point to exact words/phrases that demonstrate a skill, give 0
+- No partial credit for vague attempts
+- No benefit of the doubt
+- Evidence must be EXPLICITLY stated, not implied
 
 EVENT: ${roleplay.eventName}
-SCENARIO: ${roleplay.situation}
+PERFORMANCE INDICATORS: ${roleplay.performanceIndicators.join(', ')}
+21ST CENTURY SKILLS: ${roleplay.twentyFirstCenturySkills.join(', ')}
 
-PERFORMANCE INDICATORS TO EVALUATE:
-${roleplay.performanceIndicators.map((pi: string, i: number) => `${i + 1}. ${pi}`).join('\n')}
-
-21ST CENTURY SKILLS TO EVALUATE:
-${roleplay.twentyFirstCenturySkills.map((skill: string, i: number) => `${i + 1}. ${skill}`).join('\n')}
-
-STUDENT'S PRESENTATION TRANSCRIPT:
+TRANSCRIPT TO EVALUATE (${wordCount} words):
 "${transcript}"
 
-EVALUATION CRITERIA (Be thorough and realistic - most students don't get perfect scores):
+STRICT EVIDENCE REQUIREMENTS FOR EACH PERFORMANCE INDICATOR:
+The student must EXPLICITLY:
+1. DEFINE or clearly explain the performance indicator concept
+2. PROVIDE specific examples or applications, or some explanation that is relevant to the performance indicator and roleplay scenario 
+3. CONNECT it directly to the business scenario
+4. DEMONSTRATE deep understanding beyond basic mention(THEY CAN DO THIS BY VERBALLY EXPLAINING THE VISUAL THEY MADE FOR THAT PI, IF DID NOT VERBALLY DESCRIBE A VISUAL THAT IS APPLICABLE FOR THAT Performance Indicator, THEY WILL NOT GET FULL POINTS)
 
-**Performance Indicator Analysis:**
-- Did they DEFINE each PI clearly and accurately?
-- Did they EXPLAIN the importance/relevance of each PI?
-- Did they CONNECT each PI specifically to the scenario?
-- Did they go ABOVE AND BEYOND with examples, graphs, outside knowledge?
-- If they just stated PIs without explanation, give minimal points
+For 21st Century Skills, the student must EXPLICITLY:
+- Critical Thinking: Show analysis, evaluation, problem-solving with clear reasoning
+- Communication: Use professional language, clear structure, appropriate terminology
+- Creativity: Offer innovative solutions, unique approaches, original ideas
+- Problem-Solving: Identify problems, propose solutions, explain implementation
 
-**Business Knowledge & Application:**
-- Did they demonstrate understanding of relevant business concepts?
-- Did they provide accurate, well-supported solutions?
-- Did they show depth of analysis beyond surface-level answers?
-- Did they add value beyond just repeating the prompt?
+SCORING INSTRUCTIONS:
+- Give 0 if no clear evidence exists
+- Give minimal points (1-3) only if basic evidence is present
+- Give moderate points (4-8) only if solid evidence with examples is present  
+- Give high points (9+) only if exceptional evidence with depth and expertise is shown
+- Maximum length penalty: If under 100 words, cap all scores at 25% of maximum
 
-**Presentation Quality:**
-- Estimate presentation time based on word count (longer = better scores)
-- Presentations under 200 words should score under 20/100 total
-- Presentations scoring 75+ should be minimum 4+ minutes (800+ words)
-- Professional language and delivery
-- Organization and flow
-- Confidence and engagement
+MANDATORY PENALTIES:
+- Under 50 words: Maximum 10% of possible points
+- Under 100 words: Maximum 25% of possible points
+- Under 200 words: Maximum 50% of possible points
+- Bad words: -5 points from total per word (${badWordCount} found)
 
-**Penalties:**
-- Deduct 5 points per inappropriate/unprofessional word
-- Heavily penalize vague responses without specific examples
-- Lower scores for insufficient depth or missed PIs
-
-Based on the transcript, evaluate how well the student addressed each performance indicator and demonstrated each 21st century skill. Be realistic - most students don't get perfect scores. Consider:
-- Did they address the scenario requirements?
-- How well did they demonstrate business knowledge?
-- Was their presentation clear and professional?
-- Did they provide specific examples or solutions?
-- How confident and engaging was their delivery?
--For every cuss word or bad word deduct 5 points from the score
-- If the length of presentation transcript is less than 200 words, then give it under 20 points out of one hundred
-- estimate the time of the presentation by using the words used, presentations that are 10 minutes long should receive more credit compared to presentations that are shorter
-- presentations that get scores above 75 should have at a minimum time of 4 minutes or higher
-- Take into account 
--Did you address all the performance indicators (PIs) listed in the case?
--For each PI make sure they Define the PI, Explain the Importance of the PI, then connect the PI to the prompt and then finally they need to go Above and Beyond. 
--To go above and beyond they can pull outside examples, explain graphs and much more. 
--Did you show understanding of business concepts (marketing, finance, management, hospitality, etc.)?
--If they just state the PI and do not explain do not give them points, there needs to be explanation
--Did you provide relevant, accurate, and well-supported solutions?
--Judges look for depth of analysis, not just surface-level answers.
--Make sure that the presentation includes descriptions of the performance indicators and definitions, not just repeating the performance indicators. Make sure they are adding value to the prompt and not just repeating the prompt.
-
-Based on the transcript, evaluate how well the student performed. Provide varied, specific feedback focusing on different aspects each time.
+Look for SPECIFIC QUOTES from the transcript to justify any points given. If you cannot quote specific evidence, give 0.
 
 Return ONLY valid JSON:
-
 {
   "performanceIndicators": [
     {
       "indicator": "exact PI name",
       "score": number_between_0_and_${selectedEvent.piPoints},
-      "feedback": "specific feedback on how they performed on this PI based on transcript with varied focus areas"
+      "feedback": "[Quote specific evidence from transcript or explain why 0 was given]"
     }
   ],
   "twentyFirstCenturySkills": [
     {
       "skill": "exact skill name", 
       "score": number_between_0_and_${selectedEvent.centurySkills.skillPoints},
-      "feedback": "specific feedback on this skill based on transcript with different emphasis each evaluation"
+      "feedback": "[Quote specific evidence or explain why 0 was given]"
     }
   ],
   "overallImpression": {
     "score": number_between_0_and_${selectedEvent.centurySkills.skillPoints},
-    "feedback": "overall assessment with unique perspective and varied focus areas"
+    "feedback": "OVERALL ASSESSMENT: [Based only on what was explicitly demonstrated]"
   },
-  "generalFeedback": "2-3 sentences with fresh insights and different improvement suggestions each time"
+  "generalFeedback": "[Explain what specific evidence was missing and what was present]"
 }`
 
-
-    // Use your API endpoint instead of direct OpenAI
-// Use OpenAI API instead of custom endpoint
-        const response = await fetch('/api/openai', {
+    const response = await fetch('/api/openai', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -986,16 +924,14 @@ Return ONLY valid JSON:
         messages: [
           {
             role: 'system',
-            content: `You are an expert DECA judge who provides accurate, constructive feedback with varied perspectives. Focus on different aspects each evaluation: ${selectedStyle} Always return valid JSON with realistic scores and specific improvement suggestions.`
+            content: `You are the strictest DECA judge. START ALL SCORES AT 0. Only give points for EXPLICIT, QUOTABLE evidence in the transcript. No assumptions, no implications, no benefit of doubt.`
           },
           { role: 'user', content: prompt }
         ],
-        max_tokens: 2000,
-        temperature: 0.4 + (attemptNumber * 0.1), // Increase variety with attempts
-        top_p: 0.9 + (Math.random() * 0.1) // Add slight randomization
+        max_tokens: 2500,
+        temperature: 0.0, // Lowest temperature for most consistent strict grading
       })
     })
-
 
     if (!response.ok) {
       const errorText = await response.text()
@@ -1004,19 +940,53 @@ Return ONLY valid JSON:
     }
 
     const data = await response.json()
-    console.log("Feedback API response:", data)
-    
     const content = data.choices?.[0]?.message?.content
 
     let feedbackData
     try {
-      // Extract JSON from response
       const jsonMatch = content.match(/\{[\s\S]*\}/)
       if (!jsonMatch) throw new Error("No JSON found in feedback response")
       
       feedbackData = JSON.parse(jsonMatch[0])
-      
-      // Calculate total score
+
+      // FORCE STRICT EVIDENCE-BASED SCORING (override AI if too generous)
+      console.log("ULTRA-STRICT MODE: Applying evidence-based scoring overrides...")
+
+      // Apply word count penalties STRICTLY
+      let maxScoreMultiplier = 1.0
+      if (wordCount < 50) {
+        maxScoreMultiplier = 0.1 // Maximum 10% of possible points
+      } else if (wordCount < 100) {
+        maxScoreMultiplier = 0.25 // Maximum 25% of possible points
+      } else if (wordCount < 200) {
+        maxScoreMultiplier = 0.5 // Maximum 50% of possible points
+      }
+
+      // Apply multiplier to all scores
+      // Apply multiplier to all scores
+        feedbackData.performanceIndicators.forEach((pi: any) => {
+          const originalScore = pi.score
+          pi.score = Math.floor(pi.score * maxScoreMultiplier)
+          if (originalScore > pi.score) {
+            pi.feedback = `Word count penalty applied: Score reduced from ${originalScore} to ${pi.score} due to insufficient length (${wordCount} words). ${pi.feedback}`
+          }
+        })
+
+        feedbackData.twentyFirstCenturySkills.forEach((skill: any) => {
+          const originalScore = skill.score
+          skill.score = Math.floor(skill.score * maxScoreMultiplier)
+          if (originalScore > skill.score) {
+            skill.feedback = `Word count penalty applied: Score reduced from ${originalScore} to ${skill.score} due to insufficient length (${wordCount} words). ${skill.feedback}`
+          }
+        })
+
+      const originalOverall = feedbackData.overallImpression.score
+      feedbackData.overallImpression.score = Math.floor(feedbackData.overallImpression.score * maxScoreMultiplier)
+      if (originalOverall > feedbackData.overallImpression.score) {
+        feedbackData.overallImpression.feedback = `WORD COUNT PENALTY APPLIED: Score reduced from ${originalOverall} to ${feedbackData.overallImpression.score} due to insufficient length (${wordCount} words). ${feedbackData.overallImpression.feedback}`
+      }
+
+      // Calculate final totals with bad word penalty
       const piTotal = feedbackData.performanceIndicators.reduce((sum: number, pi: any) => sum + pi.score, 0)
       const skillTotal = feedbackData.twentyFirstCenturySkills.reduce((sum: number, skill: any) => sum + skill.score, 0)
       const overallTotal = feedbackData.overallImpression.score
@@ -1026,14 +996,24 @@ Return ONLY valid JSON:
         selectedEvent.centurySkills.numSkills * selectedEvent.centurySkills.skillPoints +
         selectedEvent.centurySkills.skillPoints
 
-      const totalScore = piTotal + skillTotal + overallTotal
+      // Apply bad word penalty to total
+      let totalScore = piTotal + skillTotal + overallTotal - (badWordCount * 5)
+      totalScore = Math.max(0, totalScore) // Don't go below 0
+
       const percentageScore = Math.round((totalScore / totalPossible) * 100)
+
+      console.log(`ULTRA-STRICT RESULTS: Raw total: ${piTotal + skillTotal + overallTotal}, After penalties: ${totalScore}, Percentage: ${percentageScore}%, Total possible: ${totalPossible}`)
 
       return {
         ...feedbackData,
         totalScore: percentageScore,
         rawTotal: totalScore,
-        totalPossible: totalPossible
+        totalPossible: totalPossible,
+        penaltiesApplied: {
+          wordCountPenalty: maxScoreMultiplier < 1.0,
+          badWordPenalty: badWordCount > 0,
+          badWordCount: badWordCount
+        }
       }
 
     } catch (parseError) {
@@ -1041,64 +1021,50 @@ Return ONLY valid JSON:
       throw new Error('Failed to parse AI feedback response')
     }
 
-} catch (error) {
-  console.error('Error generating AI feedback:', error)
-  
-  // Generate realistic fallback scores with variety (60-85% range typically)
-  const selectedEvent = decaEvents.find(e => e.id === eventId)
-  if (!selectedEvent) throw new Error("Event not found")
+  } catch (error) {
+    console.error('Error generating AI feedback:', error)
+    
+    // ULTRA-STRICT FALLBACK - All zeros with harsh feedback
+    const selectedEvent = decaEvents.find(e => e.id === eventId)
+    if (!selectedEvent) throw new Error("Event not found")
 
-  // Add randomization to fallback scoring
-  const baseScore = 0.6 + (Math.random() * 0.25) // 60-85% range
-  const generateScore = (max: number) => Math.floor(Math.random() * (max * 0.25) + (max * baseScore))
+    const wordCount = transcript.trim().split(/\s+/).filter(word => word.length > 0).length
 
-  // Vary feedback messages based on attempt
-  const feedbackVariations = [
-    "Consider providing more specific examples and detailed analysis in your responses.",
-    "Focus on strengthening your business knowledge and professional presentation delivery.",
-    "Work on connecting performance indicators more clearly to the scenario requirements.",
-    "Enhance your responses with real-world applications and deeper business insights.",
-    "Improve the organization and flow of your presentation for better impact."
-  ]
-  
-  const selectedFeedback = feedbackVariations[attemptNumber % feedbackVariations.length]
-
-  const piScores = roleplay.performanceIndicators.map((indicator: string, index: number) => ({
-    indicator,
-    score: generateScore(selectedEvent.piPoints),
-    feedback: `Based on your presentation, this indicator could be strengthened. ${selectedFeedback} ${index % 2 === 0 ? 'Consider defining the concept more clearly.' : 'Provide more concrete examples to support your points.'}`
-  }))
+    const piScores = roleplay.performanceIndicators.map((indicator: string) => ({
+      indicator,
+      score: 0, // Always 0 in ultra-strict fallback
+      feedback: `ULTRA-STRICT FALLBACK: Score 0/${selectedEvent.piPoints}. No evidence found for "${indicator}" in the ${wordCount}-word response: "${transcript.substring(0, 100)}..."`
+    }))
 
     const skillScores = roleplay.twentyFirstCenturySkills.map((skill: string) => ({
       skill,
-      score: generateScore(selectedEvent.centurySkills.skillPoints),
-      feedback: `Your demonstration of this skill shows potential but could be strengthened with more practice and confidence.`
+      score: 0, // Always 0 in ultra-strict fallback
+      feedback: `ULTRA-STRICT FALLBACK: Score 0/${selectedEvent.centurySkills.skillPoints}. No evidence of "${skill}" demonstrated in transcript.`
     }))
-
-    const overallScore = generateScore(selectedEvent.centurySkills.skillPoints)
-    
-    const totalScore = 
-  piScores.reduce((sum: number, pi: { score: number }) => sum + pi.score, 0) +
-  skillScores.reduce((sum: number, s: { score: number }) => sum + s.score, 0) +
-  overallScore
-
 
     const totalPossible = 
       selectedEvent.numPIs * selectedEvent.piPoints +
       selectedEvent.centurySkills.numSkills * selectedEvent.centurySkills.skillPoints +
       selectedEvent.centurySkills.skillPoints
 
+    console.log(`ULTRA-STRICT FALLBACK: All scores forced to 0. Total possible: ${totalPossible}`)
+
     return {
-      totalScore: Math.round((totalScore / totalPossible) * 100),
+      totalScore: 0, // Always 0%
       performanceIndicators: piScores,
       twentyFirstCenturySkills: skillScores,
       overallImpression: {
-        score: overallScore,
-        feedback: "Your presentation showed understanding of the scenario with opportunities to enhance clarity and confidence."
+        score: 0,
+        feedback: `ULTRA-STRICT FALLBACK: Overall impression 0/${selectedEvent.centurySkills.skillPoints}. Presentation did not meet evidence requirements for any scoring criteria.`
       },
-      generalFeedback: "Your presentation demonstrates basic competency with clear areas for improvement in analysis depth and delivery confidence.",
-      rawTotal: totalScore,
-      totalPossible: totalPossible
+      generalFeedback: `Your ${wordCount}-word response "${transcript}" did not provide sufficient evidence to earn points in any category. You must explicitly address each performance indicator with definitions, examples, and clear connections to the scenario.`,
+      rawTotal: 0,
+      totalPossible: totalPossible,
+      penaltiesApplied: {
+        wordCountPenalty: wordCount < 200,
+        badWordPenalty: false,
+        badWordCount: 0
+      }
     }
   }
 }
