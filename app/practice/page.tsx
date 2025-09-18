@@ -94,7 +94,6 @@ const decaEvents = [
 
 
 
-// Performance Indicator mapping based on event types
 const getPerformanceIndicatorsFile = (eventId: string): string => {
   const baCore = ["PBM", "PEN", "PFN", "PHT", "PMK"]
   const baMgmt = ["BLTDM", "HRM"]
@@ -102,6 +101,7 @@ const getPerformanceIndicatorsFile = (eventId: string): string => {
   const fin = ["ACT", "BFS", "FTDM"]  // Removed non-existent FCE
   const ht = ["PHT", "HTDM", "HLM", "QSRM", "RFSM", "TTDM"]  // Fixed event IDs
   const mark = ["AAM", "ASM", "BSM", "BTDM", "FMS", "MCS", "MTDM", "RMS", "SEM", "STDM"]  // Cleaned up
+  const pfl = ["PFL"]  // Personal Financial Literacy
   
   if (baCore.includes(eventId)) return "output-ba-core-definitions.json"
   if (baMgmt.includes(eventId)) return "output-ba-mgmt-definitions.json"
@@ -109,9 +109,11 @@ const getPerformanceIndicatorsFile = (eventId: string): string => {
   if (fin.includes(eventId)) return "output-fin-definitions.json"
   if (ht.includes(eventId)) return "output-ht-definitions.json"
   if (mark.includes(eventId)) return "output-mark-definitions.json"
+  if (pfl.includes(eventId)) return "output-pfl-definitions.json"
   
   return "output-ba-core-definitions.json"
 }
+
 
 // Load event scenario from file
 // Load event scenario from file

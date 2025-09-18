@@ -98,7 +98,8 @@ useEffect(() => {
         '/data/output-ent-definitions.json',
         '/data/output-fin-definitions.json',
         '/data/output-ht-definitions.json',
-        '/data/output-mark-definitions.json'
+        '/data/output-mark-definitions.json',
+        '/data/output-pfl-definitions.json'
       ]
 
       const allData: PI[] = []
@@ -231,6 +232,12 @@ useEffect(() => {
 
   const flipCard = () => {
     setIsFlipped(!isFlipped)
+  }
+
+  // Handle both click and touch events for mobile
+  const handleCardClick = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault()
+    flipCard()
   }
 
   const currentPI = filteredPIs[currentCardIndex]
@@ -385,62 +392,65 @@ useEffect(() => {
               </span>
             </div>
 
-            {/* Card */}
-            <div 
-              className="relative h-80 cursor-pointer group perspective-1000"
-              onClick={flipCard}
-            >
-              <div className={`relative w-full h-full transition-transform duration-700 transform-style-preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
-                {/* Front of Card */}
-                <div className="absolute inset-0 bg-white rounded-xl shadow-xl border-2 border-blue-200 backface-hidden group-hover:shadow-2xl transition-shadow duration-300">
-                  <div className="h-full flex flex-col justify-center items-center p-8 text-center">
-                    <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
-                      {currentPI.code}
-                    </div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4 leading-tight">
-                      {currentPI.name}
-                    </h2>
-                    <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded text-sm mb-4">
-                      {currentPI.category} • Level {currentPI.level}
-                    </div>
-                    <div className="flex flex-wrap gap-2 justify-center mb-4">
-                      {currentPI.event.slice(0, 6).map(eventId => (
-                        <span key={eventId} className="bg-teal-100 text-teal-800 px-2 py-1 rounded text-xs">
-                          {eventId}
-                        </span>
-                      ))}
-                      {currentPI.event.length > 6 && (
-                        <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
-                          +{currentPI.event.length - 6} more
-                        </span>
-                      )}
-                    </div>
-                    <div className="mt-auto text-sm text-gray-500">
-                      Click to reveal definition
-                    </div>
+            {/* Card - Mobile-Friendly Version */}
+            <div className="relative">
+              {!isFlipped ? (
+                // Front of Card
+                <div 
+                  className="bg-white rounded-xl shadow-xl border-2 border-blue-200 p-8 text-center cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 min-h-[320px] flex flex-col justify-center"
+                  onClick={handleCardClick}
+                  onTouchEnd={handleCardClick}
+                  style={{ touchAction: 'manipulation' }}
+                >
+                  <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block mx-auto">
+                    {currentPI.code}
+                  </div>
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 leading-tight">
+                    {currentPI.name}
+                  </h2>
+                  <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded text-sm mb-4 inline-block mx-auto">
+                    {currentPI.category} • Level {currentPI.level}
+                  </div>
+                  <div className="flex flex-wrap gap-2 justify-center mb-4">
+                    {currentPI.event.slice(0, 6).map(eventId => (
+                      <span key={eventId} className="bg-teal-100 text-teal-800 px-2 py-1 rounded text-xs">
+                        {eventId}
+                      </span>
+                    ))}
+                    {currentPI.event.length > 6 && (
+                      <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">
+                        +{currentPI.event.length - 6} more
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-auto text-sm text-gray-500">
+                    Tap to reveal definition
                   </div>
                 </div>
-
-                {/* Back of Card */}
-                <div className="absolute inset-0 bg-gradient-to-br from-teal-50 to-blue-50 rounded-xl shadow-xl border-2 border-teal-200 backface-hidden rotate-y-180 group-hover:shadow-2xl transition-shadow duration-300">
-                  <div className="h-full flex flex-col justify-center items-center p-8 text-center overflow-y-auto">
-                    <div className="bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm font-medium mb-4">
-                      Definition
-                    </div>
-                    <div className="text-lg text-gray-800 leading-relaxed mb-4 max-h-48 overflow-y-auto">
-                      {currentPI.definition.split('\n').map((line, index) => (
-                        <p key={index} className="mb-2">{line}</p>
-                      ))}
-                    </div>
-                    <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded text-sm mb-2">
-                      Level: {currentPI.level}
-                    </div>
-                    <div className="mt-auto text-sm text-gray-500">
-                      Click to show question
-                    </div>
+              ) : (
+                // Back of Card
+                <div 
+                  className="bg-gradient-to-br from-teal-50 to-blue-50 rounded-xl shadow-xl border-2 border-teal-200 p-8 text-center cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 min-h-[320px] flex flex-col justify-center"
+                  onClick={handleCardClick}
+                  onTouchEnd={handleCardClick}
+                  style={{ touchAction: 'manipulation' }}
+                >
+                  <div className="bg-teal-100 text-teal-800 px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block mx-auto">
+                    Definition
+                  </div>
+                  <div className="text-base md:text-lg text-gray-800 leading-relaxed mb-4 max-h-48 overflow-y-auto">
+                    {currentPI.definition.split('\n').map((line, index) => (
+                      <p key={index} className="mb-2">{line}</p>
+                    ))}
+                  </div>
+                  <div className="bg-gray-100 text-gray-600 px-3 py-1 rounded text-sm mb-2 inline-block mx-auto">
+                    Level: {currentPI.level}
+                  </div>
+                  <div className="mt-auto text-sm text-gray-500">
+                    Tap to show question
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Navigation */}
@@ -448,7 +458,7 @@ useEffect(() => {
               <button
                 onClick={prevCard}
                 disabled={filteredPIs.length <= 1}
-                className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-2 px-4 md:px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm md:text-base"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Previous
@@ -456,7 +466,7 @@ useEffect(() => {
               
               <button
                 onClick={flipCard}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 md:px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm md:text-base"
               >
                 {isFlipped ? 'Show Question' : 'Show Answer'}
               </button>
@@ -464,7 +474,7 @@ useEffect(() => {
               <button
                 onClick={nextCard}
                 disabled={filteredPIs.length <= 1}
-                className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex items-center gap-2 px-4 md:px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-sm md:text-base"
               >
                 Next
                 <ChevronRight className="h-4 w-4" />
@@ -515,21 +525,6 @@ useEffect(() => {
           </div>
         )}
       </div>
-
-      <style jsx global>{`
-        .perspective-1000 {
-          perspective: 1000px;
-        }
-        .transform-style-preserve-3d {
-          transform-style: preserve-3d;
-        }
-        .backface-hidden {
-          backface-visibility: hidden;
-        }
-        .rotate-y-180 {
-          transform: rotateY(180deg);
-        }
-      `}</style>
     </div>
   )
 }
