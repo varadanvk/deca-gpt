@@ -15,7 +15,7 @@ export default function ContactPage() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
-          {/* Fake form, display only */}
+          {/* Contact form - inputs enabled but non-functional */}
           <Card>
             <CardHeader>
               <CardTitle>Send us a message</CardTitle>
@@ -27,9 +27,8 @@ export default function ContactPage() {
                 <input
                   id="name"
                   name="user_name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Your name"
-                  disabled
                 />
               </div>
               <div className="space-y-2">
@@ -38,9 +37,8 @@ export default function ContactPage() {
                   id="email"
                   name="user_email"
                   type="email"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="your@email.com"
-                  disabled
                 />
               </div>
               <div className="space-y-2">
@@ -49,12 +47,11 @@ export default function ContactPage() {
                   id="message"
                   name="message"
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-vertical"
                   placeholder="How can we help?"
-                  disabled
                 />
               </div>
-              <Button className="w-full" disabled>
+              <Button className="w-full">
                 Send Message
               </Button>
             </CardContent>

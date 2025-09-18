@@ -116,28 +116,6 @@ const getPerformanceIndicatorsFile = (eventId: string): string => {
 // Load event scenario from file
 // Load event scenario from file
 // Load event scenario from public files using fetch
-const loadEventScenario = async (eventId: string): Promise<string> => {
-  try {
-    const filePath = `/roleplay-data/${eventId} Event.txt`
-    console.log('Attempting to load scenario from:', filePath)
-    const response = await fetch(filePath)
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    
-    const fileContent = await response.text()
-    console.log('Successfully loaded scenario for:', eventId)
-    return fileContent
-  } catch (error) {
-    console.error('Error loading event file:', error)
-    console.error('Attempted file path:', `/roleplay-data/${eventId} Event.txt`)
-  }
-  
-  // Fallback to mock scenario if file loading fails
-  console.warn('Using fallback scenario for event:', eventId)
-  return `You are to assume the role of a business professional in a dynamic competitive environment. You have been tasked with analyzing a complex business situation and presenting strategic recommendations to senior leadership. Your presentation should demonstrate strong analytical thinking, clear communication, and practical business acumen.`
-}
 
 // NEW: Load ALL performance indicators from JSON file for intelligent selection
 const loadAllPerformanceIndicators = async (eventId: string): Promise<PI[]> => {
@@ -174,6 +152,7 @@ const loadAllPerformanceIndicators = async (eventId: string): Promise<PI[]> => {
   }
 }
 
+
 // NEW: Use LLM to intelligently select the most relevant PIs based on scenario
 const selectMostRelevantPIs = async (
   eventScenario: string, 
@@ -209,11 +188,11 @@ Return ONLY a JSON array of the exact PI names (not numbers), like this:
 
 IMPORTANT: Return only the JSON array with no additional text or formatting.`
 
-    const response = await fetch('/api/roleplay', {
+    const response = await fetch('/api/openai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'llama-4-maverick-17b-128e-instruct',
+        model: 'gpt-4.1-nano',
         messages: [
           {
             role: 'system',
@@ -265,6 +244,31 @@ IMPORTANT: Return only the JSON array with no additional text or formatting.`
 }
 
 
+
+const loadEventScenario = async (eventId: string): Promise<string> => {
+  try {
+    const filePath = `/roleplay-data/${eventId} Event.txt`
+    console.log('Attempting to load scenario from:', filePath)
+    const response = await fetch(filePath)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const fileContent = await response.text()
+    console.log('Successfully loaded scenario for:', eventId)
+    return fileContent
+  } catch (error) {
+    console.error('Error loading event file:', error)
+    console.error('Attempted file path:', `/roleplay-data/${eventId} Event.txt`)
+  }
+  
+  // Fallback to mock scenario if file loading fails
+  console.warn('Using fallback scenario for event:', eventId)
+  return `You are to assume the role of a business professional in a dynamic competitive environment. You have been tasked with analyzing a complex business situation and presenting strategic recommendations to senior leadership. Your presentation should demonstrate strong analytical thinking, clear communication, and practical business acumen.`
+}
+
+
 // Define PI interface
 interface PI {
   id: number;
@@ -278,43 +282,31 @@ interface PI {
 }
 
 
-
-// Alternative approach using fetch (since you're also using fetch elsewhere)
 // Load performance indicators from JSON file
+// Fixed loadPerformanceIndicators function
 const loadPerformanceIndicators = async (eventId: string): Promise<string[]> => {
   try {
     const fileName = getPerformanceIndicatorsFile(eventId)
-    // Files in /public are available at /data/<fileName>
     const response = await fetch(`/data/${fileName}`)
 
     if (!response.ok) {
       throw new Error(`Failed to load performance indicators for ${eventId}`)
     }
 
-    const data = await response.json() // This is an array of PI objects
+    const data = await response.json()
 
-    // Find the selected event to get its numPIs value
     const selectedEvent = decaEvents.find(e => e.id === eventId)
     const numPIs = selectedEvent?.numPIs || 5
 
-    // ✅ Filter PIs that include this eventId in their event array
     const eventPIs = data.filter(
       (pi: any) => pi.event && Array.isArray(pi.event) && pi.event.includes(eventId)
     )
 
-    console.log(`Found ${eventPIs.length} PIs for event ${eventId}`)
-
-    // ✅ Take the correct number and extract the name field
-    const indicators = eventPIs
-      .slice(0, numPIs) // Get the right number of PIs
-      .map((pi: any) => pi.name) // Extract the name field
-
-    return indicators
+    return eventPIs.slice(0, numPIs).map((pi: any) => pi.name)
   } catch (error) {
     console.error("Error loading performance indicators:", error)
   }
 
-  // Fallback performance indicators
   return [
     "Analyze business situations effectively",
     "Develop strategic recommendations",
@@ -325,6 +317,60 @@ const loadPerformanceIndicators = async (eventId: string): Promise<string[]> => 
 }
 
 
+// Alternative approach using fetch (since you're also using fetch elsewhere)
+const loadPerformanceIndicatorsFetch = async (eventId: string): Promise<string[]> => {
+  try {
+    const fileName = getPerformanceIndicatorsFile(eventId)
+    const response = await fetch(`/data/${fileName}`)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const data = await response.json() // Array of PI objects
+
+    // Find the selected event to get its numPIs value
+    const selectedEvent = decaEvents.find(e => e.id === eventId)
+    const numPIs = selectedEvent?.numPIs || 5
+
+    // Filter PIs that include this eventId in their event array
+    const eventPIs = data.filter((pi: any) => 
+      pi.event && Array.isArray(pi.event) && pi.event.includes(eventId)
+    )
+
+    console.log(`Found ${eventPIs.length} PIs for event ${eventId}`)
+
+    if (eventPIs.length === 0) {
+      console.warn(`No PIs found for event ${eventId} in file ${fileName}`)
+      return [
+        "Analyze business situations effectively",
+        "Develop strategic recommendations", 
+        "Present findings clearly and persuasively"
+      ].slice(0, numPIs)
+    }
+
+    // Take the correct number and extract the name field
+    const indicators = eventPIs
+      .slice(0, numPIs) // Get the right number of PIs
+      .map((pi: any) => pi.name) // Extract the name field
+
+    return indicators
+  } catch (error) {
+    console.error("Error loading performance indicators:", error)
+    
+    // Return fallback
+    const selectedEvent = decaEvents.find(e => e.id === eventId)
+    const numPIs = selectedEvent?.numPIs || 5
+    
+    return [
+      "Analyze business situations effectively",
+      "Develop strategic recommendations", 
+      "Present findings clearly and persuasively",
+      "Consider ethical implications in decision making",
+      "Evaluate implementation feasibility"
+    ].slice(0, numPIs)
+  }
+}
 
 
 
@@ -415,7 +461,7 @@ const generateRoleplayScenario = async (
     console.log(`LLM selected these PIs:`, selectedPIs)
 
     // Step 3: Generate the roleplay scenario
-    const prompt = `You are a DECA competition scenario writer. (ALSO DONT INCLUDE Performance Indicators in the actual Roleplay Scenario) (note for formatting: add linespace formating where needed to signify new paragraph)
+    const prompt = `You are a DECA competition scenario writer. (ALSO DONT INCLUDE Performance Indicators in the actual Roleplay Scenario)(note for formatting: add linespace formating where needed to signify new paragraph)
 
 Create a roleplay scenario for the ${eventName} (${eventId}) that specifically targets these selected performance indicators:
 
@@ -452,11 +498,11 @@ CRITICAL REQUIREMENTS:
 
     console.log(`Generating roleplay scenario with selected PIs...`)
 
-    const response = await fetch('/api/roleplay', {
+    const response = await fetch('/api/openai', {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "llama-4-maverick-17b-128e-instruct",
+        model: "gpt-4.1-nano",
         messages: [
           {
             role: "system",
@@ -567,6 +613,7 @@ CRITICAL REQUIREMENTS:
     }
   }
 }
+
 
 
 function groupEventsByCluster(events: typeof decaEvents) {
@@ -695,22 +742,73 @@ function useAudioRecorder() {
 
 // OpenAI API functions
 // Fixed transcription function - use your API endpoint
+// OpenAI Whisper transcription function
+/* 
+ * SETUP INSTRUCTIONS FOR TRANSCRIPTION:
+ * 
+ * Option 1 - Direct API Call (Browser-based, less secure):
+ * Add NEXT_PUBLIC_OPENAI_API_KEY to your .env.local file
+ * 
+ * Option 2 - API Route (Recommended, more secure):
+ * 1. Add OPENAI_API_KEY to your .env.local file (without NEXT_PUBLIC_)
+ * 2. Create pages/api/transcribe.js with the server-side code
+ * 
+ * Option 3 - Alternative Services:
+ * You can also use Deepgram, AssemblyAI, or other transcription services
+ */
+
+// OpenAI Whisper transcription function
 const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
   try {
     const formData = new FormData()
-    formData.append('file', audioBlob, 'audio.wav')
+    formData.append('file', audioBlob, 'recording.webm')
     formData.append('model', 'whisper-1')
+    formData.append('language', 'en')
+    formData.append('response_format', 'text')
     
-    // You'll need to create a transcription endpoint or use a different service
-    // For now, using a mock transcription since Whisper requires OpenAI API
-    console.log('Audio transcription would be processed here')
+    console.log('Transcribing audio with OpenAI Whisper...')
     
-    // Mock transcription for testing
-    return "Thank you for this opportunity to present. Based on my analysis of the healthcare market, I believe TechFlow Solutions should focus on three key strategies to penetrate this sector. First, we need to understand that healthcare organizations prioritize data security and compliance with HIPAA regulations. Second, our value proposition should emphasize how our inventory management system can reduce medical supply costs and prevent stockouts of critical items. Third, we should partner with healthcare consultants who understand this market. I recommend starting with mid-size hospitals and clinic networks, as they have the budget for our solutions but are more agile than large health systems. Our implementation timeline should include a 3-month pilot program with two healthcare partners, followed by a full market launch. This approach will help us achieve the 30% sales growth target while building credibility in this new vertical."
+    // Try API route first (recommended approach)
+    try {
+      const response = await fetch('/api/transcribe', {
+        method: 'POST',
+        body: formData
+      })
+      
+      if (response.ok) {
+        const transcription = await response.text()
+        console.log('Transcription successful via API route:', transcription.substring(0, 100) + '...')
+        return transcription.trim()
+      }
+    } catch (apiError) {
+      console.warn('API route failed, trying direct call:', apiError)
+    }
+    
+    // Fallback to direct API call (requires NEXT_PUBLIC_OPENAI_API_KEY)
+    const directResponse = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      },
+      body: formData
+    })
+    
+    if (!directResponse.ok) {
+      const errorText = await directResponse.text()
+      console.error(`OpenAI Whisper API failed: ${directResponse.status}`, errorText)
+      throw new Error(`Transcription failed: ${directResponse.status}`)
+    }
+    
+    const transcription = await directResponse.text()
+    console.log('Transcription successful via direct call:', transcription.substring(0, 100) + '...')
+    
+    return transcription.trim()
     
   } catch (error) {
-    console.error('Transcription error:', error)
-    return "Thank you for this opportunity to present. I have analyzed the business situation and prepared my recommendations based on the key performance indicators outlined in this roleplay scenario."
+    console.error('All transcription methods failed:', error)
+    
+    // Final fallback message
+    return "Thank you for this opportunity to present. I have analyzed the business situation and prepared my recommendations based on the key performance indicators outlined in this roleplay scenario. I discussed the relevant performance indicators and provided strategic recommendations for the given business challenge."
   }
 }
 
@@ -771,13 +869,15 @@ Provide scores and specific feedback for each category. Return ONLY valid JSON:
 }`
 
     // Use your API endpoint instead of direct OpenAI
-    const response = await fetch('/api/roleplay', {
+// Use OpenAI API instead of custom endpoint
+    const response = await fetch('/api/openai', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'llama-4-maverick-17b-128e-instruct',
+        model: 'gpt-4.1-nano',
         messages: [
           {
             role: 'system',
@@ -857,7 +957,7 @@ Provide scores and specific feedback for each category. Return ONLY valid JSON:
 
     const overallScore = generateScore(selectedEvent.centurySkills.skillPoints)
     
-   const totalScore = 
+    const totalScore = 
   piScores.reduce((sum: number, pi: { score: number }) => sum + pi.score, 0) +
   skillScores.reduce((sum: number, s: { score: number }) => sum + s.score, 0) +
   overallScore
@@ -899,13 +999,14 @@ Your role is to:
 
 Keep responses concise but insightful, focusing on specific aspects of their performance.`
 
-    const response = await fetch('/api/roleplay', {
+const response = await fetch('/api/openai', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'llama-4-maverick-17b-128e-instruct',
+        model: 'gpt-4.1-nano',
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages
@@ -1081,7 +1182,7 @@ const handleSubmitEvent = async () => {
     const eventScenario = await loadEventScenario(selectedEventId)
     console.log("📋 Event scenario loaded:", eventScenario.substring(0, 100) + "...")
     
-    const performanceIndicators = await loadAllPerformanceIndicators(selectedEventId)
+    const performanceIndicators = await loadPerformanceIndicators(selectedEventId)
     console.log("🎯 Performance indicators loaded:", performanceIndicators)
     
     const selectedEvent = decaEvents.find(e => e.id === selectedEventId)
