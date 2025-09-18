@@ -278,81 +278,33 @@ interface PI {
 }
 
 
-// Load performance indicators from JSON file
-// Fixed loadPerformanceIndicators function
-const loadPerformanceIndicators = async (eventId: string): Promise<string[]> => {
-  try {
-    if (window.fs && window.fs.readFile) {
-      const fileName = getPerformanceIndicatorsFile(eventId)
-      const filePath = `public/data/${fileName}`
-      const fileContent = await window.fs.readFile(filePath, { encoding: 'utf8' })
-      const data = JSON.parse(fileContent) // This is an array of PI objects
-
-      // Find the selected event to get its numPIs value
-      const selectedEvent = decaEvents.find(e => e.id === eventId)
-      const numPIs = selectedEvent?.numPIs || 5
-
-      // ✅ Filter PIs that include this eventId in their event array
-      const eventPIs = data.filter((pi: any) => 
-        pi.event && Array.isArray(pi.event) && pi.event.includes(eventId)
-      )
-
-      console.log(`Found ${eventPIs.length} PIs for event ${eventId}`)
-
-      // ✅ Take the correct number and extract the name field
-      const indicators = eventPIs
-        .slice(0, numPIs) // Get the right number of PIs
-        .map((pi: any) => pi.name) // Extract the name field
-
-      return indicators
-    }
-  } catch (error) {
-    console.error("Error loading performance indicators:", error)
-  }
-
-  // Fallback performance indicators
-  return [
-    "Analyze business situations effectively",
-    "Develop strategic recommendations", 
-    "Present findings clearly and persuasively",
-    "Consider ethical implications in decision making",
-    "Evaluate implementation feasibility"
-  ]
-}
 
 // Alternative approach using fetch (since you're also using fetch elsewhere)
-const loadPerformanceIndicatorsFetch = async (eventId: string): Promise<string[]> => {
+// Load performance indicators from JSON file
+const loadPerformanceIndicators = async (eventId: string): Promise<string[]> => {
   try {
     const fileName = getPerformanceIndicatorsFile(eventId)
+    // Files in /public are available at /data/<fileName>
     const response = await fetch(`/data/${fileName}`)
-    
+
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      throw new Error(`Failed to load performance indicators for ${eventId}`)
     }
-    
-    const data = await response.json() // Array of PI objects
+
+    const data = await response.json() // This is an array of PI objects
 
     // Find the selected event to get its numPIs value
     const selectedEvent = decaEvents.find(e => e.id === eventId)
     const numPIs = selectedEvent?.numPIs || 5
 
-    // Filter PIs that include this eventId in their event array
-    const eventPIs = data.filter((pi: any) => 
-      pi.event && Array.isArray(pi.event) && pi.event.includes(eventId)
+    // ✅ Filter PIs that include this eventId in their event array
+    const eventPIs = data.filter(
+      (pi: any) => pi.event && Array.isArray(pi.event) && pi.event.includes(eventId)
     )
 
     console.log(`Found ${eventPIs.length} PIs for event ${eventId}`)
 
-    if (eventPIs.length === 0) {
-      console.warn(`No PIs found for event ${eventId} in file ${fileName}`)
-      return [
-        "Analyze business situations effectively",
-        "Develop strategic recommendations", 
-        "Present findings clearly and persuasively"
-      ].slice(0, numPIs)
-    }
-
-    // Take the correct number and extract the name field
+    // ✅ Take the correct number and extract the name field
     const indicators = eventPIs
       .slice(0, numPIs) // Get the right number of PIs
       .map((pi: any) => pi.name) // Extract the name field
@@ -360,20 +312,19 @@ const loadPerformanceIndicatorsFetch = async (eventId: string): Promise<string[]
     return indicators
   } catch (error) {
     console.error("Error loading performance indicators:", error)
-    
-    // Return fallback
-    const selectedEvent = decaEvents.find(e => e.id === eventId)
-    const numPIs = selectedEvent?.numPIs || 5
-    
-    return [
-      "Analyze business situations effectively",
-      "Develop strategic recommendations", 
-      "Present findings clearly and persuasively",
-      "Consider ethical implications in decision making",
-      "Evaluate implementation feasibility"
-    ].slice(0, numPIs)
   }
+
+  // Fallback performance indicators
+  return [
+    "Analyze business situations effectively",
+    "Develop strategic recommendations",
+    "Present findings clearly and persuasively",
+    "Consider ethical implications in decision making",
+    "Evaluate implementation feasibility",
+  ]
 }
+
+
 
 
 
@@ -906,10 +857,11 @@ Provide scores and specific feedback for each category. Return ONLY valid JSON:
 
     const overallScore = generateScore(selectedEvent.centurySkills.skillPoints)
     
-    const totalScore = 
-      piScores.reduce((sum, pi) => sum + pi.score, 0) +
-      skillScores.reduce((sum, s) => sum + s.score, 0) +
-      overallScore
+   const totalScore = 
+  piScores.reduce((sum: number, pi: { score: number }) => sum + pi.score, 0) +
+  skillScores.reduce((sum: number, s: { score: number }) => sum + s.score, 0) +
+  overallScore
+
 
     const totalPossible = 
       selectedEvent.numPIs * selectedEvent.piPoints +
