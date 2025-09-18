@@ -71,7 +71,7 @@ export default function Navbar() {
           <div className="md:hidden py-4 border-t border-gray-200">
             {[
               { name: 'Home', path: '/' },
-              { name: 'PI Flashcards', path: '/pi-flashcards' },
+              { name: 'PI Flashcards', path: '/flashcard' },
               { name: 'Practice', path: '/practice' },
               { name: 'Contact', path: '/contact' }
             ].map((item) => (
