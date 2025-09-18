@@ -1,0 +1,3446 @@
+[
+  {
+    "id": 1,
+    "code": "BL:051",
+    "name": "Describe methods used to protect intellectual property (BL:051) (SP)",
+    "definition": "Methods used to protect intellectual property include actions taken to keep creations, inventions, or brand assets secure. These methods may involve:\n- Applying for patents, trademarks, or copyrights\n- Using confidentiality agreements or non-disclosure agreements (NDAs)\n- Implementing security measures to prevent unauthorized use or theft",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 2,
+    "code": "BL:001",
+    "name": "Describe legal issues affecting businesses (BL:001) (SP)",
+    "definition": "Legal issues affecting businesses include laws and regulations that impact how businesses operate. These issues can involve:\n   - Compliance with legal standards\n   - Intellectual property rights\n   - Employment laws",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 3,
+    "code": "BL:069",
+    "name": "Identify the basic torts relating to business enterprises (BL:069) (SP)",
+    "definition": "The basic legal wrongs that can occur in business settings, which can result in legal liability. These include:\n- Negligence\n- Defamation\n- Intentional interference with contracts",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 4,
+    "code": "BL:002",
+    "name": "Describe the nature of legally binding contracts (BL:002) (SP)",
+    "definition": "A legally binding contract is an agreement that creates a legal obligation between parties. It typically includes:\n  - An offer and acceptance\n  - Consideration (something of value exchanged)\n  - Intent to create legal relations\n  - Mutual agreement and understanding",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 5,
+    "code": "BL:007",
+    "name": "Explain the nature of human resources regulations (BL:007) (SU)",
+    "definition": "Details about laws and rules that govern how businesses manage their employees, including:\n- employee rights\n- labor laws\n- workplace policies",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 6,
+    "code": "BL:008",
+    "name": "Explain the nature of workplace regulations (including OSHA, ADA) (BL:008) (SU)",
+    "definition": "Understanding workplace regulations involves recognizing the rules and laws that ensure employee safety and fair treatment. This includes:\n- OSHA (Occupational Safety and Health Administration) standards that protect worker health and safety\n- ADA (Americans with Disabilities Act) provisions that prevent discrimination and ensure accessibility for individuals with disabilities",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 7,
+    "code": "BL:003",
+    "name": "Explain types of business ownership (BL:003) (CS)",
+    "definition": "Different types of business ownership refer to the various ways a business can be legally structured. This includes:\n- Sole proprietorship, where one person owns and operates the business\n- Partnership, where two or more people share ownership and responsibilities\n- Corporation, a separate legal entity owned by shareholders",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 8,
+    "code": "BL:006",
+    "name": "Select form of business ownership (BL:006) (ON)",
+    "definition": "The decision of how to legally organize a business, which affects its liability, taxation, and management structure. This includes choosing among different types of ownership, such as:\n- Sole proprietorship\n- Partnership\n- Corporation",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 9,
+    "code": "BL:009",
+    "name": "Explain the nature of tax regulations on business (BL:009) (ON)",
+    "definition": "Tax regulations are rules set by government authorities that govern how businesses calculate, report, and pay taxes. These regulations ensure compliance and influence business operations.  \n   - Income tax laws  \n   - Sales tax rules  \n   - Payroll tax requirements",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 10,
+    "code": "BL:010",
+    "name": "Explain the nature of businesses' reporting requirements (BL:010) (ON)",
+    "definition": "The reporting requirements for businesses include the rules and standards that organizations must follow when preparing and submitting financial and operational information.  \n   - Legal obligations for financial disclosures  \n   - Types of reports required (e.g., financial statements, tax documents)  \n   - The purpose of accurate and timely reporting",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 11,
+    "code": "BL:011",
+    "name": "Develop strategies for legal/government compliance (BL:011) (ON)",
+    "definition": "Create plans to ensure that a business follows laws and government regulations, including:\n- understanding legal requirements\n- implementing policies and procedures\n- monitoring ongoing compliance",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 12,
+    "code": "CO:009",
+    "name": "Prepare complex written reports (CO:009) (MN)",
+    "definition": "The ability to create detailed written reports that analyze information and present findings clearly.  \n- Includes organizing information logically  \n- Incorporates relevant data and evidence  \n- Presents conclusions and recommendations effectively",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 13,
+    "code": "CO:062",
+    "name": "Write proposals (CO:062) (MN)",
+    "definition": "The ability to create formal written suggestions or plans to address a specific business issue or opportunity.\n   - Clearly identify the problem or opportunity\n   - Outline proposed solutions or actions\n   - Present supporting details and rationale",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 14,
+    "code": "CR:008",
+    "name": "Explain management's role in customer relations (CR:008) (MN)",
+    "definition": "The role of management in customer relations involves overseeing and implementing strategies to build and maintain positive relationships with customers, ensuring customer satisfaction and loyalty.\n- Developing customer service policies\n- Training staff in customer service skills\n- Monitoring customer feedback and resolving issues",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 15,
+    "code": "CR:001",
+    "name": "Identify company's brand promise (CR:001) (CS)",
+    "definition": "The company's brand promise is the core message or commitment the business makes to its customers, reflecting what they can consistently expect from the brand. It includes:\n- A statement of the brand's value or benefit\n- The company's unique qualities or differentiators\n- The experience or outcome customers are promised",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 16,
+    "code": "EC:065",
+    "name": "Identify the impact of small business/entrepreneurship on market economies (EC:065) (CS)",
+    "definition": "The influence of small business and entrepreneurship on market economies, including how they contribute to economic growth, innovation, and employment.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 17,
+    "code": "EC:009",
+    "name": "Explain the concept of private enterprise (EC:009) (CS)",
+    "definition": "Private enterprise refers to businesses and industries owned and operated by individuals or private groups rather than the government. It involves the freedom to start, manage, and grow a business for profit. Examples include small local shops, corporations, and startups.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 18,
+    "code": "EC:010",
+    "name": "Identify factors affecting a business's profit (EC:010) (CS)",
+    "definition": "Factors affecting a business's profit are the elements that influence the company's revenue and expenses. These include:\n- Sales volume and pricing strategies\n- Operating costs and expenses\n- Market demand and competition",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 19,
+    "code": "EC:011",
+    "name": "Determine factors affecting business risk (EC:011) (CS)",
+    "definition": "Understanding the factors that influence the level of risk a business faces. These factors can include economic conditions, industry trends, management decisions, and financial stability.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 20,
+    "code": "EC:012",
+    "name": "Explain the concept of competition (EC:012) (CS)",
+    "definition": "The concept of competition involves understanding the process where businesses or individuals strive to succeed by outperforming others.  \n- It includes competing for customers, market share, or profits  \n- It involves strategies used to gain an advantage over competitors  \n- It is a key element in the economic environment that influences business decisions",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 21,
+    "code": "EC:008",
+    "name": "Determine the relationship between government and business (EC:008) (CS)",
+    "definition": "The connection between government and business involves how government policies and regulations influence economic activities.  \n- Understanding government roles, such as regulation, taxation, and providing public services  \n- Recognizing how government decisions affect business operations and growth  \n- Analyzing the impact of government policies on the economy and business environment",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 22,
+    "code": "EC:072",
+    "name": "Describe the nature of taxes (EC:072) (SP)",
+    "definition": "Taxes are mandatory financial charges imposed by a government on individuals or businesses to fund public services and government operations.  \n- Types of taxes include income taxes, sales taxes, and property taxes  \n- Taxes are collected according to laws and regulations  \n- They influence economic activity and government funding",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 23,
+    "code": "EC:077",
+    "name": "Describe the concept of economies of scale (EC:077) (MN)",
+    "definition": "Economies of scale occur when the average cost of producing a product decreases as the quantity produced increases. This happens because fixed costs are spread over more units and operational efficiencies are gained.  \n   - Cost savings from bulk purchasing  \n   - Increased specialization and efficiency  \n   - Spreading fixed costs over more units",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 24,
+    "code": "EI:123",
+    "name": "Describe the nature of ethics (EI:123) (CS)",
+    "definition": "The nature of ethics involves understanding the principles and values that guide proper behavior and decision-making. This includes recognizing:\n- Moral principles that determine right and wrong\n- The importance of honesty, integrity, and fairness\n- How ethics influence personal and business actions",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 25,
+    "code": "EI:124",
+    "name": "Explain reasons for ethical dilemmas (EI:124) (CS)",
+    "definition": "Identify the factors that can lead to ethical dilemmas in business situations, such as:\n- Conflicting interests\n- Legal versus ethical considerations\n- Personal values versus company policies",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 26,
+    "code": "EI:125",
+    "name": "Recognize and respond to ethical dilemmas (EI:125) (CS)",
+    "definition": "Identify situations involving ethical questions and take appropriate actions by:\n- Recognizing ethical dilemmas\n- Responding in a way that aligns with ethical standards\n- Considering the impact on stakeholders",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 27,
+    "code": "EI:033",
+    "name": "Exhibit cultural sensitivity (EI:033) (CS)",
+    "definition": "Demonstrate awareness and respect for different cultural practices and perspectives in business settings by:\n- Understanding cultural customs and traditions\n- Communicating respectfully across cultures\n- Recognizing and adapting to cultural differences",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 28,
+    "code": "EI:104",
+    "name": "Leverage personality types in business situations (EI:104) (SP)",
+    "definition": "Utilize understanding of different personality types to enhance business interactions and decision-making.  \n- Recognize personality traits that influence behavior  \n- Adjust communication styles based on personality types  \n- Apply personality insights to improve teamwork and customer relations",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 29,
+    "code": "EI:105",
+    "name": "Adapt management style to the personality type of others (EI:105) (SU)",
+    "definition": "Adjust your leadership approach based on the personality traits of team members to improve communication and teamwork.  \n- Recognize different personality types  \n- Modify your management style accordingly  \n- Foster positive working relationships",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 30,
+    "code": "EI:108",
+    "name": "“Sell” ideas to others (EI:108) (SP)",
+    "definition": "The ability to persuade others to accept or support your ideas.  \n   - Present convincing arguments  \n   - Highlight benefits and value  \n   - Address concerns and objections",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 31,
+    "code": "EI:012",
+    "name": "Persuade others (EI:012) (SP)",
+    "definition": "The ability to influence others' attitudes, beliefs, or actions through communication and reasoning.  \n   - Use persuasive language and techniques  \n   - Present clear and compelling arguments  \n   - Address potential objections effectively",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 32,
+    "code": "EI:062",
+    "name": "Demonstrate negotiation skills (EI:062) (SP)",
+    "definition": "The ability to effectively discuss and reach agreements with others to satisfy mutual interests. This includes:\n- Preparing for negotiations\n- Communicating clearly\n- Reaching mutually beneficial terms",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 33,
+    "code": "EI:044",
+    "name": "Encourage team building (EI:044) (SU)",
+    "definition": "Promote teamwork and collaboration among members to improve group functioning.  \n- Organize activities that build trust and cooperation  \n- Foster open communication within the team  \n- Recognize team members’ contributions",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 34,
+    "code": "EI:009",
+    "name": "Explain the concept of leadership (EI:009) (CS)",
+    "definition": "Leadership is the ability to influence, motivate, and guide others to achieve goals. It involves:\n- Communicating a clear vision\n- Demonstrating integrity and confidence\n- Building teamwork and trust",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 35,
+    "code": "EI:063",
+    "name": "Determine personal vision (EI:063) (CS)",
+    "definition": "Identify and clarify your personal goals and aspirations to guide your actions and decisions.  \n  - Set personal objectives  \n  - Recognize core values and passions  \n  - Develop a clear future direction",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 36,
+    "code": "EI:006",
+    "name": "Demonstrate adaptability (EI:006) (CS)",
+    "definition": "Ability to adjust to new conditions or changes in the workplace.  \n- Accepting new tasks or responsibilities  \n- Modifying plans when needed  \n- Responding positively to unexpected challenges",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 37,
+    "code": "EI:027",
+    "name": "Develop an achievement orientation (EI:027) (CS)",
+    "definition": "A mindset focused on setting and reaching goals through motivation, persistence, and taking responsibility for success.  \n- Demonstrating a positive attitude toward challenges  \n- Maintaining motivation to achieve objectives  \n- Persisting through setbacks and obstacles",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 38,
+    "code": "EI:060",
+    "name": "Enlist others in working toward a shared vision (EI:060) (CS)",
+    "definition": "Mobilizing others to work together toward a common goal by inspiring, influencing, and encouraging team members.  \n  - Communicating the shared vision effectively  \n  - Building enthusiasm and commitment  \n  - Collaborating to achieve common objectives",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 39,
+    "code": "EI:111",
+    "name": "Act as a role model to fulfill the organization's standards/values (EI:111) (SU)",
+    "definition": "Demonstrate behavior that reflects the organization's standards and values by serving as a positive example for others to follow.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 40,
+    "code": "EI:014",
+    "name": "Recognize/Reward others for their efforts and contributions (EI:014) (SU)",
+    "definition": "Recognizing and rewarding others involves acknowledging their efforts and contributions to motivate and encourage continued performance. Examples include:\n- Giving verbal praise\n- Awarding certificates or trophies\n- Providing incentives or positive feedback",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 41,
+    "code": "EI:113",
+    "name": "Determine stakeholder expectations (EI:113) (MN)",
+    "definition": "Identifying what stakeholders anticipate or require from a business or project by understanding their needs and preferences.  \n- Recognize stakeholder groups  \n- Gather feedback and preferences  \n- Analyze stakeholder interests and priorities",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 42,
+    "code": "EI:114",
+    "name": "Establish strategic relationships with others (EI:114) (MN)",
+    "definition": "Building strategic relationships involves creating and maintaining connections with individuals or organizations that can support and advance business goals. This includes:\n- Identifying potential partners\n- Communicating effectively to build trust\n- Collaborating on shared objectives",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 43,
+    "code": "EI:115",
+    "name": "Share best practices with key individuals and groups (EI:115) (MN)",
+    "definition": "The act of communicating effective strategies and methods to important individuals or groups to improve performance or results.  \n- Sharing successful techniques  \n- Providing helpful advice  \n- Exchanging information with team members or colleagues",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 44,
+    "code": "EI:116",
+    "name": "Leverage business relationships (EI:116) (MN)",
+    "definition": "Building strong connections with businesses to benefit your organization.  \n- Establishing partnerships  \n- Maintaining ongoing communication  \n- Collaborating for mutual benefits",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 45,
+    "code": "EN:039",
+    "name": "Describe the nature of entrepreneurship (EN:039) (SP)",
+    "definition": "The nature of entrepreneurship involves understanding the fundamental aspects of starting and running a business.  \n- Recognizing how entrepreneurs identify opportunities  \n- Understanding the risks and rewards of new ventures  \n- Comprehending the innovation and creativity involved in creating new products or services",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 46,
+    "code": "EN:040",
+    "name": "Explain the role requirements of entrepreneurs and owners (EN:040) (SP)",
+    "definition": "Describes the necessary skills, attitudes, and responsibilities that entrepreneurs and owners must fulfill to successfully operate a business.  \n   - Identifying personal strengths and weaknesses  \n   - Managing daily business operations  \n   - Making strategic decisions and ensuring compliance with laws and regulations",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 47,
+    "code": "EN:044",
+    "name": "Describe the use of business ethics in entrepreneurship (EN:044) (SP)",
+    "definition": "The use of business ethics in entrepreneurship involves applying moral principles to guide decision-making and conduct in starting and managing a business. This includes demonstrating integrity, fairness, and responsibility while making business choices.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 48,
+    "code": "EN:041",
+    "name": "Describe small-business opportunities in international trade (EN:041) (SP)",
+    "definition": "Opportunities for small businesses to expand internationally include identifying markets with demand for their products or services, understanding international trade regulations and procedures, and recognizing cultural differences that may affect sales and marketing strategies.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 49,
+    "code": "EN:001",
+    "name": "Explain the need for entrepreneurial discovery (EN:001) (ON)",
+    "definition": "The importance of identifying new business opportunities and innovations to support entrepreneurial growth.  \n   - Recognizing market gaps  \n   - Exploring emerging trends  \n   - Developing innovative ideas",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 50,
+    "code": "EN:002",
+    "name": "Discuss entrepreneurial discovery processes (EN:002) (ON)",
+    "definition": "The process of identifying new business opportunities through analyzing markets and customer needs, involving activities such as:\n- researching industry trends\n- evaluating customer preferences\n- assessing competitive advantages",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 51,
+    "code": "EN:003",
+    "name": "Assess global trends and opportunities for business ventures (EN:003) (ON)",
+    "definition": "Analyzes current global trends and identifies potential opportunities for starting or expanding a business venture.  \n- Examines international economic, social, and technological developments  \n- Recognizes emerging markets and industries  \n- Assesses how global shifts can influence business success",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 52,
+    "code": "EN:004",
+    "name": "Determine opportunities for venture creation (EN:004) (ON)",
+    "definition": "Identifying potential areas where a new business or product can be developed to meet market needs or solve problems.  \n- Analyzing market trends  \n- Recognizing customer needs  \n- Evaluating unmet demands",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 53,
+    "code": "EN:005",
+    "name": "Assess opportunities for venture creation (EN:005) (ON)",
+    "definition": "Evaluating potential new business ideas to determine if they have the potential for success. This includes identifying:\n- Market needs or gaps\n- Consumer demand\n- Competitive advantages",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 54,
+    "code": "EN:006",
+    "name": "Generate venture ideas (EN:006) (ON)",
+    "definition": "Developing venture ideas involves creating new business concepts or opportunities, often by identifying market needs or gaps.  \n- Brainstorming potential business ideas  \n- Evaluating the feasibility of different concepts  \n- Considering innovative solutions to meet customer needs",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 55,
+    "code": "EN:038",
+    "name": "Determine feasibility of venture ideas (EN:038) (ON)",
+    "definition": "Assess whether a business idea is practical and achievable by analyzing factors such as market demand, costs, and resources.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 56,
+    "code": "EN:007",
+    "name": "Describe entrepreneurial planning considerations (EN:007) (ON)",
+    "definition": "Explaining the factors that influence entrepreneurial planning decisions.  \n   - Market research and analysis  \n   - Financial resources and funding options  \n   - Business goals and objectives",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 57,
+    "code": "EN:008",
+    "name": "Explain tools used by entrepreneurs for venture planning (EN:008) (ON)",
+    "definition": "Tools used by entrepreneurs for venture planning are resources that assist in organizing, analyzing, and developing a new business idea. They help entrepreneurs make informed decisions and outline their business strategies. Examples include:\n- Business plans\n- Financial projections\n- Market research tools",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 58,
+    "code": "EN:009",
+    "name": "Assess start-up requirements (EN:009) (ON)",
+    "definition": "Evaluating the necessary resources and conditions needed to start a new business or project.  \n   - Identifying financial needs  \n   - Determining staffing requirements  \n   - Assessing physical and technological resources",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 59,
+    "code": "EN:010",
+    "name": "Assess risks associated with venture (EN:010) (ON)",
+    "definition": "Evaluating the potential hazards and uncertainties that could negatively impact a new business venture or project.  \n   - Identifying financial risks  \n   - Recognizing legal or regulatory risks  \n   - Considering market or competitive risks",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 60,
+    "code": "EN:011",
+    "name": "Describe external resources useful to entrepreneurs during concept development (EN:011) (ON)",
+    "definition": "External resources useful to entrepreneurs during concept development include tools and support systems that provide guidance, information, or assistance. These can include:\n- Entrepreneurial networks and associations\n- Government and non-profit business development programs\n- Industry research and market data",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 61,
+    "code": "EN:012",
+    "name": "Assess the need to use external resources for concept development (EN:012) (ON)",
+    "definition": "Evaluating whether additional resources are needed to develop a business concept, including considering:\n- external expertise\n- market research tools\n- financial support",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 62,
+    "code": "EN:013",
+    "name": "Describe strategies to protect intellectual property (EN:013) (ON)",
+    "definition": "Strategies to protect intellectual property involve taking actions to prevent unauthorized use or theft of ideas, inventions, or branding. These include:\n- Applying for patents, trademarks, or copyrights\n- Implementing confidentiality agreements\n- Using secure storage and access controls",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 63,
+    "code": "EN:014",
+    "name": "Use components of business plan to define venture idea (EN:014) (ON)",
+    "definition": "A business plan foundation, used to clearly describe and develop a venture idea, including:\n- product or service description\n- target market analysis\n- financial projections",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 64,
+    "code": "EN:015",
+    "name": "(EN:015) (ON)",
+    "definition": "The process of creating, developing, and delivering a product or service to meet customer needs, including activities like planning, designing, and implementing marketing strategies.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 65,
+    "code": "EN:016",
+    "name": "Select sources to finance venture creation/start-up (EN:016) (ON)",
+    "definition": "This involves choosing appropriate financial sources to fund the start-up or creation of a new venture.  \n- Recognize different financing options  \n- Evaluate the suitability of each source  \n- Select the best source based on the venture's needs and circumstances",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 66,
+    "code": "EN:017",
+    "name": "Explain factors to consider in determining a venture's human-resources needs (EN:017) (ON)",
+    "definition": "Factors to consider include evaluating the current and future workload, assessing employee skills and availability, and determining the budget for staffing.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 67,
+    "code": "EN:018",
+    "name": "Explain considerations in making the decision to hire staff (EN:018) (ON)",
+    "definition": "Considerations in making the decision to hire staff involve evaluating factors that impact the staffing choice. These include:\n- The skills and qualifications needed for the position\n- The potential impact on team dynamics and company culture\n- The budget and compensation considerations",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 68,
+    "code": "EN:019",
+    "name": "Describe considerations in selecting capital resources (EN:019) (ON)",
+    "definition": "Factors to consider include the cost, availability, and suitability of resources to ensure they meet the needs of the business.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 69,
+    "code": "EN:020",
+    "name": "Identify capital resources needed for the venture (EN:020) (ON)",
+    "definition": "Determining the funds and assets required to start or operate a business venture.  \n- Financial resources such as money or credit  \n- Physical assets like equipment or inventory  \n- Human resources including staff or labor",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 70,
+    "code": "EN:021",
+    "name": "Assess the costs/benefits associated with resources (EN:021) (ON)",
+    "definition": "Understanding the costs and benefits of resources involves analyzing the positive and negative outcomes associated with their use. This includes considering:\n\n- The expenses involved in acquiring or maintaining the resources\n- The advantages gained from using the resources\n- The potential drawbacks or negative impacts of resource utilization",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 71,
+    "code": "EN:042",
+    "name": "Establish banking procedures (EN:042) (ON)",
+    "definition": "Developing banking procedures involves creating standardized processes for banking operations to ensure efficiency and accuracy. This includes establishing guidelines and steps for tasks such as:\n- Handling deposits and withdrawals\n- Processing transactions\n- Managing account records",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 72,
+    "code": "EN:022",
+    "name": "Use external resources to supplement entrepreneur's expertise (EN:022) (ON)",
+    "definition": "Utilize external resources to enhance and support the entrepreneur’s knowledge and skills by seeking expert advice, consulting industry reports, or using professional tools and networks.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 73,
+    "code": "EN:023",
+    "name": "Explain the complexity of business operations (EN:023) (ON)",
+    "definition": "Understanding that business operations involve various interconnected activities and decisions, some of which include:\n- Managing multiple departments such as marketing, finance, and production\n- Coordinating resources to meet organizational goals\n- Adapting to changes in the market or internal processes",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 74,
+    "code": "EN:024",
+    "name": "Evaluate risk-taking opportunities (EN:024) (ON)",
+    "definition": "Assess the potential benefits and drawbacks of pursuing uncertain business ventures by analyzing factors such as:\n\n- potential rewards  \n- possible losses  \n- likelihood of success",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 75,
+    "code": "EN:025",
+    "name": "Explain the need for business systems and procedures (EN:025) (ON)",
+    "definition": "The need for business systems and procedures is explained by understanding their role in guiding daily operations, ensuring consistency, and improving efficiency.  \n- They help organize tasks and workflows  \n- They promote uniformity and quality in work  \n- They support achieving business goals effectively",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 76,
+    "code": "EN:026",
+    "name": "Describe the use of operating procedures (EN:026) (ON)",
+    "definition": "This involves explaining how standard operating procedures guide daily business activities.  \n- Procedures are documented steps to complete tasks  \n- They ensure consistency and efficiency in operations  \n- They help employees understand their responsibilities and follow company standards",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 77,
+    "code": "EN:027",
+    "name": "Explain methods/processes for organizing workflow (EN:027) (ON)",
+    "definition": "The process of arranging tasks and responsibilities in a logical order to improve efficiency and effectiveness in completing work.  \n- Identifying tasks and priorities  \n- Determining the sequence of activities  \n- Assigning responsibilities and deadlines",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 78,
+    "code": "EN:028",
+    "name": "Develop and/or provide product/service (EN:028) (ON)",
+    "definition": "Create and deliver a product or service to meet customer needs and preferences.  \n- Identifying customer needs  \n- Designing the product or service  \n- Providing the final product or service to customers",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 79,
+    "code": "EN:029",
+    "name": "Use creative problem-solving in business activities/decisions (EN:029) (ON)",
+    "definition": "Employ innovative thinking to identify solutions in business activities and decisions, encouraging originality and resourcefulness.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 80,
+    "code": "EN:030",
+    "name": "Explain the impact of resource productivity on venture success (EN:030) (ON)",
+    "definition": "The effect that resource productivity has on the success of a business venture, including how efficiently resources are used to generate output and contribute to overall profitability and growth.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 81,
+    "code": "EN:031",
+    "name": "Create processes for ongoing opportunity recognition (EN:031) (ON)",
+    "definition": "Establish systematic methods to continuously identify new business opportunities.  \n- Monitor industry trends  \n- Gather customer feedback  \n- Analyze market data",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 82,
+    "code": "EN:032",
+    "name": "Develop plan to invest resources into improving current products or creating new ones (EN:032)",
+    "definition": "A process of creating a strategic approach to allocate resources for enhancing existing products or developing new products.  \n- Assessing current products and market needs  \n- Setting investment goals  \n- Outlining specific actions and timelines for product improvement or innovation",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 83,
+    "code": "EN:033",
+    "name": "Adapt to changes in business environment (EN:033) (ON)",
+    "definition": "Adjusting one’s approach and actions in response to shifting factors within the business environment, such as market trends, technology, or competition, to remain effective and relevant.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 84,
+    "code": "EN:034",
+    "name": "Explain the need for continuation planning (EN:034) (ON)",
+    "definition": "Planning for future success by preparing for potential challenges or changes. This includes:\n\n- Identifying risks and uncertainties\n- Developing strategies to address potential issues\n- Ensuring business sustainability and growth over time",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 85,
+    "code": "EN:035",
+    "name": "Describe methods of venture harvesting (EN:035) (ON)",
+    "definition": "Methods of venture harvesting involve strategies used to maximize the value of a business or investment when exiting or transitioning ownership. These methods include:\n- Selling the business to another company or individual\n- Merging with another company\n- Liquidating or closing down the business",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 86,
+    "code": "EN:036",
+    "name": "Evaluate options for continued venture involvement (EN:036) (ON)",
+    "definition": "Analyzing different choices to determine whether to stay involved in a business venture.  \n- Considerations of potential risks and rewards  \n- Assessment of current performance and future prospects  \n- Evaluation of personal or team goals and resources",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 87,
+    "code": "EN:037",
+    "name": "Develop exit strategies (EN:037) (ON)",
+    "definition": "Developing exit strategies involves planning how to successfully conclude a business venture or investment.  \n- Identifying conditions for ending or selling a business  \n- Creating plans for transferring ownership or assets  \n- Preparing for financial or operational closure",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 88,
+    "code": "FI:082",
+    "name": "Obtain insurance coverage (FI:082) (ON)",
+    "definition": "Securing an appropriate insurance policy to protect against potential risks and liabilities.  \n   - Evaluating insurance needs  \n   - Comparing coverage options  \n   - Purchasing suitable insurance policies",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 89,
+    "code": "FI:085",
+    "name": "Explain the concept of accounting (FI:085) (CS)",
+    "definition": "The concept of accounting involves understanding the process of recording, summarizing, and analyzing financial information to help manage a business.  \n- Includes recording financial transactions  \n- Involves preparing financial statements  \n- Uses financial data to make business decisions",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 90,
+    "code": "FI:093",
+    "name": "Explain the nature of balance sheets (FI:093) (SP)",
+    "definition": "Balance sheets are financial statements that show a company's assets, liabilities, and equity at a specific point in time.  \n- Assets: resources owned by the business  \n- Liabilities: obligations or debts owed  \n- Equity: owner’s interest or net worth",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 91,
+    "code": "FI:094",
+    "name": "Describe the nature of income statements (FI:094) (SP)",
+    "definition": "An income statement shows a company's financial performance over a specific period by detailing revenues and expenses. It includes:\n- Total income or sales\n- Cost of goods sold\n- Net profit or loss",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 92,
+    "code": "FI:092",
+    "name": "Prepare cash flow statements (FI:092) (MN)",
+    "definition": "A financial document that shows a company's inflows and outflows of cash over a specific period. It includes:\n- Operating activities\n- Investing activities\n- Financing activities",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 93,
+    "code": "FI:023",
+    "name": "Explain the purposes and importance of obtaining business credit (FI:023) (ON)",
+    "definition": "Understanding the reasons for obtaining business credit is important because it helps a business build financial credibility, access funding, and establish a solid credit history.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 94,
+    "code": "FI:039",
+    "name": "Analyze critical banking relationships (FI:039) (ON)",
+    "definition": "Examining important banking partnerships and relationships to understand their roles and functions within financial institutions.  \n  - Identifying key banking relationships  \n  - Understanding the significance of these relationships  \n  - Analyzing how they impact banking operations and services",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 95,
+    "code": "FI:040",
+    "name": "Make critical decisions regarding acceptance of bank cards (FI:040) (ON)",
+    "definition": "Evaluating and choosing whether to accept bank cards as a form of payment involves analyzing the benefits and costs.  \n- Assessing the advantages of accepting bank cards  \n- Considering potential fees and expenses  \n- Making an informed decision about card acceptance",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 96,
+    "code": "FI:043",
+    "name": "Determine financing needed for business operations (FI:043) (ON)",
+    "definition": "Identifying the amount of money a business needs to cover its day-to-day activities and expenses.  \n   - Calculate operational costs  \n   - Assess cash flow requirements  \n   - Determine funding sources",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 97,
+    "code": "FI:041",
+    "name": "Identify risks associated with obtaining business credit (FI:041) (ON)",
+    "definition": "Recognize potential issues that could arise when applying for or using business credit, including:\n- Default risk\n- Credit denial\n- Increased borrowing costs",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 98,
+    "code": "FI:031",
+    "name": "Explain sources of financial assistance (FI:031) (ON)",
+    "definition": "The ability to identify and describe different types of financial assistance available to individuals or businesses.  \n- Grants  \n- Loans  \n- Scholarships",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 99,
+    "code": "FI:034",
+    "name": "Explain loan evaluation criteria used by lending institutions (FI:034) (ON)",
+    "definition": "The criteria used by lending institutions to assess a borrower's ability to repay a loan. These often include:\n- Credit history\n- Income level\n- Debt-to-income ratio",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 100,
+    "code": "FI:033",
+    "name": "Complete loan application package (FI:033) (ON)",
+    "definition": "A complete loan application package includes all necessary documents required by the lender to evaluate a loan request.  \n- Completed application form  \n- Financial statements or credit information  \n- Supporting documents such as proof of income, collateral details, and identification",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 101,
+    "code": "FI:357",
+    "name": "Describe the nature of cost/benefit analysis (FI:357) (MN)",
+    "definition": "A process used to compare the costs and benefits of different decisions or actions to determine the most advantageous option.  \n- Includes identifying and measuring costs and benefits  \n- Considers both tangible and intangible factors  \n- Aims to support informed decision-making",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 102,
+    "code": "FI:358",
+    "name": "Determine relationships among total revenue, marginal revenue, output, and profit (FI:358) (MN)",
+    "definition": "Understanding how total revenue, marginal revenue, output, and profit are interconnected helps analyze a business's financial performance.  \n- Total revenue: the total income from sales  \n- Marginal revenue: the additional income from selling one more unit  \n- Output: the quantity of goods or services produced and sold  \n- Profit: the financial gain after subtracting costs from total revenue",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 103,
+    "code": "FI:099",
+    "name": "Develop company's/department's budget (FI:099) (MN)",
+    "definition": "The process of preparing a financial plan that allocates resources to achieve the company's or department's goals. This includes:\n- Estimating revenues and expenses\n- Setting financial targets\n- Planning for income and expenditures",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 104,
+    "code": "FI:096",
+    "name": "Forecast sales (FI:096) (MN)",
+    "definition": "The process of estimating future sales based on historical data and expected market conditions.  \n- Analyzing past sales data  \n- Considering market trends and economic factors  \n- Using statistical methods or models to predict future sales",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 105,
+    "code": "FI:097",
+    "name": "Calculate financial ratios (FI:097) (MN)",
+    "definition": "Determine and interpret various financial ratios to evaluate a company's financial health, such as:\n- Liquidity ratios\n- Profitability ratios\n- Solvency ratios",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 106,
+    "code": "FI:102",
+    "name": "Interpret financial statements (FI:102) (MN)",
+    "definition": "Understanding financial statements involves analyzing documents that show a company's financial performance and position. This includes examining:\n- the income statement\n- the balance sheet\n- the cash flow statement",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 107,
+    "code": "FI:652",
+    "name": "File business tax returns (FI:652) (ON)",
+    "definition": "The process of preparing and submitting business tax returns to the appropriate tax authorities. This includes organizing financial information and ensuring compliance with tax laws.\n- Gathering financial records\n- Calculating taxable income and deductions\n- Submitting completed tax forms",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 108,
+    "code": "FI:653",
+    "name": "Verify the accuracy of business financial records (FI:653) (ON)",
+    "definition": "Ensuring that all financial records are correct and consistent.  \n- Review transactions for accuracy  \n- Cross-check account balances  \n- Reconcile financial statements",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 109,
+    "code": "HR:410",
+    "name": "Discuss the nature of human resources management (HR:410) (CS)",
+    "definition": "The nature of human resources management involves overseeing activities related to managing people within an organization. This includes:\n- Recruiting and hiring employees  \n- Training and development  \n- Employee relations and compensation",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 110,
+    "code": "HR:508",
+    "name": "Coordinate human, capital, and fiscal resources to meet business priorities (HR:508) (MN)",
+    "definition": "Organize and manage human, financial, and material resources to achieve business goals efficiently.  \n- Human resources such as staff and team members  \n- Capital resources like money and equipment  \n- Fiscal resources including budgets and financial plans",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 111,
+    "code": "HR:353",
+    "name": "Determine hiring needs (HR:353) (SU)",
+    "definition": "Assess an organization’s current and future staffing requirements to ensure appropriate staffing levels.  \n   - Identifying job openings  \n   - Analyzing workload and business growth  \n   - Considering employee turnover and retirement patterns",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 112,
+    "code": "HR:354",
+    "name": "Screen job applications/résumés (HR:354) (SU)",
+    "definition": "Review and evaluate job applications and résumés to determine if they meet the required qualifications.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 113,
+    "code": "HR:355",
+    "name": "Interview job applicants (HR:355) (SU)",
+    "definition": "Conducts interviews with job applicants to evaluate their qualifications and fit for the position.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 114,
+    "code": "HR:356",
+    "name": "Select and hire new employees (HR:356) (SU)",
+    "definition": "The process of choosing and employing new staff members for a business or organization.  \n- Reviewing job applicants  \n- Interviewing candidates  \n- Making hiring decisions",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 115,
+    "code": "HR:358",
+    "name": "Dismiss/Fire employees (HR:358) (SU)",
+    "definition": "The process of terminating an employee’s employment due to various reasons, such as performance issues or reorganization, following company policies and legal guidelines.  \n- Reviewing employee performance  \n- Conducting termination meetings  \n- Handling final pay and documentation",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 116,
+    "code": "HR:359",
+    "name": "Maintain human resources records (HR:359) (SU)",
+    "definition": "Maintaining human resources records involves systematically organizing and storing employee information to ensure accuracy, confidentiality, and easy access.  \n- Employee personal information  \n- Employment history and job details  \n- Attendance and performance records",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 117,
+    "code": "HR:392",
+    "name": "Train staff (HR:392) (SU)",
+    "definition": "The process of providing employees with the knowledge, skills, and resources they need to perform their jobs effectively.  \n  - Conducting training sessions  \n  - Developing training materials  \n  - Evaluating training effectiveness",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 118,
+    "code": "HR:393",
+    "name": "Supervise staff (HR:393) (SU)",
+    "definition": "Overseeing and directing staff to ensure effective workflow and performance.  \n   - Assigning tasks and responsibilities  \n   - Monitoring employee performance  \n   - Providing feedback and support",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 119,
+    "code": "HR:403",
+    "name": "Foster “right” environment for employees (HR:403) (SU)",
+    "definition": "Create a positive work atmosphere by supporting employee needs and promoting a respectful environment.  \n- Encourage open communication  \n- Recognize employee achievements  \n- Provide a safe and inclusive space",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 120,
+    "code": "HR:368",
+    "name": "Assess employee performance (HR:368) (SU)",
+    "definition": "Evaluating how well employees complete their job duties and responsibilities to ensure effective performance, improvement, and development.  \n- Setting performance standards  \n- Monitoring employee activities  \n- Providing feedback and coaching",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 121,
+    "code": "HR:366",
+    "name": "Handle employee complaints and grievances (HR:366) (SU)",
+    "definition": "Addressing employee complaints and grievances involves listening to concerns, resolving issues, and ensuring fair treatment.  \n- Listening actively to employee concerns  \n- Investigating complaints objectively  \n- Applying company policies to resolve issues fairly",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 122,
+    "code": "HR:369",
+    "name": "Explain the nature of remedial action (HR:369) (SU)",
+    "definition": "Remedial action involves identifying and addressing issues or problems to improve performance or correct mistakes.  \n- Includes understanding the purpose of corrective measures  \n- Involves steps to implement solutions  \n- Focuses on improving skills or processes to meet standards",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SU",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 123,
+    "code": "MK:001",
+    "name": "Explain marketing and its importance in a global economy (MK:001) (CS)",
+    "definition": "Understanding marketing involves recognizing its role in connecting businesses with customers to satisfy needs and wants. It is important in a global economy because it:\n- Facilitates international trade and business growth\n- Promotes competition and innovation\n- Helps businesses reach diverse markets worldwide",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 124,
+    "code": "MK:002",
+    "name": "Describe marketing functions and related activities (MK:002) (CS)",
+    "definition": "The process of explaining the different roles and tasks involved in marketing operations. These functions include:\n- identifying customer needs\n- developing products or services\n- promoting and selling offerings\n- distributing products\n- analyzing market trends",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 125,
+    "code": "MK:014",
+    "name": "Explain factors that influence customer/client/business buying behavior (MK:014) (SP)",
+    "definition": "The factors that influence customer, client, or business buying behavior are the various internal and external elements that impact how and why decisions are made. These include:\n- Personal preferences and motivations\n- Cultural and social influences\n- Economic conditions and trends",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 126,
+    "code": "MK:019",
+    "name": "behavior, gaining market share, etc.) (MK:019) (SP)",
+    "definition": "A measure of how a business influences customer choices and improves its position in the market.  \n- Increasing the number of customers  \n- Expanding product sales  \n- Improving brand recognition",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 127,
+    "code": "NF:091",
+    "name": "Establish specifications for selecting hardware/software systems (NF:091) (MN)",
+    "definition": "The process of setting clear criteria to choose appropriate hardware and software systems, ensuring they meet the specific needs of a business or project.  \n   - Identifying necessary features  \n   - Evaluating compatibility with existing systems  \n   - Considering cost and performance factors",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 128,
+    "code": "NF:012",
+    "name": "Determine venture's information technology needs (NF:012) (MN)",
+    "definition": "Assess a venture's requirements for information technology solutions by identifying needed hardware, software, and support systems to support business operations effectively.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 129,
+    "code": "NF:001",
+    "name": "Describe the nature of business records (NF:001) (SP)",
+    "definition": "Business records are documents that track and summarize a company's financial and operational activities.  \n- They include sales reports, expense receipts, and inventory logs.  \n- They help in decision-making, financial analysis, and legal compliance.  \n- Proper record-keeping is essential for accurate business management.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 130,
+    "code": "NF:013",
+    "name": "Describe current business trends (NF:013) (SP)",
+    "definition": "An explanation of recent developments and movements in the business world, highlighting how companies and industries are changing.  \n   - Economic shifts  \n   - Technological advancements  \n   - Consumer behavior trends",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 131,
+    "code": "NF:014",
+    "name": "Monitor internal records for business information (NF:014) (SP)",
+    "definition": "This involves regularly reviewing and analyzing internal business records to ensure accuracy and support decision-making.  \n- Sales reports  \n- Inventory records  \n- Financial statements",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 132,
+    "code": "NF:015",
+    "name": "Conduct an environmental scan to obtain business information (NF:015) (SP)",
+    "definition": "The process of collecting and analyzing information about external and internal factors that could impact a business's success.  \n- Identifies trends, opportunities, and threats  \n- Examines competitors, markets, and economic conditions  \n- Uses results to inform business decisions",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 133,
+    "code": "NF:093",
+    "name": "Interpret statistical findings (NF:093) (SP)",
+    "definition": "Analyze and explain statistical results to identify patterns, trends, or differences in data, helping make informed business decisions.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 134,
+    "code": "NF:216",
+    "name": "Translate research findings into actionable business recommendations (NF:216) (SP)",
+    "definition": "Transform research findings into practical business suggestions by analyzing data, understanding results, and recommending specific actions to improve business performance.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 135,
+    "code": "NF:139",
+    "name": "Explain the principles of data analysis (NF:139) (SP)",
+    "definition": "Understanding the basic concepts of data analysis involves knowing how to examine and interpret data to make informed business decisions.  \n- Organize and interpret data sets  \n- Identify patterns, trends, and relationships  \n- Use data to support decision-making",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 136,
+    "code": "NF:148",
+    "name": "Discuss the nature of data mining (NF:148) (CS)",
+    "definition": "Data mining is the process of analyzing large sets of data to discover useful patterns and trends. Elements include:\n- identifying relationships within data\n- extracting relevant information\n- using analysis tools to support decision-making",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 137,
+    "code": "OP:189",
+    "name": "Explain the nature of operations (OP:189) (CS)",
+    "definition": "The basic functions and activities involved in the day-to-day processes of a business.  \n- Determine the purpose of business operations  \n- Identify key operational activities  \n- Understand how operations support business goals",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 138,
+    "code": "OP:151",
+    "name": "Identify potential safety issues (OP:151) (MN)",
+    "definition": "Recognize possible safety concerns in a business or retail setting to prevent accidents and ensure a safe environment.  \n- observe workplace conditions  \n- notice hazards or unsafe behaviors  \n- consider safety regulations and guidelines",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 139,
+    "code": "OP:012",
+    "name": "Establish safety policies and procedures (OP:012) (MN)",
+    "definition": "Create and implement safety policies and procedures to ensure a secure environment.  \n- Develop written safety guidelines  \n- Communicate safety procedures to staff and customers  \n- Enforce safety rules consistently",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 140,
+    "code": "OP:154",
+    "name": "Identify potential security issues (OP:154) (MN)",
+    "definition": "Recognize possible security problems that could affect a business or system, such as:\n  - Data breaches\n  - Unauthorized access\n  - Cyberattacks",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 141,
+    "code": "OP:155",
+    "name": "Establish policies to protect company information and intangibles (OP:155) (MN)",
+    "definition": "Creates guidelines to safeguard company data and intangible assets, including policies that:\n- Control access to sensitive information\n- Ensure proper data handling procedures\n- Prevent unauthorized disclosure or use of company resources",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 142,
+    "code": "OP:157",
+    "name": "Establish policies and procedures to maintain physical security of the work environment (OP:157)",
+    "definition": "A plan of actions and rules designed to protect the physical safety and security of the workplace. This includes:\n- Developing security policies and procedures\n- Implementing access controls\n- Ensuring safety measures are in place",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 143,
+    "code": "OP:015",
+    "name": "Explain the nature and scope of purchasing (OP:015) (CS)",
+    "definition": "The nature and scope of purchasing involves understanding the process of acquiring goods and services. This includes:\n- Identifying what to purchase\n- Selecting suppliers\n- Negotiating terms\n- Managing the ordering and delivery process",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 144,
+    "code": "OP:161",
+    "name": "Select vendors (OP:161) (SP)",
+    "definition": "The process of choosing suppliers or providers for a business by evaluating their offers and capabilities, ensuring they meet the company's needs.  \n   - Research potential vendors  \n   - Compare prices and quality  \n   - Consider delivery times and reputation",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 145,
+    "code": "OP:162",
+    "name": "Evaluate vendor performance (OP:162) (SP)",
+    "definition": "Assess how well a vendor meets the agreed-upon standards and expectations. This includes reviewing factors such as delivery times, product quality, and overall service to ensure the vendor supports the business's needs.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 146,
+    "code": "OP:017",
+    "name": "Explain the concept of production (OP:017) (CS)",
+    "definition": "Production is the process of creating goods and services to meet customer needs.  \n- Involves transforming resources into finished products  \n- Includes activities such as manufacturing, assembling, or developing services  \n- Is essential for fulfilling consumer demand and generating business revenue",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 147,
+    "code": "OP:020",
+    "name": "Describe the role of management in the achievement of quality (OP:020) (MN)",
+    "definition": "The role of management in achieving quality involves overseeing processes and resources to ensure products or services meet or exceed standards.  \n- Establishing quality standards and goals  \n- Implementing procedures for quality control  \n- Motivating and training staff to maintain high-quality work",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 148,
+    "code": "OP:022",
+    "name": "Establish efficient operating systems (OP:022) (MN)",
+    "definition": "Develop and implement systems that enable a business to run smoothly and effectively. This includes creating processes, procedures, and workflows that improve productivity and efficiency.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 149,
+    "code": "OP:024",
+    "name": "Explain the nature of overhead/operating costs (OP:024) (SP)",
+    "definition": "Overhead or operating costs are the expenses a business incurs that are not directly tied to producing a product or service. These costs include:\n- Rent\n- Utilities\n- Salaries of management and support staff",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 150,
+    "code": "OP:192",
+    "name": "Conduct breakeven analysis (OP:192) (MN)",
+    "definition": "A financial analysis method used to determine when a business will be able to cover its costs and start making a profit.  \n   - Calculates fixed and variable costs  \n   - Identifies sales volume needed to break even  \n   - Analyzes changes in costs and revenues to assess financial viability",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 151,
+    "code": "OP:027",
+    "name": "Negotiate service and maintenance contracts (OP:027) (MN)",
+    "definition": "The process of discussing and reaching an agreement on the terms, conditions, and pricing of service and maintenance agreements.  \n- Establishing the scope of services  \n- Discussing pricing and payment terms  \n- Clarifying service durations and responsibilities",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 152,
+    "code": "OP:028",
+    "name": "Negotiate lease or purchase of facility (OP:028) (MN)",
+    "definition": "The process of discussing and reaching an agreement on the terms and conditions for renting or buying a facility.  \n- Includes establishing price, duration, and other terms  \n- Involves communication and bargaining skills  \n- Results in a lease or purchase agreement",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 153,
+    "code": "OP:029",
+    "name": "Develop expense control plans (OP:029) (MN)",
+    "definition": "A plan created to manage and reduce expenses in a business. It involves setting budget limits and identifying ways to control costs.  \n   - Analyzing current expenses  \n   - Setting spending limits  \n   - Implementing cost-saving strategies",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 154,
+    "code": "OP:030",
+    "name": "Use budgets to control operations (OP:030) (MN)",
+    "definition": "Using budgets to control operations involves comparing actual spending and performance against budgeted amounts to ensure financial goals are met and operations stay on track. This process helps managers make informed decisions, identify variances, and take corrective actions as needed.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 155,
+    "code": "OP:443",
+    "name": "Explain the concept of supply chain (OP:443) (CS)",
+    "definition": "The supply chain is the series of activities involved in producing and delivering a product or service. It includes:\n   - Sourcing raw materials\n   - Manufacturing or processing\n   - Distributing finished products to customers",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 156,
+    "code": "PD:256",
+    "name": "Establish performance standards to meet organizational goals (PD:256) (MN)",
+    "definition": "Setting specific levels of performance that an organization aims to achieve in order to fulfill its goals.  \n- Define measurable targets  \n- Identify benchmarks for success  \n- Use these standards to guide improvement efforts",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 157,
+    "code": "PD:257",
+    "name": "Monitor progress in achieving organizational goals (PD:257) (MN)",
+    "definition": "Track and evaluate the progress of an organization in reaching its set objectives by collecting data and measuring performance over time.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 158,
+    "code": "PD:126",
+    "name": "Explain the need for innovation skills (PD:126) (CS)",
+    "definition": "Understanding the importance of innovation skills involves recognizing how they help adapt to change and improve business practices. This includes:\n- Identifying the value of creativity and problem-solving in the workplace\n- Recognizing how innovation drives competitive advantage\n- Explaining the role of innovation in meeting customer needs and market trends",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 159,
+    "code": "PD:017",
+    "name": "Make decisions (PD:017) (CS)",
+    "definition": "Deciding on a course of action after considering available options and information to achieve a specific goal.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 160,
+    "code": "PD:077",
+    "name": "Demonstrate problem-solving skills (PD:077) (CS)",
+    "definition": "Demonstrate problem-solving skills by identifying issues, analyzing options, and selecting effective solutions to address workplace or business challenges.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 161,
+    "code": "PD:019",
+    "name": "Use time-management skills (PD:019) (SP)",
+    "definition": "Effective use of time-management skills involves planning, prioritizing, and organizing tasks to complete assignments efficiently and meet deadlines.  \n- Setting goals and deadlines  \n- Creating schedules or to-do lists  \n- Avoiding procrastination",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 162,
+    "code": "SM:001",
+    "name": "Explain the concept of management (SM:001) (CS)",
+    "definition": "The concept of management involves coordinating and overseeing an organization’s resources and activities to achieve set objectives.  \n- Planning, organizing, leading, and controlling resources  \n- Making decisions to improve efficiency and effectiveness  \n- Ensuring goals are met through strategic and operational actions",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 163,
+    "code": "SM:002",
+    "name": "Explain the nature of managerial ethics (SM:002) (MN)",
+    "definition": "The nature of managerial ethics involves understanding the principles and moral standards that guide managers' decisions and actions in a business setting. It includes the following elements:\n- The importance of honesty and integrity in management\n- The responsibility to act fairly and ethically toward employees, customers, and stakeholders\n- The impact of ethical or unethical behavior on a company's reputation and success",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 164,
+    "code": "SM:007",
+    "name": "Explain the nature of business plans (SM:007) (MN)",
+    "definition": "A business plan is a written document that outlines a company's goals, strategies, and how it plans to achieve success. It typically includes:\n- Business objectives\n- Target market\n- Financial projections",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 165,
+    "code": "SM:008",
+    "name": "Develop company goals/objectives (SM:008) (ON)",
+    "definition": "The process of creating clear, specific targets that a business aims to achieve.  \n- Sets direction and priorities for the company  \n- Guides decision-making and planning  \n- Measures progress toward business success",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 166,
+    "code": "SM:009",
+    "name": "Define business mission (SM:009) (ON)",
+    "definition": "A statement that describes a business’s core purpose, goals, and reasons for existence. It provides direction and focus for the organization.  \n   - outlines the company’s primary purpose  \n   - reflects the target market or customers  \n   - guides decision-making and strategic planning",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 167,
+    "code": "SM:010",
+    "name": "Conduct an organizational SWOT (SM:010) (ON)",
+    "definition": "Analyzing an organization’s strengths, weaknesses, opportunities, and threats to assess its current position and inform strategic planning.  \n   - Identify internal strengths  \n   - Recognize internal weaknesses  \n   - Evaluate external opportunities and threats",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 168,
+    "code": "SM:011",
+    "name": "Explain external planning considerations (SM:011) (MN)",
+    "definition": "Consideration of factors outside the organization that influence planning decisions. These may include:\n- market trends\n- economic conditions\n- legal and regulatory requirements",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 169,
+    "code": "SM:027",
+    "name": "Identify and benchmark key performance indicators (e.g., dashboards, scorecards, etc.) (SM:027)",
+    "definition": "The process of recognizing and comparing important measurements that track a business’s performance.  \n- Includes tools like dashboards and scorecards to display data.  \n- Helps monitor progress toward goals and improve decision-making.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 170,
+    "code": "SM:012",
+    "name": "Develop action plans (SM:012) (ON)",
+    "definition": "Creating detailed plans to achieve specific goals, including:\n- Setting objectives\n- Identifying necessary resources\n- Outlining steps and deadlines",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 171,
+    "code": "SM:013",
+    "name": "Develop business plan (SM:013) (ON)",
+    "definition": "Create a detailed plan for a business idea that outlines goals, strategies, and actions.  \n- Define the business mission and vision  \n- Include marketing strategies  \n- Outline financial projections",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 172,
+    "code": "SM:074",
+    "name": "Select and apply metrics for measuring organizational success (SM:074) (MN)",
+    "definition": "Choosing and using specific measures to evaluate how well an organization is achieving its goals. This includes:\n- Identifying relevant success metrics\n- Applying these metrics to assess performance\n- Interpreting the results to improve organizational effectiveness",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 173,
+    "code": "SM:005",
+    "name": "Analyze operating results in relation to budget/industry (SM:005) (MN)",
+    "definition": "Evaluating a company’s financial performance by comparing its actual results to budgeted or industry standards. This involves examining:\n- Revenue and expenses\n- Profit margins\n- Key financial ratios",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 174,
+    "code": "SM:006",
+    "name": "Track performance of business plan (SM:006) (MN)",
+    "definition": "Monitor and assess the progress and results of a business plan to ensure goals are being met.  \n- Track sales, expenses, and profits  \n- Measure customer response and engagement  \n- Adjust strategies based on performance data",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 175,
+    "code": "SM:075",
+    "name": "Explain the nature of risk management (SM:075) (SP)",
+    "definition": "Risk management involves identifying, assessing, and controlling potential risks to minimize negative impacts on a business.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 176,
+    "code": "FI:541",
+    "name": "Interpret cash-flow statements (FI:541) (SP)",
+    "definition": "Analyzing cash-flow statements involves understanding the movement of money into and out of a business over a specific period.  \n- Identifying sources of cash inflows, such as sales or loans  \n- Recognizing cash outflows, like expenses or purchases  \n- Interpreting how cash flow impacts the financial health and liquidity of the business",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 177,
+    "code": "FI:542",
+    "name": "Monitor business's profitability (FI:542) (MN)",
+    "definition": "Regularly assess a business's financial performance to ensure profitability by analyzing:\n- Revenue and expenses\n- Profit margins\n- Sales trends",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 178,
+    "code": "OP:473",
+    "name": "customer data, and other protected information (OP:473) (MN)",
+    "definition": "The protection of sensitive information related to customers and other individuals, ensuring confidentiality and privacy.  \n- Customer data  \n- Personal identification information (PII)  \n- Financial details",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 179,
+    "code": "OP:327",
+    "name": "Discuss the nature of business analysis (OP:327) (SP)",
+    "definition": "The examination of business operations and performance to understand strengths, weaknesses, and areas for improvement.  \n- Involves analyzing financial data, market trends, and internal processes  \n- Helps inform strategic decision-making  \n- Supports the development of solutions to improve business effectiveness",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 180,
+    "code": "OP:474",
+    "name": "Discuss business process thinking and its impact (OP:474) (SP)",
+    "definition": "Business process thinking involves analyzing and improving the steps and activities within a business to increase efficiency and effectiveness. It impacts overall performance by streamlining operations, reducing costs, and enhancing customer satisfaction.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 181,
+    "code": "OP:475",
+    "name": "Describe the factors that influence business process design (OP:475) (SP)",
+    "definition": "The factors that influence business process design include considerations that impact how a business organizes and improves its workflows. These factors may include:\n- Technology availability and capabilities\n- Cost and resource constraints\n- Customer needs and expectations",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 182,
+    "code": "OP:476",
+    "name": "Explain the causes of business process changes (OP:476) (SP)",
+    "definition": "Understanding the reasons why business processes change, including factors such as technological advancements, market demands, competition, regulatory updates, and internal improvements.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 183,
+    "code": "OP:477",
+    "name": "business design, sustainability) (OP:477) (SP)",
+    "definition": "The process of creating a business plan that incorporates sustainable practices to ensure long-term success. Key elements include:\n- Identifying sustainable resources\n- Reducing environmental impact\n- Planning for ongoing social and economic responsibility",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 184,
+    "code": "OP:303",
+    "name": "Discuss the nature of supply chain management (OP:303) (SP)",
+    "definition": "Supply chain management involves coordinating and overseeing the activities involved in producing and delivering a product or service.  \n- Planning and managing the flow of goods, services, and information  \n- Working with suppliers, manufacturers, and distributors  \n- Ensuring efficient and effective delivery to meet customer needs",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 185,
+    "code": "SM:028",
+    "name": "Describe factors that influence management (SM:028) (MN)",
+    "definition": "Factors that influence management are elements that affect how managers plan, organize, lead, and control business activities. These include:\n- Economic conditions\n- Technological changes\n- Social and cultural influences\n- Legal and regulatory requirements\n- Organizational structure and culture",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 186,
+    "code": "SM:094",
+    "name": "Describe relationship among innovation, learning, and change (SM:094) (CS)",
+    "definition": "The relationship among innovation, learning, and change involves understanding how introducing new ideas (innovation) leads to gaining knowledge (learning) and results in adjustments or transformations (change) within a business or organization.  \n   - Innovation promotes the development of new products, services, or processes  \n   - Learning allows individuals and organizations to acquire new skills and knowledge  \n   - Change involves adapting to new methods, ideas, or technologies to improve performance",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 187,
+    "code": "SM:095",
+    "name": "Explain the nature of change management (SM:095) (SP)",
+    "definition": "Change management involves understanding how organizations plan and implement changes to improve and adapt. It includes:\n- Recognizing the need for change\n- Communicating effectively about the change\n- Supporting employees through the transition",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 188,
+    "code": "QM:001",
+    "name": "Explain the nature of quality management (QM:001) (SP)",
+    "definition": "Quality management involves the systematic process of overseeing and improving an organization's products, services, and processes to meet customer expectations and enhance overall performance.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 189,
+    "code": "RM:094",
+    "name": "Assess business risks (RM:094) (MN)",
+    "definition": "Evaluating potential threats that could negatively impact a business’s operations or success, including:\n- Financial risks\n- Operational risks\n- Market or competitive risks",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 190,
+    "code": "FI:334",
+    "name": "Describe types of financial statement analysis (e.g., ratio analysis, trend analysis, etc.) (FI:334) (MN)",
+    "definition": "The analysis of financial statements to evaluate a company's financial health and performance. Types include:\n- Ratio analysis\n- Trend analysis\n- Other methods used to interpret financial data",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 191,
+    "code": "FI:655",
+    "name": "Discuss limitations of using financial statements to assess business performance (FI:655) (MN)",
+    "definition": "This involves explaining the challenges and restrictions of relying solely on financial statements to evaluate how well a business is doing.  \n- Financial statements may not reflect non-financial factors like customer satisfaction or employee morale  \n- They can be affected by accounting practices or errors  \n- They do not show future potential or external market conditions",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 192,
+    "code": "FI:335",
+    "name": "Spot problems in/issues with financial statements (FI:335) (MN)",
+    "definition": "Identifying errors or discrepancies in financial statements to ensure accuracy and proper financial reporting.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 193,
+    "code": "FI:339",
+    "name": "Describe the financial needs of a business at different stages of its development (FI:339) (MN)",
+    "definition": "The financial needs of a business vary at different stages of development.  \n- Startup stage: initial funding for equipment, inventory, and marketing  \n- Growth stage: funds for expanding operations, hiring staff, and increased inventory  \n- Maturity stage: resources for maintaining competitiveness, upgrading equipment, and managing cash flow",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 194,
+    "code": "FI:340",
+    "name": "Discuss factors to consider in choosing between debt and equity capital (FI:340) (MN)",
+    "definition": "Reasons businesses choose between debt and equity capital include analyzing costs, risks, and ownership implications. Factors to consider are:\n- The cost and repayment terms of debt versus the ownership dilution from equity\n- The company's current financial situation and creditworthiness\n- The impact on control and decision-making within the business",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 195,
+    "code": "PD:213",
+    "name": "Discuss the importance of corporate governance in business (PD:213) (CS)",
+    "definition": "The importance of corporate governance in business is the value of establishing systems and practices that ensure a company is operated ethically and responsibly to protect stakeholder interests.  \n- Ensures accountability and transparency  \n- Promotes ethical decision-making  \n- Protects company reputation and stakeholder trust",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 196,
+    "code": "PD:302",
+    "name": "Identify the factors that impact governance structures (PD:302) (SP)",
+    "definition": "Factors that impact governance structures include various elements that influence how organizations are managed and controlled. These may include:\n- Organizational size and complexity\n- Stakeholder interests and influence\n- Legal and regulatory requirements",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 197,
+    "code": "PD:214",
+    "name": "transparency, internal and external audit functions) (PD:214) (SP)",
+    "definition": "The ability to conduct and support both internal and external audit functions by providing clear, honest, and accurate information about an organization’s financial and operational activities.  \n- Ensuring transparency in reporting financial data  \n- Supporting internal audits to improve operations  \n- Facilitating external audits to verify accuracy and compliance",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 198,
+    "code": "RM:062",
+    "name": "Discuss the nature of enterprise risk management (ERM) (RM:062) (SP)",
+    "definition": "A discussion of enterprise risk management (ERM) involves explaining the overall process organizations use to identify, assess, and control risks that could affect their objectives.  \n- It is a strategic approach that integrates risk management into all parts of the organization.  \n- It aims to improve decision-making and safeguard assets.  \n- It involves understanding various types of risks, such as financial, operational, and external risks.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 199,
+    "code": "RM:044",
+    "name": "Discuss the relationship between risk and business objectives (RM:044) (MN)",
+    "definition": "The connection between the level of risk a business faces and the goals it aims to achieve, highlighting how risk influences goal setting and decision making.\n- Risk levels impact business objectives\n- Risk management strategies help achieve goals\n- Balancing risk and reward is essential for success",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 200,
+    "code": "RM:056",
+    "name": "Identify business risks (RM:056) (MN)",
+    "definition": "The ability to recognize and understand potential challenges or uncertainties that could negatively impact a business.  \n- Examples include: market competition, financial loss, legal issues",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 201,
+    "code": "RM:059",
+    "name": "Explain ways to assess risk (RM:059) (MN)",
+    "definition": "Methods used to evaluate the potential negative outcomes of a decision or action.  \n- Identifying risks  \n- Analyzing likelihood and impact  \n- Using tools like risk assessments or charts",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 202,
+    "code": "RM:045",
+    "name": "Develop a risk management program (RM:045) (MN)",
+    "definition": "A plan to identify, assess, and address potential risks to a business.  \n- Identifying potential risks  \n- Assessing the likelihood and impact of risks  \n- Implementing strategies to minimize or manage risks",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 203,
+    "code": "CM:001",
+    "name": "Explain the nature and scope of channel management (CM:001) (CS)",
+    "definition": "The process of overseeing and coordinating the movement of products from producers to consumers, including planning, structure, and decision-making.  \n- Types of distribution channels  \n- Functions of channel members  \n- Factors influencing channel choices",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 204,
+    "code": "CM:003",
+    "name": "Explain the nature of channels of distribution (CM:003) (CS)",
+    "definition": "The process by which products move from producers to consumers, including the different paths and intermediaries involved.  \n- The functions of distribution channels  \n- Types of distribution channels  \n- Roles of channel members",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 205,
+    "code": "CM:009",
+    "name": "Explain the nature of channel strategies (CM:009) (MN)",
+    "definition": "A discussion of how businesses choose and manage different methods to get products from the producer to the consumer.  \n- The purpose of channel strategies  \n- Types of distribution channels (e.g., direct, indirect)  \n- Factors influencing channel selection and management",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 206,
+    "code": "CM:010",
+    "name": "Select channels of distribution (CM:010) (MN)",
+    "definition": "Choosing the most effective methods for distributing products to customers, considering factors like cost, coverage, and convenience.  \n- Direct selling  \n- Retail stores  \n- Online sales",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 207,
+    "code": "CM:011",
+    "name": "Evaluate channel members (CM:011) (MN)",
+    "definition": "Analyze the effectiveness and efficiency of channel members in a distribution channel.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 208,
+    "code": "IM:012",
+    "name": "Describe the need for marketing data (IM:012) (CS)",
+    "definition": "Understanding the need for marketing data involves recognizing its importance in making informed business decisions.  \n- It helps identify customer needs and preferences  \n- It assists in evaluating marketing strategies and performance  \n- It supports the development of effective marketing plans",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 209,
+    "code": "IM:010",
+    "name": "Explain the nature of marketing research (IM:010) (SP)",
+    "definition": "Marketing research involves collecting and analyzing information to help make informed marketing decisions. It includes understanding customer needs, preferences, and behaviors, as well as evaluating market trends and competitors.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 210,
+    "code": "MP:001",
+    "name": "Explain the concept of marketing strategies (MP:001) (CS)",
+    "definition": "Marketing strategies are plans or methods used by businesses to promote products or services and achieve their marketing goals.  \n- They include identifying target markets  \n- Developing promotional tactics  \n- Implementing methods to reach potential customers effectively",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 211,
+    "code": "MP:003",
+    "name": "Explain the concept of market and market identification (MP:003) (CS)",
+    "definition": "The concept involves understanding how markets are defined and identified.  \n- Recognizing what a market is based on customer needs and preferences  \n- Understanding how to identify different markets through factors like demographics, location, and buying behavior  \n- Explaining the importance of market identification in developing marketing strategies",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 212,
+    "code": "MP:004",
+    "name": "Identify market segments (MP:004) (MN)",
+    "definition": "The process of recognizing and describing specific groups of consumers with similar needs or characteristics.  \n   - Demographics (age, gender, income)  \n   - Geographics (location, climate)  \n   - Psychographics (lifestyles, interests)",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 213,
+    "code": "MP:031",
+    "name": "Develop customer profile (MP:031) (MN)",
+    "definition": "Creating a customer profile involves identifying and understanding your target customers by gathering information such as:\n- Demographics (age, gender, income)\n- Buying habits\n- Preferences and needs",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 214,
+    "code": "MP:005",
+    "name": "Select target market (MP:005) (MN)",
+    "definition": "The process of identifying and choosing a specific group of potential customers who are most likely to buy a product or service.  \n- Analyzing customer characteristics  \n- Considering geographic location, demographics, and preferences  \n- Focusing marketing efforts on the selected group",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 215,
+    "code": "MP:009",
+    "name": "Conduct market analysis (market size, area, potential, etc.) (MP:009) (MN)",
+    "definition": "Analyzing the market to gather information about its characteristics.  \n- Market size  \n- Geographic area  \n- Market potential",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 216,
+    "code": "MP:010",
+    "name": "Conduct SWOT analysis for use in the marketing planning process (MP:010) (MN)",
+    "definition": "A SWOT analysis involves evaluating a business or product’s internal strengths and weaknesses, as well as external opportunities and threats, to inform the marketing planning process.  \n  - Identifies internal strengths and weaknesses  \n  - Recognizes external opportunities and threats  \n  - Supports strategic decision-making in marketing planning",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 217,
+    "code": "MP:012",
+    "name": "Conduct competitive analysis (MP:012) (MN)",
+    "definition": "Analyzing the strengths and weaknesses of competitors to understand their strategies and position in the market.\n- Comparing products or services\n- Evaluating pricing and promotion strategies\n- Identifying competitive advantages and disadvantages",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 218,
+    "code": "MP:014",
+    "name": "Forecast sales for marketing plan (MP:014) (MN)",
+    "definition": "Estimating future sales based on market data and trends to support the marketing plan  \n- Analyzing historical sales data  \n- Considering market conditions and consumer behavior  \n- Using statistical methods or tools to predict future sales",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 219,
+    "code": "MP:015",
+    "name": "Set marketing goals and objectives (MP:015) (MN)",
+    "definition": "The process of establishing specific, measurable, achievable, relevant, and time-bound targets to guide marketing activities.  \n- Includes identifying what the marketing efforts aim to accomplish  \n- Involves setting clear performance targets  \n- Helps ensure marketing strategies align with overall business goals",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 220,
+    "code": "MP:018",
+    "name": "Develop marketing plan (MP:018) (MN)",
+    "definition": "A detailed document that outlines marketing goals, strategies, and tactics to promote a product or service.  \n- Identifies target markets  \n- Sets marketing objectives and strategies  \n- Includes action plans and budgets",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 221,
+    "code": "MP:020",
+    "name": "Explain strategies for linking performance measures to financial outcomes (MP:020) (MN)",
+    "definition": "This involves describing methods for connecting performance measures to financial results.  \n- Identifying key performance indicators that impact financial outcomes  \n- Analyzing how changes in performance measures affect income and expenses  \n- Using performance data to improve profitability and financial stability",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 222,
+    "code": "MP:021",
+    "name": "Translate performance measures into financial outcomes (MP:021) (MN)",
+    "definition": "Converting performance measures into monetary results to evaluate the financial impact of business activities.  \n   - Assessing how specific actions affect revenue or costs  \n   - Calculating profit or loss related to performance measures  \n   - Using financial data to inform business decisions",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 223,
+    "code": "PI:001",
+    "name": "Explain the nature and scope of the pricing function (PI:001) (SP)",
+    "definition": "The process of determining the appropriate price for products or services, considering factors such as costs, competition, and customer demand.  \n- Includes understanding how pricing affects sales, profit, and market position  \n- Involves setting strategies like skimming or penetration pricing  \n- Encompasses the scope of adjusting prices in response to market changes",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 224,
+    "code": "PI:002",
+    "name": "Explain factors affecting pricing decisions (PI:002) (SP)",
+    "definition": "The factors influencing pricing decisions are elements that a business considers when setting product or service prices. These include:\n- Costs of production and operations\n- Competitor pricing strategies\n- Customer demand and perception of value",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 225,
+    "code": "PM:129",
+    "name": "Determine initial feasibility of product idea (PM:129) (MN)",
+    "definition": "Assess whether a product idea is practical and worth pursuing by analyzing factors such as market demand, costs, and resources needed.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 226,
+    "code": "PM:204",
+    "name": "Adjust idea to create functional product (PM:204) (MN)",
+    "definition": "Modifying an idea to develop a practical and usable product by making necessary changes or improvements. This may involve:  \n- Incorporating feedback  \n- Improving features  \n- Ensuring functionality",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 227,
+    "code": "PM:136",
+    "name": "Create processes for ongoing opportunity recognition (PM:136) (MN)",
+    "definition": "Develops systems or methods to continuously identify new business opportunities; this includes regularly monitoring the environment for trends, customer needs, and market gaps.",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 228,
+    "code": "PM:138",
+    "name": "Evaluate customer experience (PM:138) (MN)",
+    "definition": "Assess the overall quality of the customer’s interactions with a business to determine their satisfaction and identify areas for improvement. This includes considering factors such as:\n- Customer feedback and reviews  \n- Service speed and efficiency  \n- Staff behavior and communication skills",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 229,
+    "code": "PM:003",
+    "name": "Explain the concept of product mix (PM:003) (SP)",
+    "definition": "The combination of all the products a business offers to meet customer needs.  \n- It includes different product lines and individual items within those lines  \n- It helps businesses determine the variety and focus of their offerings  \n- It influences sales strategies and customer choices",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 230,
+    "code": "PM:006",
+    "name": "Plan product mix (PM:006) (MN)",
+    "definition": "Develop a strategy to determine the right combination of products to offer in a business, considering factors like customer preferences, sales data, and profit margins.  \n- Analyze customer needs  \n- Assess product performance  \n- Balance variety and profitability",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 231,
+    "code": "PM:036",
+    "name": "Determine services to provide customers (PM:036) (MN)",
+    "definition": "Identify the types of services a business can offer to meet customer needs.  \n   - Consulting  \n     - Troubleshooting assistance  \n     - Product demonstrations",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 232,
+    "code": "PM:273",
+    "name": "Identify internal and external service standards (PM:273) (MN)",
+    "definition": "A process of recognizing quality expectations set by a company or industry.  \n   - Internal service standards (company-defined quality levels for employees and departments)  \n   - External service standards (industry or customer expectations for service quality)",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 233,
+    "code": "PM:126",
+    "name": "Build corporate brands (PM:126) (ON)",
+    "definition": "Developing strong corporate brands involves creating a positive identity and reputation for a company. This includes:\n- Establishing brand image and messaging\n- Promoting brand awareness\n- Building customer loyalty",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "ON",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 234,
+    "code": "PM:013",
+    "name": "Explain the role of customer service in positioning/image (PM:013) (MN)",
+    "definition": "Customer service helps shape a company's image and public perception by providing positive interactions that build trust and loyalty.  \n- It impacts how customers view the brand's reputation  \n- It influences customer satisfaction and repeat business  \n- It contributes to the overall positioning of the business in the marketplace",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 235,
+    "code": "PM:272",
+    "name": "Identify company's unique selling proposition (PM:272) (MN)",
+    "definition": "Describes what makes a company's product or service different and more attractive to customers than competitors.  \n- Focuses on factors that give the company a competitive advantage  \n- Highlights the company's key benefits or features  \n- Explains why customers should choose their offering over others",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 236,
+    "code": "PM:209",
+    "name": "Build product/service brand (PM:209) (MN)",
+    "definition": "Creating a strong brand for a product or service by establishing a recognizable identity and positive reputation, including:\n- Developing a brand name and logo\n- Communicating the brand's value and benefits\n- Promoting brand awareness and customer loyalty",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "MN",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 237,
+    "code": "PR:001",
+    "name": "Explain the role of promotion as a marketing function (PR:001) (CS)",
+    "definition": "Promotion is a marketing function that involves communicating with target audiences to inform, persuade, and remind them about products or services.  \n- Includes advertising, public relations, sales promotion, and personal selling  \n- Helps build brand awareness and customer interest  \n- Supports the overall marketing strategy by influencing consumer purchasing decisions",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 238,
+    "code": "PR:002",
+    "name": "Explain the types of promotion (i.e., institutional, product) (PR:002) (CS)",
+    "definition": "The different methods used to inform, persuade, or remind customers about a business, product, or service. These include:\n- Institutional promotion, which builds the organization's image and reputation\n- Product promotion, which highlights the features and benefits of a specific product or service",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 239,
+    "code": "PR:003",
+    "name": "Identify the elements of the promotional mix (PR:003) (SP)",
+    "definition": "The elements of the promotional mix are the different tools businesses use to promote their products or services. These include:\n- Advertising\n- Personal selling\n- Public relations\n- Sales promotion\n- Direct marketing",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 240,
+    "code": "PR:007",
+    "name": "Explain types of advertising media (PR:007) (SP)",
+    "definition": "The different channels or methods used to deliver advertising messages to consumers.  \n  - Print media (e.g., newspapers, magazines)  \n  - Broadcast media (e.g., TV, radio)  \n  - Digital media (e.g., social media, websites)",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 241,
+    "code": "PR:247",
+    "name": "Describe word-of-mouth channels used to communicate with targeted audiences (PR:247) (SP)",
+    "definition": "This involves explaining the methods through which a business uses informal communication to share information and influence targeted audiences.  \n- Examples include:  \n   - Social media sharing  \n   - Customer recommendations  \n   - Online reviews",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 242,
+    "code": "PR:089",
+    "name": "Explain the nature of direct marketing channels (PR:089) (SP)",
+    "definition": "Direct marketing channels involve selling products straight to consumers without intermediaries, allowing for direct interaction and transaction. Examples include:\n- Mail-order catalogs\n- Telephone sales\n- Online direct sales",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 243,
+    "code": "PR:249",
+    "name": "Identify communications channels used in sales promotion (PR:249) (SP)",
+    "definition": "The process of recognizing the different methods used to communicate promotional messages.  \n- Advertising  \n- Public relations (PR)  \n- Personal selling",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 244,
+    "code": "PR:250",
+    "name": "Explain communications channels used in public-relations activities (PR:250) (SP)",
+    "definition": "The methods or platforms used to share information and promote a company's public image. These include:\n- Press releases\n- Social media\n- Newsletters",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 245,
+    "code": "PR:252",
+    "name": "Identify types of public-relations activities (PR:252) (SP)",
+    "definition": "A category of activities aimed at maintaining a positive image and building relationships with the public. Includes:\n  - Press releases\n  - Community events\n  - Media outreach",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "SP",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  },
+  {
+    "id": 246,
+    "code": "SE:017",
+    "name": "Explain the nature and scope of the selling function (SE:017) (CS)",
+    "definition": "The selling function involves activities related to persuading customers to purchase products or services. It includes:\n- Determining customer needs\n- Presenting product features and benefits\n- Closing sales and providing after-sales service",
+    "cluster": "",
+    "category": "Entrepreneurship",
+    "level": "CS",
+    "event": [
+      "ENT",
+      "ETDM",
+      "PEN"
+    ]
+  }
+]

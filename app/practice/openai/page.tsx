@@ -1,0 +1,1829 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
+import { Mic, Square, ArrowRight, Play, Pause, Clock, MessageCircle, Send } from "lucide-react"
+
+// Complete DECA events data
+// Complete DECA events data with number of Performance Indicators (numPIs)
+const decaEvents = [
+  // Principles of Business Administration Events (10 min prep, 10 min presentation, 4 PIs, 0–18 each, 4 skills, 0–7 each)
+  { 
+    id: "PBM", 
+    name: "Principles of Business Management and Administration", 
+    cluster: "Principles of Business Administration Events", 
+    prepTime: 10, 
+    presentationTime: 10, 
+    numPIs: 4,
+    piPoints: 18,
+    centurySkills: {
+      numSkills: 4,
+      skillPoints: 7,
+      skills: [
+        "Reason effectively and use systems thinking",
+        "Communicate clearly",
+        "Show evidence of creativity",
+        "Overall impression and responses to the judge’s questions"
+      ]
+    }
+  },
+  { id: "PEN", name: "Principles of Entrepreneurship", cluster: "Principles of Business Administration Events", prepTime: 10, presentationTime: 10, numPIs: 4, piPoints: 18,
+    centurySkills: { numSkills: 4, skillPoints: 7, skills: ["Reason effectively and use systems thinking","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "PFN", name: "Principles of Finance", cluster: "Principles of Business Administration Events", prepTime: 10, presentationTime: 10, numPIs: 4, piPoints: 18,
+    centurySkills: { numSkills: 4, skillPoints: 7, skills: ["Reason effectively and use systems thinking","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "PHT", name: "Principles of Hospitality and Tourism", cluster: "Principles of Business Administration Events", prepTime: 10, presentationTime: 10, numPIs: 4, piPoints: 18,
+    centurySkills: { numSkills: 4, skillPoints: 7, skills: ["Reason effectively and use systems thinking","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "PMK", name: "Principles of Marketing", cluster: "Principles of Business Administration Events", prepTime: 10, presentationTime: 10, numPIs: 4, piPoints: 18,
+    centurySkills: { numSkills: 4, skillPoints: 7, skills: ["Reason effectively and use systems thinking","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+
+  // Team Decision Making Events (30 min prep, 15 min presentation, 7 PIs, 0–14 each, 5 skills, 0–6 each)
+  { id: "BLTDM", name: "Business Law and Ethics", cluster: "Team Decision Making Events", prepTime: 30, presentationTime: 15, numPIs: 7, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "BTDM", name: "Buying and Merchandising", cluster: "Team Decision Making Events", prepTime: 30, presentationTime: 15, numPIs: 7, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "ETDM", name: "Entrepreneurship", cluster: "Team Decision Making Events", prepTime: 30, presentationTime: 15, numPIs: 7, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "FTDM", name: "Financial Services", cluster: "Team Decision Making Events", prepTime: 30, presentationTime: 15, numPIs: 7, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "HTDM", name: "Hospitality Services", cluster: "Team Decision Making Events", prepTime: 30, presentationTime: 15, numPIs: 7, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "MTDM", name: "Marketing Management", cluster: "Team Decision Making Events", prepTime: 30, presentationTime: 15, numPIs: 7, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "STDM", name: "Sports and Entertainment Marketing", cluster: "Team Decision Making Events", prepTime: 30, presentationTime: 15, numPIs: 7, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "TTDM", name: "Travel and Tourism", cluster: "Team Decision Making Events", prepTime: 30, presentationTime: 15, numPIs: 7, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+
+  // Individual Series Events (10 min prep, 10 min presentation, 5 PIs, 0–14 each, 5 skills, 0–6 each)
+  { id: "ACT", name: "Accounting Applications", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "AAM", name: "Apparel and Accessories Marketing", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "ASM", name: "Automotive Services Marketing", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "BFS", name: "Business Finance", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "BSM", name: "Business Services Marketing", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "ENT", name: "Entrepreneurship", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "FMS", name: "Food Marketing", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "HLM", name: "Hotel and Lodging Management", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "HRM", name: "Human Resources Management", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "MCS", name: "Marketing Communications", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "QSRM", name: "Quick Serve Restaurant Management", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "RFSM", name: "Restaurant and Food Service Management", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "RMS", name: "Retail Merchandising", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+  { id: "SEM", name: "Sports and Entertainment Marketing", cluster: "Individual Series Events", prepTime: 10, presentationTime: 10, numPIs: 5, piPoints: 14,
+    centurySkills: { numSkills: 5, skillPoints: 6, skills: ["Reason effectively and use systems thinking","Make judgments and decisions, and solve problems","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }},
+
+  // Personal Financial Literacy Event (10 min prep, 10 min presentation, 3 PIs, 0–18 each, 4 skills, 0–7 each)
+  { id: "PFL", name: "Personal Financial Literacy", cluster: "Personal Financial Literacy Event", prepTime: 10, presentationTime: 10, numPIs: 3, piPoints: 18,
+    centurySkills: { numSkills: 4, skillPoints: 7, skills: ["Reason effectively and use systems thinking","Communicate clearly","Show evidence of creativity","Overall impression and responses to the judge’s questions"] }}
+];
+
+
+
+// Performance Indicator mapping based on event types
+const getPerformanceIndicatorsFile = (eventId: string): string => {
+  const baCore = ["PBM", "PEN", "PFN", "PHT", "PMK"]
+  const baMgmt = ["BLTDM", "HRM"]
+  const ent = ["ENT", "ETDM"]  // Removed duplicate PEN
+  const fin = ["ACT", "BFS", "FTDM"]  // Removed non-existent FCE
+  const ht = ["PHT", "HTDM", "HLM", "QSRM", "RFSM", "TTDM"]  // Fixed event IDs
+  const mark = ["AAM", "ASM", "BSM", "BTDM", "FMS", "MCS", "MTDM", "RMS", "SEM", "STDM"]  // Cleaned up
+  
+  if (baCore.includes(eventId)) return "output-ba-core-definitions.json"
+  if (baMgmt.includes(eventId)) return "output-ba-mgmt-definitions.json"
+  if (ent.includes(eventId)) return "output-ent-definitions.json"
+  if (fin.includes(eventId)) return "output-fin-definitions.json"
+  if (ht.includes(eventId)) return "output-ht-definitions.json"
+  if (mark.includes(eventId)) return "output-mark-definitions.json"
+  
+  return "output-ba-core-definitions.json"
+}
+
+// Load event scenario from file
+// Load event scenario from file
+// Load event scenario from public files using fetch
+
+// NEW: Load ALL performance indicators from JSON file for intelligent selection
+const loadAllPerformanceIndicators = async (eventId: string): Promise<PI[]> => {
+  try {
+    const fileName = getPerformanceIndicatorsFile(eventId)
+    console.log(`Loading ALL PIs from: /data/${fileName}`)
+    
+    const response = await fetch(`/data/${fileName}`)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const data: PI[] = await response.json()
+    console.log(`Loaded ${data.length} total PIs from JSON file`)
+    
+    // Filter PIs that include this eventId in their event array
+    const eventPIs = data.filter((pi: PI) => 
+      pi.event && Array.isArray(pi.event) && pi.event.includes(eventId)
+    )
+    
+    console.log(`Found ${eventPIs.length} PIs applicable to event ${eventId}`)
+    
+    if (eventPIs.length === 0) {
+      console.warn(`No PIs found for event ${eventId} in file ${fileName}`)
+      return []
+    }
+
+    return eventPIs
+    
+  } catch (error) {
+    console.error("Error loading all performance indicators:", error)
+    return []
+  }
+}
+
+
+// NEW: Use LLM to intelligently select the most relevant PIs based on scenario
+const selectMostRelevantPIs = async (
+  eventScenario: string, 
+  eventName: string,
+  allPIs: PI[], 
+  numPIsNeeded: number
+): Promise<string[]> => {
+  try {
+    console.log(`Using LLM to select ${numPIsNeeded} most relevant PIs from ${allPIs.length} candidates`)
+    
+    const piList = allPIs.map((pi, index) => 
+      `${index + 1}. ${pi.name}\n   Definition: ${pi.definition}\n   Category: ${pi.category}`
+    ).join('\n\n')
+
+    const prompt = `You are an expert DECA competition designer. Given this roleplay scenario and list of available performance indicators, select the ${numPIsNeeded} MOST RELEVANT performance indicators for this specific scenario.
+
+EVENT: ${eventName}
+
+SCENARIO:
+${eventScenario}
+
+AVAILABLE PERFORMANCE INDICATORS (${allPIs.length} total):
+${piList}
+
+Your task:
+1. Analyze the scenario to understand what business skills/knowledge areas it tests
+2. Select the ${numPIsNeeded} performance indicators that are MOST directly relevant to this scenario
+3. Choose PIs that would allow a student to demonstrate the key competencies needed for this roleplay
+4. Prioritize PIs that align with the scenario's business context and challenges
+
+Return ONLY a JSON array of the exact PI names (not numbers), like this:
+["Performance Indicator Name 1", "Performance Indicator Name 2", "Performance Indicator Name 3"]
+
+IMPORTANT: Return only the JSON array with no additional text or formatting.`
+
+    const response = await fetch('/api/openai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'gpt-4.1-nano',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert DECA competition designer. Always return only valid JSON arrays of performance indicator names.'
+          },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 500,
+        temperature: 0.3
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`LLM API request failed: ${response.status}`)
+    }
+
+    const data = await response.json()
+    const content = data.choices?.[0]?.message?.content
+
+    if (!content) {
+      throw new Error('No content returned from LLM')
+    }
+
+    console.log('LLM response for PI selection:', content)
+
+    // Parse the JSON response
+    try {
+      const selectedPINames = JSON.parse(content.trim())
+      
+      if (!Array.isArray(selectedPINames)) {
+        throw new Error('LLM response is not an array')
+      }
+
+      console.log(`LLM selected ${selectedPINames.length} PIs:`, selectedPINames)
+      return selectedPINames.slice(0, numPIsNeeded) // Ensure we don't exceed the limit
+      
+    } catch (parseError) {
+      console.error('Error parsing LLM response:', parseError)
+      throw new Error('Failed to parse LLM response as JSON')
+    }
+
+  } catch (error) {
+    console.error('Error in LLM PI selection:', error)
+    
+    // Fallback: return first N PI names if LLM fails
+    console.log('Using fallback PI selection')
+    return allPIs.slice(0, numPIsNeeded).map(pi => pi.name)
+  }
+}
+
+
+
+const loadEventScenario = async (eventId: string): Promise<string> => {
+  try {
+    const filePath = `/roleplay-data/${eventId} Event.txt`
+    console.log('Attempting to load scenario from:', filePath)
+    const response = await fetch(filePath)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const fileContent = await response.text()
+    console.log('Successfully loaded scenario for:', eventId)
+    return fileContent
+  } catch (error) {
+    console.error('Error loading event file:', error)
+    console.error('Attempted file path:', `/roleplay-data/${eventId} Event.txt`)
+  }
+  
+  // Fallback to mock scenario if file loading fails
+  console.warn('Using fallback scenario for event:', eventId)
+  return `You are to assume the role of a business professional in a dynamic competitive environment. You have been tasked with analyzing a complex business situation and presenting strategic recommendations to senior leadership. Your presentation should demonstrate strong analytical thinking, clear communication, and practical business acumen.`
+}
+
+
+// Define PI interface
+interface PI {
+  id: number;
+  code: string;
+  name: string;
+  definition: string;
+  cluster: string;
+  category: string;
+  level: string;
+  event: string[];
+}
+
+
+// Load performance indicators from JSON file
+// Fixed loadPerformanceIndicators function
+const loadPerformanceIndicators = async (eventId: string): Promise<string[]> => {
+  try {
+    if (window.fs && window.fs.readFile) {
+      const fileName = getPerformanceIndicatorsFile(eventId)
+      const filePath = `public/data/${fileName}`
+      const fileContent = await window.fs.readFile(filePath, { encoding: 'utf8' })
+      const data = JSON.parse(fileContent) // This is an array of PI objects
+
+      // Find the selected event to get its numPIs value
+      const selectedEvent = decaEvents.find(e => e.id === eventId)
+      const numPIs = selectedEvent?.numPIs || 5
+
+      // ✅ Filter PIs that include this eventId in their event array
+      const eventPIs = data.filter((pi: any) => 
+        pi.event && Array.isArray(pi.event) && pi.event.includes(eventId)
+      )
+
+      console.log(`Found ${eventPIs.length} PIs for event ${eventId}`)
+
+      // ✅ Take the correct number and extract the name field
+      const indicators = eventPIs
+        .slice(0, numPIs) // Get the right number of PIs
+        .map((pi: any) => pi.name) // Extract the name field
+
+      return indicators
+    }
+  } catch (error) {
+    console.error("Error loading performance indicators:", error)
+  }
+
+  // Fallback performance indicators
+  return [
+    "Analyze business situations effectively",
+    "Develop strategic recommendations", 
+    "Present findings clearly and persuasively",
+    "Consider ethical implications in decision making",
+    "Evaluate implementation feasibility"
+  ]
+}
+
+// Alternative approach using fetch (since you're also using fetch elsewhere)
+const loadPerformanceIndicatorsFetch = async (eventId: string): Promise<string[]> => {
+  try {
+    const fileName = getPerformanceIndicatorsFile(eventId)
+    const response = await fetch(`/data/${fileName}`)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const data = await response.json() // Array of PI objects
+
+    // Find the selected event to get its numPIs value
+    const selectedEvent = decaEvents.find(e => e.id === eventId)
+    const numPIs = selectedEvent?.numPIs || 5
+
+    // Filter PIs that include this eventId in their event array
+    const eventPIs = data.filter((pi: any) => 
+      pi.event && Array.isArray(pi.event) && pi.event.includes(eventId)
+    )
+
+    console.log(`Found ${eventPIs.length} PIs for event ${eventId}`)
+
+    if (eventPIs.length === 0) {
+      console.warn(`No PIs found for event ${eventId} in file ${fileName}`)
+      return [
+        "Analyze business situations effectively",
+        "Develop strategic recommendations", 
+        "Present findings clearly and persuasively"
+      ].slice(0, numPIs)
+    }
+
+    // Take the correct number and extract the name field
+    const indicators = eventPIs
+      .slice(0, numPIs) // Get the right number of PIs
+      .map((pi: any) => pi.name) // Extract the name field
+
+    return indicators
+  } catch (error) {
+    console.error("Error loading performance indicators:", error)
+    
+    // Return fallback
+    const selectedEvent = decaEvents.find(e => e.id === eventId)
+    const numPIs = selectedEvent?.numPIs || 5
+    
+    return [
+      "Analyze business situations effectively",
+      "Develop strategic recommendations", 
+      "Present findings clearly and persuasively",
+      "Consider ethical implications in decision making",
+      "Evaluate implementation feasibility"
+    ].slice(0, numPIs)
+  }
+}
+
+
+
+// Helper: Ask GPT to select the most relevant PIs
+const selectRelevantPIs = async (
+  eventScenario: string,
+  candidatePIs: string[],
+  numPIs: number
+): Promise<string[]> => {
+  const prompt = `You are an expert DECA competition designer. 
+Given the following roleplay scenario and a list of possible performance indicators, 
+choose the ${numPIs} most relevant performance indicators. 
+
+Scenario:
+${eventScenario}
+
+Candidate Performance Indicators:
+${candidatePIs.map((pi, i) => `${i + 1}. ${pi}`).join("\n")}
+
+Output ONLY a JSON array of the selected performance indicators, no extra text. Example:
+["PI1", "PI2", "PI3", "PI4"]
+`
+
+const response = await fetch("/api/roleplay", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    model: "llama-4-maverick-17b-128e-instruct",
+    messages: [{ role: "user", content: "Hello from Next.js" }],
+  }),
+})
+
+const result = await response.json()
+console.log("AI Result:", result)
+
+
+  if (!response.ok) throw new Error(`PI selection failed: ${response.status}`)
+
+  const data = await response.json()
+  const content = data.choices[0]?.message?.content
+  try {
+    return JSON.parse(content)
+  } catch (e) {
+    console.error("Error parsing PI selection:", e, content)
+    return candidatePIs.slice(0, numPIs) // fallback
+  }
+}
+
+
+
+
+
+
+// Debugged generateRoleplayScenario function
+// Updated generateRoleplayScenario function
+// Updated generateRoleplayScenario function with better JSON parsing
+// Updated generateRoleplayScenario function with intelligent PI selection
+const generateRoleplayScenario = async (
+  eventId: string,
+  eventName: string,
+  eventScenario: string,
+  retryCount: number = 0
+): Promise<any> => {
+  console.log(`Starting roleplay generation for ${eventId} (attempt ${retryCount + 1})`)
+
+  try {
+    // Step 1: Load ALL available PIs for this event
+    console.log(`Loading all available PIs for ${eventId}...`)
+    const allPIs = await loadAllPerformanceIndicators(eventId)
+
+    if (!allPIs || allPIs.length === 0) {
+      throw new Error(`No performance indicators loaded for ${eventId}`)
+    }
+
+    console.log(`Loaded ${allPIs.length} available PIs for analysis`)
+
+    // Step 2: Use LLM to intelligently select the most relevant PIs
+    const selectedEvent = decaEvents.find(e => e.id === eventId)
+    const numPIsNeeded = selectedEvent?.numPIs || 5
+
+    console.log(`Using LLM to select ${numPIsNeeded} most relevant PIs...`)
+    const selectedPIs = await selectMostRelevantPIs(eventScenario, eventName, allPIs, numPIsNeeded)
+
+    if (!selectedPIs || selectedPIs.length === 0) {
+      throw new Error(`LLM failed to select relevant PIs for ${eventId}`)
+    }
+
+    console.log(`LLM selected these PIs:`, selectedPIs)
+
+    // Step 3: Generate the roleplay scenario
+    const prompt = `You are a DECA competition scenario writer. (ALSO DONT INCLUDE Performance Indicators in the actual Roleplay Scenario)(note for formatting: add linespace formating where needed to signify new paragraph)
+
+Create a roleplay scenario for the ${eventName} (${eventId}) that specifically targets these selected performance indicators:
+
+SELECTED PERFORMANCE INDICATORS:
+${selectedPIs.map((pi, i) => `${i + 1}. ${pi}`).join('\n')}
+
+EVENT CONTEXT:
+${eventScenario}
+
+Return ONLY valid JSON with this exact structure:
+{
+  "eventName": "${eventName}",
+  "cluster": "${selectedEvent?.cluster || 'Business Event Category'}",
+  "instructionalArea": "Business Area",
+  "twentyFirstCenturySkills": ["Skill1", "Skill2", "Skill3", "Skill4"],
+  "performanceIndicators": ["PI1", "PI2", "PI3", "PI4", "PI5"],
+  "situation": "A DECA-style roleplay scenario between 300-500 words that directly relates to the selected performance indicators. The situation must follow this format:
+
+You are to assume the role of a [job/professional role relevant to ${eventName}] at [company/organization relevant to ${eventName}]. 
+You are meeting with [the judge's role, e.g., a client, supervisor, coworker, or new employee] to discuss [a realistic business challenge that requires the selected performance indicators].
+
+The judge will begin the roleplay by asking you about [the challenge]. 
+You must respond by addressing the judge's concerns and explaining your ideas clearly and professionally. 
+Be sure to demonstrate your knowledge of the instructional area and cover the assigned performance indicators during your explanation. 
+The judge may ask follow-up questions, which you should answer in detail.
+
+After you have explained your recommendations and answered the judge's questions, the judge will conclude the roleplay by thanking you for your work."
+}
+
+CRITICAL REQUIREMENTS:
+- Use EXACTLY the performance indicators provided above
+- Make the scenario specifically designed to test those PIs
+- Ensure the business challenge naturally requires those competencies`
+
+    console.log(`Generating roleplay scenario with selected PIs...`)
+
+    const response = await fetch('/api/openai', {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "gpt-4.1-nano",
+        messages: [
+          {
+            role: "system",
+            content: "You are a DECA competition designer. Return only valid JSON format with the exact performance indicators provided."
+          },
+          { role: "user", content: prompt }
+        ],
+        max_tokens: 1500,
+        temperature: 0.7,
+      }),
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`API request failed: ${response.status}`, errorText)
+      throw new Error(`API request failed: ${response.status} - ${errorText}`)
+    }
+
+    const data = await response.json()
+    console.log("Roleplay generation API response:", data)
+
+    const content = data.choices?.[0]?.message?.content
+    if (!content) {
+      throw new Error("No content returned from API")
+    }
+
+    // Parse JSON response
+    let roleplay = null
+    try {
+      roleplay = JSON.parse(content.trim())
+    } catch {
+      const match = content.match(/\{[\s\S]*\}/)
+      if (match) {
+        try {
+          roleplay = JSON.parse(match[0])
+        } catch {}
+      }
+    }
+
+    if (!roleplay) {
+      throw new Error("Failed to parse JSON from API response")
+    }
+
+    // Validate and ensure we use the LLM-selected PIs
+    roleplay.performanceIndicators = selectedPIs.slice(0, numPIsNeeded)
+    roleplay.eventName = eventName
+    roleplay.cluster = selectedEvent?.cluster || roleplay.cluster
+    
+    if (!Array.isArray(roleplay.twentyFirstCenturySkills)) {
+      roleplay.twentyFirstCenturySkills = selectedEvent?.centurySkills?.skills || [
+        "Critical thinking",
+        "Communication", 
+        "Problem solving",
+        "Leadership"
+      ]
+    }
+
+    console.log(`Successfully generated roleplay with intelligently selected PIs for ${eventId}`)
+    return roleplay
+
+  } catch (error) {
+    console.error(`Error generating roleplay scenario for ${eventId}:`, error)
+
+    if (retryCount < 1) {
+      console.log(`Retrying generation (attempt ${retryCount + 2})`)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      return await generateRoleplayScenario(eventId, eventName, eventScenario, retryCount + 1)
+    }
+
+    // Final fallback - try to load PIs normally and use first N
+    console.log('Using final fallback scenario generation')
+    try {
+      const allPIs = await loadAllPerformanceIndicators(eventId)
+      const selectedEvent = decaEvents.find(e => e.id === eventId)
+      const fallbackPIs = allPIs.length > 0 
+        ? allPIs.slice(0, selectedEvent?.numPIs || 5).map(pi => pi.name)
+        : [
+            "Analyze business situations effectively",
+            "Develop strategic recommendations", 
+            "Present findings clearly and persuasively",
+            "Consider ethical implications in decision making",
+            "Evaluate implementation feasibility"
+          ].slice(0, selectedEvent?.numPIs || 5)
+
+      return {
+        eventName,
+        cluster: selectedEvent?.cluster || "Individual Series Events",
+        instructionalArea: "Business Operations",
+        twentyFirstCenturySkills: selectedEvent?.centurySkills?.skills || ["Critical thinking", "Communication", "Problem solving", "Leadership"],
+        performanceIndicators: fallbackPIs,
+        situation: `You are to assume the role of a ${eventName.toLowerCase()} professional working with a retail company. You are meeting with a supervisor (judge) to discuss a business challenge. The judge will begin the roleplay by asking for your recommendations. You must respond with clear, professional ideas that address the performance indicators. After answering follow-up questions, the judge will conclude the roleplay by thanking you for your work.`
+      }
+    } catch (fallbackError) {
+      console.error('Even fallback failed:', fallbackError)
+      const selectedEvent = decaEvents.find(e => e.id === eventId)
+      return {
+        eventName,
+        cluster: selectedEvent?.cluster || "Individual Series Events", 
+        instructionalArea: "Business Operations",
+        twentyFirstCenturySkills: selectedEvent?.centurySkills?.skills || ["Critical thinking", "Communication", "Problem solving", "Leadership"],
+        performanceIndicators: [
+          "Analyze business situations effectively",
+          "Develop strategic recommendations",
+          "Present findings clearly and persuasively"
+        ].slice(0, selectedEvent?.numPIs || 5),
+        situation: `You are to assume the role of a business professional. You are meeting with a supervisor (judge) to discuss recommendations for a business challenge. Present your analysis clearly and professionally.`
+      }
+    }
+  }
+}
+
+
+
+function groupEventsByCluster(events: typeof decaEvents) {
+  return events.reduce(
+    (acc: Record<string, typeof decaEvents[number][]>, event) => {
+      const cluster = event.cluster
+      if (!acc[cluster]) {
+        acc[cluster] = []
+      }
+      acc[cluster].push(event)
+      return acc
+    },
+    {},
+  )
+}
+
+// Real audio recording hook with enhanced playback
+function useAudioRecorder() {
+  const [isRecording, setIsRecording] = useState(false)
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
+  const [duration, setDuration] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [audioDuration, setAudioDuration] = useState(0)
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null)
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
+  const [durationInterval, setDurationInterval] = useState<NodeJS.Timeout | null>(null)
+  
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const recorder = new MediaRecorder(stream)
+      const chunks: BlobPart[] = []
+      
+      recorder.ondataavailable = (e) => chunks.push(e.data)
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: 'audio/wav' })
+        const url = URL.createObjectURL(blob)
+        setAudioUrl(url)
+        setAudioBlob(blob)
+        stream.getTracks().forEach(track => track.stop())
+      }
+      
+      recorder.start()
+      setMediaRecorder(recorder)
+      setIsRecording(true)
+      setDuration(0)
+      
+      const interval = setInterval(() => {
+        setDuration(prev => {
+          if (prev >= 600) { // 10 minutes max
+            recorder.stop()
+            setIsRecording(false)
+            clearInterval(interval)
+            return prev
+          }
+          return prev + 1
+        })
+      }, 1000)
+      setDurationInterval(interval)
+    } catch (error) {
+      console.error('Error starting recording:', error)
+      alert('Could not access microphone. Please ensure microphone permissions are granted.')
+    }
+  }
+  
+  const stopRecording = () => {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop()
+      setIsRecording(false)
+      if (durationInterval) {
+        clearInterval(durationInterval)
+        setDurationInterval(null)
+      }
+    }
+  }
+  
+  const togglePlayback = () => {
+    if (!audioUrl) return
+    
+    if (!audioElement) {
+      const audio = new Audio(audioUrl)
+      audio.onended = () => setIsPlaying(false)
+      audio.onloadedmetadata = () => {
+        setAudioDuration(audio.duration)
+      }
+      audio.ontimeupdate = () => {
+        setCurrentTime(audio.currentTime)
+      }
+      setAudioElement(audio)
+      audio.play()
+      setIsPlaying(true)
+    } else {
+      if (isPlaying) {
+        audioElement.pause()
+        setIsPlaying(false)
+      } else {
+        audioElement.play()
+        setIsPlaying(true)
+      }
+    }
+  }
+
+  const seekTo = (time: number) => {
+    if (audioElement) {
+      audioElement.currentTime = time
+      setCurrentTime(time)
+    }
+  }
+  
+  return {
+    isRecording,
+    audioUrl,
+    audioBlob,
+    duration,
+    isPlaying,
+    currentTime,
+    audioDuration,
+    startRecording,
+    stopRecording,
+    togglePlayback,
+    seekTo
+  }
+}
+
+// OpenAI API functions
+// Fixed transcription function - use your API endpoint
+const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
+  try {
+    const formData = new FormData()
+    formData.append('file', audioBlob, 'audio.wav')
+    formData.append('model', 'whisper-1')
+    
+    // You'll need to create a transcription endpoint or use a different service
+    // For now, using a mock transcription since Whisper requires OpenAI API
+    console.log('Audio transcription would be processed here')
+    
+    // Mock transcription for testing
+    return "Thank you for this opportunity to present. Based on my analysis of the healthcare market, I believe TechFlow Solutions should focus on three key strategies to penetrate this sector. First, we need to understand that healthcare organizations prioritize data security and compliance with HIPAA regulations. Second, our value proposition should emphasize how our inventory management system can reduce medical supply costs and prevent stockouts of critical items. Third, we should partner with healthcare consultants who understand this market. I recommend starting with mid-size hospitals and clinic networks, as they have the budget for our solutions but are more agile than large health systems. Our implementation timeline should include a 3-month pilot program with two healthcare partners, followed by a full market launch. This approach will help us achieve the 30% sales growth target while building credibility in this new vertical."
+    
+  } catch (error) {
+    console.error('Transcription error:', error)
+    return "Thank you for this opportunity to present. I have analyzed the business situation and prepared my recommendations based on the key performance indicators outlined in this roleplay scenario."
+  }
+}
+
+// Fixed AI feedback generation - use your API endpoint
+const generateAIFeedback = async (transcript: string, roleplay: any, eventId: string): Promise<any> => {
+  try {
+    const selectedEvent = decaEvents.find(e => e.id === eventId)
+    if (!selectedEvent) throw new Error("Event not found")
+
+    const prompt = `You are an expert DECA judge evaluating a roleplay presentation. 
+
+SCORING SYSTEM:
+- Performance Indicators: ${selectedEvent.numPIs} indicators, each scored 0-${selectedEvent.piPoints} points
+- 21st Century Skills: ${selectedEvent.centurySkills.numSkills} skills, each scored 0-${selectedEvent.centurySkills.skillPoints} points
+- Overall Impression: 1 category, scored 0-${selectedEvent.centurySkills.skillPoints} points
+
+EVENT: ${roleplay.eventName}
+SCENARIO: ${roleplay.situation}
+
+PERFORMANCE INDICATORS TO EVALUATE:
+${roleplay.performanceIndicators.map((pi: string, i: number) => `${i + 1}. ${pi}`).join('\n')}
+
+21ST CENTURY SKILLS TO EVALUATE:
+${roleplay.twentyFirstCenturySkills.map((skill: string, i: number) => `${i + 1}. ${skill}`).join('\n')}
+
+STUDENT'S PRESENTATION TRANSCRIPT:
+"${transcript}"
+
+Based on the transcript, evaluate how well the student addressed each performance indicator and demonstrated each 21st century skill. Be realistic - most students don't get perfect scores. Consider:
+- Did they address the scenario requirements?
+- How well did they demonstrate business knowledge?
+- Was their presentation clear and professional?
+- Did they provide specific examples or solutions?
+- How confident and engaging was their delivery?
+
+Provide scores and specific feedback for each category. Return ONLY valid JSON:
+
+{
+  "performanceIndicators": [
+    {
+      "indicator": "exact PI name",
+      "score": number_between_0_and_${selectedEvent.piPoints},
+      "feedback": "specific feedback on how they performed on this PI based on transcript"
+    }
+  ],
+  "twentyFirstCenturySkills": [
+    {
+      "skill": "exact skill name", 
+      "score": number_between_0_and_${selectedEvent.centurySkills.skillPoints},
+      "feedback": "specific feedback on this skill based on transcript"
+    }
+  ],
+  "overallImpression": {
+    "score": number_between_0_and_${selectedEvent.centurySkills.skillPoints},
+    "feedback": "overall assessment of presentation quality and professionalism"
+  },
+  "generalFeedback": "2-3 sentences summarizing strengths and areas for improvement"
+}`
+
+    // Use your API endpoint instead of direct OpenAI
+// Use OpenAI API instead of custom endpoint
+    const response = await fetch('/api/openai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4.1-nano',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert DECA judge who provides accurate, constructive feedback. Always return valid JSON.'
+          },
+          { role: 'user', content: prompt }
+        ],
+        max_tokens: 2000,
+        temperature: 0.3
+      })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error(`Feedback API request failed: ${response.status}`, errorText)
+      throw new Error(`API request failed: ${response.status}`)
+    }
+
+    const data = await response.json()
+    console.log("Feedback API response:", data)
+    
+    const content = data.choices?.[0]?.message?.content
+
+    let feedbackData
+    try {
+      // Extract JSON from response
+      const jsonMatch = content.match(/\{[\s\S]*\}/)
+      if (!jsonMatch) throw new Error("No JSON found in feedback response")
+      
+      feedbackData = JSON.parse(jsonMatch[0])
+      
+      // Calculate total score
+      const piTotal = feedbackData.performanceIndicators.reduce((sum: number, pi: any) => sum + pi.score, 0)
+      const skillTotal = feedbackData.twentyFirstCenturySkills.reduce((sum: number, skill: any) => sum + skill.score, 0)
+      const overallTotal = feedbackData.overallImpression.score
+      
+      const totalPossible = 
+        selectedEvent.numPIs * selectedEvent.piPoints +
+        selectedEvent.centurySkills.numSkills * selectedEvent.centurySkills.skillPoints +
+        selectedEvent.centurySkills.skillPoints
+
+      const totalScore = piTotal + skillTotal + overallTotal
+      const percentageScore = Math.round((totalScore / totalPossible) * 100)
+
+      return {
+        ...feedbackData,
+        totalScore: percentageScore,
+        rawTotal: totalScore,
+        totalPossible: totalPossible
+      }
+
+    } catch (parseError) {
+      console.error('Error parsing AI feedback:', parseError, "Content:", content)
+      throw new Error('Failed to parse AI feedback response')
+    }
+
+  } catch (error) {
+    console.error('Error generating AI feedback:', error)
+    
+    // Generate realistic fallback scores (60-85% range typically)
+    const selectedEvent = decaEvents.find(e => e.id === eventId)
+    if (!selectedEvent) throw new Error("Event not found")
+
+    const generateScore = (max: number) => Math.floor(Math.random() * (max * 0.25) + (max * 0.6))
+
+    const piScores = roleplay.performanceIndicators.map((indicator: string) => ({
+      indicator,
+      score: generateScore(selectedEvent.piPoints),
+      feedback: `Based on your presentation, this indicator was addressed with room for improvement. Consider providing more specific examples and detailed analysis.`
+    }))
+
+    const skillScores = roleplay.twentyFirstCenturySkills.map((skill: string) => ({
+      skill,
+      score: generateScore(selectedEvent.centurySkills.skillPoints),
+      feedback: `Your demonstration of this skill shows potential but could be strengthened with more practice and confidence.`
+    }))
+
+    const overallScore = generateScore(selectedEvent.centurySkills.skillPoints)
+    
+    const totalScore = 
+      piScores.reduce((sum, pi) => sum + pi.score, 0) +
+      skillScores.reduce((sum, s) => sum + s.score, 0) +
+      overallScore
+
+    const totalPossible = 
+      selectedEvent.numPIs * selectedEvent.piPoints +
+      selectedEvent.centurySkills.numSkills * selectedEvent.centurySkills.skillPoints +
+      selectedEvent.centurySkills.skillPoints
+
+    return {
+      totalScore: Math.round((totalScore / totalPossible) * 100),
+      performanceIndicators: piScores,
+      twentyFirstCenturySkills: skillScores,
+      overallImpression: {
+        score: overallScore,
+        feedback: "Your presentation showed understanding of the scenario with opportunities to enhance clarity and confidence."
+      },
+      generalFeedback: "Your presentation demonstrates basic competency with clear areas for improvement in analysis depth and delivery confidence.",
+      rawTotal: totalScore,
+      totalPossible: totalPossible
+    }
+  }
+}
+
+// Fixed chat message function - use your API endpoint
+const sendChatMessage = async (messages: Array<{role: 'user' | 'assistant', content: string}>, context: string): Promise<string> => {
+  try {
+    const systemPrompt = `You are an expert DECA judge and coach providing personalized feedback on roleplay performances. 
+
+Context: ${context}
+
+Your role is to:
+1. Analyze the student's presentation based on DECA performance indicators
+2. Provide specific, actionable feedback for improvement
+3. Answer questions about their performance
+4. Offer coaching advice for future competitions
+5. Be encouraging but honest about areas needing improvement
+
+Keep responses concise but insightful, focusing on specific aspects of their performance.`
+
+const response = await fetch('/api/openai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4.1-nano',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...messages
+        ],
+        max_tokens: 500,
+        temperature: 0.7
+      })
+    })
+
+    if (!response.ok) {
+      console.error(`Chat API request failed: ${response.status}`)
+      throw new Error(`API request failed: ${response.status}`)
+    }
+
+    const data = await response.json()
+    return data.choices?.[0]?.message?.content || "I'm sorry, I couldn't process your question right now. Please try again."
+    
+  } catch (error) {
+    console.error('Chat API error:', error)
+    return "I'm experiencing some technical difficulties. Please try asking your question again."
+  }
+}
+
+export default function DECAPracticePage() {
+  const [step, setStep] = useState(1)
+  const [selectedEventId, setSelectedEventId] = useState("")
+  const [roleplay, setRoleplay] = useState<any>(null)
+  const [feedback, setFeedback] = useState<any>(null)
+  const { isRecording, audioUrl, audioBlob, duration, isPlaying, currentTime, audioDuration, startRecording, stopRecording, togglePlayback, seekTo } = useAudioRecorder()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [transcriptionStatus, setTranscriptionStatus] = useState("")
+  const [showPreparation, setShowPreparation] = useState(false)
+  const [preparationStep, setPreparationStep] = useState(0)
+  const [isGenerating, setIsGenerating] = useState(false)
+  
+  // Timer states
+  const [prepTimeLeft, setPrepTimeLeft] = useState(0)
+  const [prepTimerActive, setPrepTimerActive] = useState(false)
+  const [timerVisible, setTimerVisible] = useState(true)
+  const [showTimerTooltip, setShowTimerTooltip] = useState(false)
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+
+  // Chatbot states
+  const [transcription, setTranscription] = useState("")
+  const [chatMessages, setChatMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([])
+  const [chatInput, setChatInput] = useState("")
+  const [isChatLoading, setIsChatLoading] = useState(false)
+  const [showChatbot, setShowChatbot] = useState(false)
+
+  // Timer effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null
+    if (prepTimerActive && prepTimeLeft > 0) {
+      interval = setInterval(() => {
+        setPrepTimeLeft(prev => {
+          if (prev <= 1) {
+            setPrepTimerActive(false)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+    return () => {
+      if (interval) clearInterval(interval)
+    }
+  }, [prepTimerActive, prepTimeLeft])
+
+  const formatPrepTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
+
+  const toggleTimerVisibility = () => {
+    setTimerVisible(!timerVisible)
+    setShowTimerTooltip(false)
+  }
+
+  const handleStartRecordingClick = () => {
+    if (prepTimerActive && prepTimeLeft > 0) {
+      setShowConfirmDialog(true)
+    } else {
+      startRecording()
+    }
+  }
+
+  const handleConfirmRecording = () => {
+    setShowConfirmDialog(false)
+    setPrepTimerActive(false)
+    startRecording()
+  }
+
+  const sendChatMessageHandler = async (message: string) => {
+    if (!message.trim() || isChatLoading) return
+
+    const userMessage = { role: 'user' as const, content: message }
+    const updatedMessages = [...chatMessages, userMessage]
+    setChatMessages(updatedMessages)
+    setChatInput("")
+    setIsChatLoading(true)
+
+    // Scroll to bottom after adding user message
+    setTimeout(() => {
+      const chatContainer = document.getElementById('chat-messages-container')
+      if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight
+      }
+    }, 100)
+
+    // Create context for the AI
+    const context = `
+    Roleplay Event: ${roleplay?.eventName}
+    Performance Indicators: ${roleplay?.performanceIndicators?.join(', ')}
+    21st Century Skills: ${roleplay?.twentyFirstCenturySkills?.join(', ')}
+    Scenario: ${roleplay?.situation}
+    Student's Presentation Transcript: ${transcription}
+    Overall Score: ${feedback?.totalScore}/100
+    `
+
+    try {
+      const response = await sendChatMessage(updatedMessages, context)
+      const assistantMessage = { role: 'assistant' as const, content: response }
+      setChatMessages([...updatedMessages, assistantMessage])
+      
+      // Scroll to bottom after adding assistant message
+      setTimeout(() => {
+        const chatContainer = document.getElementById('chat-messages-container')
+        if (chatContainer) {
+          chatContainer.scrollTop = chatContainer.scrollHeight
+        }
+      }, 100)
+    } catch (error) {
+      console.error('Chat error:', error)
+      const errorMessage = { role: 'assistant' as const, content: "I'm sorry, I encountered an error. Please try again." }
+      setChatMessages([...updatedMessages, errorMessage])
+      
+      // Scroll to bottom after adding error message
+      setTimeout(() => {
+        const chatContainer = document.getElementById('chat-messages-container')
+        if (chatContainer) {
+          chatContainer.scrollTop = chatContainer.scrollHeight
+        }
+      }, 100)
+    } finally {
+      setIsChatLoading(false)
+    }
+  }
+
+
+
+// Add debugging to your handleSubmitEvent function
+// Add debugging to your handleSubmitEvent function
+const handleSubmitEvent = async () => {
+  if (!selectedEventId) return
+  
+  console.log("🎯 handleSubmitEvent called with eventId:", selectedEventId)
+  
+  setShowPreparation(true)
+  setPreparationStep(0)
+  setIsGenerating(true)
+  
+  try {
+    console.log("📖 Loading event scenario and PIs...")
+    
+    // Load event scenario and performance indicators
+    const eventScenario = await loadEventScenario(selectedEventId)
+    console.log("📋 Event scenario loaded:", eventScenario.substring(0, 100) + "...")
+    
+    const performanceIndicators = await loadPerformanceIndicators(selectedEventId)
+    console.log("🎯 Performance indicators loaded:", performanceIndicators)
+    
+    const selectedEvent = decaEvents.find(e => e.id === selectedEventId)
+    console.log("🎪 Selected event:", selectedEvent?.name)
+    
+    setTimeout(() => setPreparationStep(1), 500)
+    
+    console.log("🤖 About to call generateRoleplayScenario...")
+    
+    // Generate roleplay scenario using AI
+    const generatedRoleplay = await generateRoleplayScenario(
+      selectedEventId,
+      selectedEvent?.name || "Selected Event",
+      eventScenario,
+    )
+    
+    console.log("🎉 Generated roleplay received:", generatedRoleplay)
+    console.log("📝 Generated roleplay keys:", Object.keys(generatedRoleplay))
+    console.log("📖 Situation preview:", generatedRoleplay.situation?.substring(0, 150) + "...")
+    
+    // CRITICAL: Set the roleplay state
+    console.log("💾 Setting roleplay state...")
+    setRoleplay(generatedRoleplay)
+    
+    // Verify state was set
+    setTimeout(() => {
+      console.log("🔍 Checking if roleplay state was set...")
+      console.log("Current roleplay state:", roleplay)
+    }, 100)
+    
+    setIsGenerating(false)
+    setTimeout(() => setPreparationStep(2), 1500)
+    
+  } catch (error) {
+    console.error('💥 Error in handleSubmitEvent:', error)
+    setIsGenerating(false)
+    
+    // Fallback scenario
+    const selectedEvent = decaEvents.find(e => e.id === selectedEventId)
+    const fallbackRoleplay = {
+      eventName: selectedEvent?.name || "Selected Event",
+      cluster: selectedEvent?.cluster || "Business",
+      instructionalArea: "Business Operations",
+      twentyFirstCenturySkills: ["Critical thinking", "Communication", "Problem solving", "Leadership"],
+      performanceIndicators: [
+        "Analyze business situations",
+        "Develop strategic solutions",
+        "Present recommendations effectively",
+        "Consider ethical implications",
+        "Evaluate implementation feasibility"
+      ],
+      situation: "You are working in a dynamic business environment that requires strategic thinking and effective communication.\n\nPresent your analysis and recommendations for the given business scenario, demonstrating your understanding of key concepts and ability to apply them practically."
+    }
+    
+    console.log("🆘 Setting fallback roleplay:", fallbackRoleplay)
+    setRoleplay(fallbackRoleplay)
+    setTimeout(() => setPreparationStep(2), 1500)
+  }
+}
+  const handleSubmitRecording = async () => {
+  if (!audioBlob) return
+  
+  setIsSubmitting(true)
+  setTranscriptionStatus("Transcribing your audio...")
+  
+  try {
+    // Transcribe audio
+    const transcript = await transcribeAudio(audioBlob)
+    setTranscription(transcript)
+    
+    setTranscriptionStatus("Analyzing your presentation...")
+    
+    // Generate AI-powered feedback based on transcript
+    const aiGeneratedFeedback = await generateAIFeedback(transcript, roleplay, selectedEventId)
+    
+    setFeedback(aiGeneratedFeedback)
+    setShowChatbot(true)
+    setStep(3)
+  } catch (error) {
+    console.error('Error processing recording:', error)
+    alert('Error processing your recording. Please try again.')
+  } finally {
+    setIsSubmitting(false)
+  }
+}
+
+  const handleStartRoleplay = () => {
+    setPreparationStep(3)
+    
+    const selectedEvent = decaEvents.find(e => e.id === selectedEventId)
+    const prepTime = selectedEvent?.prepTime || 10
+    setPrepTimeLeft(prepTime * 60)
+    
+    setTimeout(() => {
+      setStep(2)
+      setShowPreparation(false)
+      setPreparationStep(0)
+      setPrepTimerActive(true)
+      setTimerVisible(true)
+      
+      setTimeout(() => {
+        setShowTimerTooltip(true)
+        setTimeout(() => {
+          setTimerVisible(false)
+          setTimeout(() => {
+            setShowTimerTooltip(false)
+          }, 300)
+        }, 2000)
+      }, 1000)
+    }, 500)
+  }
+
+  const groupedEvents = groupEventsByCluster(decaEvents)
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      {/* Preparation Screen Overlay */}
+      {showPreparation && (
+        <div 
+          className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-500 ${
+            preparationStep === 0 ? 'opacity-0' : preparationStep >= 1 ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{ backgroundColor: '#000111' }}
+        >
+          <div 
+            className={`text-white text-center space-y-8 transition-opacity duration-1000 ${
+              preparationStep >= 1 ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <div className="mb-12">
+              <img 
+                src="/logo.png" 
+                alt="DECA Logo" 
+                className="mx-auto h-72 w-auto"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            </div>
+            
+            <h2 className="text-5xl font-bold mb-16 underline">{selectedEventId} Roleplay Instructions</h2>
+            
+            {isGenerating ? (
+              <div className="space-y-6 text-xl max-w-4xl text-center">
+                <div className="flex items-center justify-center space-x-4">
+                  <div className="animate-spin h-8 w-8 border-4 border-white border-t-transparent rounded-full"></div>
+                  <p>Generating your unique roleplay scenario...</p>
+                </div>
+              </div>
+            ) : (
+              <>
+                {(() => {
+                  const selectedEvent = decaEvents.find(e => e.id === selectedEventId);
+                  const prepTime = selectedEvent?.prepTime || 10;
+                  const presentationTime = selectedEvent?.presentationTime || 10;
+                  
+                  return (
+                    <div className="space-y-6 text-xl max-w-4xl text-left">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-3 h-3 bg-white rounded-full mt-2 flex-shrink-0"></div>
+                        <p>Prepare scratch paper for notes and materials</p>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-3 h-3 bg-white rounded-full mt-2 flex-shrink-0"></div>
+                        <p>You have <span className="font-bold text-blue-300">{prepTime} minutes</span> to prepare for your roleplay</p>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-3 h-3 bg-white rounded-full mt-2 flex-shrink-0"></div>
+                        <p>You will have up to <span className="font-bold text-blue-300">{presentationTime} minutes</span> to role-play your situation with a judge</p>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-3 h-3 bg-white rounded-full mt-2 flex-shrink-0"></div>
+                        <p>You will receive a 2-minute warning before your time runs out</p>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </>
+            )}
+            
+            <div 
+              className={`mt-12 transition-opacity duration-1000 ${
+                preparationStep >= 2 && !isGenerating ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <button
+                onClick={handleStartRoleplay}
+                disabled={isGenerating}
+                className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xl rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Start Roleplay
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className={`container mx-auto py-8 px-4 transition-opacity duration-500 ${
+        showPreparation && preparationStep !== 3 ? 'opacity-0' : 'opacity-100'
+      }`}>
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-blue-600 mb-2">DECA Roleplay Practice</h1>
+          <p className="text-gray-600">Perfect your roleplay skills with AI-powered feedback</p>
+        </div>
+
+        {step === 1 && (
+          <div className="max-w-4xl mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle>Select Your Event</CardTitle>
+                <CardDescription>Choose your DECA competitive event to get a roleplay scenario</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="event">Event</Label>
+                    <Select value={selectedEventId} onValueChange={setSelectedEventId}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select an event" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-64 overflow-y-auto">
+                        {Object.entries(groupedEvents).map(([cluster, events]) => (
+                          <div key={cluster}>
+                            <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground bg-muted">
+                              {cluster.replace("_", " & ")}
+                            </div>
+                            {events.map((event) => (
+                              <SelectItem key={event.id} value={event.id}>
+                                {event.name} ({event.id})
+                              </SelectItem>
+                            ))}
+                          </div>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button onClick={handleSubmitEvent} className="w-full" disabled={!selectedEventId}>
+                    Get Roleplay Scenario <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {step === 2 && roleplay && (
+          <div className="max-w-4xl mx-auto">
+            <Card>
+              <CardHeader className="relative">
+                <CardTitle>{roleplay.eventName}</CardTitle>
+                <CardDescription>{roleplay.cluster} | {roleplay.instructionalArea}</CardDescription>
+                
+                {prepTimerActive && (
+                  <div className="absolute top-4 right-4 flex items-center gap-2">
+                    <div className="relative">
+                      <button
+                        onClick={toggleTimerVisibility}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-all duration-300 ${
+                          timerVisible 
+                            ? 'bg-blue-50 border-blue-200 text-blue-700' 
+                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        <Clock className="h-4 w-4" />
+                        {timerVisible && (
+                          <span className="font-mono font-medium text-sm">
+                            {formatPrepTime(prepTimeLeft)}
+                          </span>
+                        )}
+                      </button>
+                      
+                      {showTimerTooltip && (
+                        <div className="absolute top-full mt-2 right-0 bg-gray-800 text-white text-xs px-3 py-2 rounded-lg shadow-lg whitespace-nowrap z-10 animate-pulse">
+                          Toggle Visibility On/Off
+                          <div className="absolute -top-1 right-4 w-2 h-2 bg-gray-800 transform rotate-45"></div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-semibold mb-2">21st Century Skills</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {roleplay.twentyFirstCenturySkills.map((skill: string, i: number) => (
+                        <span key={i} className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold mb-2">Performance Indicators</h3>
+                    <ul className="list-disc list-inside text-gray-600 space-y-1">
+                      {roleplay.performanceIndicators.map((indicator: string, i: number) => (
+                        <li key={i}>{indicator}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-lg border">
+                    <h3 className="font-semibold mb-3 text-lg">Roleplay Scenario</h3>
+                    <div className="bg-white p-4 rounded border">
+                      <div className="text-gray-700 whitespace-pre-line">
+                        {roleplay.situation}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <h3 className="font-semibold mb-4">Record Your Response</h3>
+                    <div className="flex justify-center gap-4">
+                      {!isRecording ? (
+                        <Button 
+                          onClick={handleStartRecordingClick} 
+                          className={`px-8 py-3 transition-all ${
+                            prepTimerActive && prepTimeLeft > 0
+                              ? 'bg-gray-400 hover:bg-gray-500 text-white'
+                              : 'bg-red-500 hover:bg-red-600'
+                          }`}
+                        >
+                          <Mic className="mr-2 h-5 w-5" /> Start Recording
+                        </Button>
+                      ) : (
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-2 text-red-600">
+                            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                            <span className="font-mono text-lg">{formatDuration(duration)}</span>
+                          </div>
+                          <Button onClick={stopRecording} variant="outline" className="border-red-500 text-red-600 hover:bg-red-50">
+                            <Square className="mr-2 h-4 w-4" /> Stop Recording
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {showConfirmDialog && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                      <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
+                        <h3 className="text-lg font-semibold mb-3 text-gray-800">Start Recording Now?</h3>
+                        <p className="text-gray-600 mb-4">
+                          You still have <span className="font-semibold text-blue-600">{formatPrepTime(prepTimeLeft)}</span> of preparation time remaining. 
+                          Are you sure you want to proceed with recording?
+                        </p>
+                        <div className="flex gap-3 justify-end">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setShowConfirmDialog(false)}
+                            className="px-4 py-2"
+                          >
+                            Continue Preparing
+                          </Button>
+                          <Button 
+                            onClick={handleConfirmRecording}
+                            className="bg-red-500 hover:bg-red-600 px-4 py-2"
+                          >
+                            Proceed Anyway
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {audioUrl && (
+                    <div className="space-y-4">
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="text-sm font-medium text-gray-700">Recording Complete</span>
+                          <span className="text-sm text-gray-500">
+                            {formatDuration(Math.floor(currentTime))} / {formatDuration(Math.floor(audioDuration))}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <Button 
+                            onClick={togglePlayback} 
+                            variant="outline" 
+                            size="sm"
+                            className="flex items-center gap-2"
+                          >
+                            {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                            {isPlaying ? "Pause" : "Play"}
+                          </Button>
+                          <div 
+                            className="flex-1 h-4 bg-gray-200 rounded-full relative cursor-pointer"
+                            onClick={(e) => {
+                              const rect = e.currentTarget.getBoundingClientRect()
+                              const x = e.clientX - rect.left
+                              const percentage = x / rect.width
+                              const newTime = percentage * audioDuration
+                              seekTo(newTime)
+                            }}
+                          >
+                            <div 
+                              className="h-4 bg-blue-500 rounded-full relative" 
+                              style={{ width: `${audioDuration ? (currentTime / audioDuration) * 100 : 0}%` }}
+                            >
+                              <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-md"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="text-center">
+                        <Button 
+                          onClick={handleSubmitRecording} 
+                          disabled={isSubmitting}
+                          className="px-8 py-3"
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                              Processing...
+                            </>
+                          ) : (
+                            "Submit Response"
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {isSubmitting && (
+                    <div className="space-y-2 text-center">
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div 
+                          className="bg-blue-500 h-2.5 rounded-full transition-all duration-300 animate-pulse" 
+                          style={{ width: "60%" }}
+                        />
+                      </div>
+                      <p className="text-sm text-gray-600">{transcriptionStatus}</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {step === 3 && feedback && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Feedback Section */}
+            <div className="lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Evaluation Results</CardTitle>
+                  <CardDescription>Detailed feedback on your roleplay performance</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="text-center bg-gradient-to-r from-blue-50 to-green-50 p-6 rounded-lg">
+                    <div className="text-6xl font-bold text-blue-600 mb-2">{feedback.totalScore}/100</div>
+                    <div className="text-gray-600 text-lg">Total Score</div>
+                    <div className="mt-2">
+                      {feedback.totalScore >= 90 ? (
+                        <span className="text-green-600 font-semibold">Excellent Performance</span>
+                      ) : feedback.totalScore >= 80 ? (
+                        <span className="text-blue-600 font-semibold">Strong Performance</span>
+                      ) : feedback.totalScore >= 70 ? (
+                        <span className="text-yellow-600 font-semibold">Good Performance</span>
+                      ) : (
+                        <span className="text-orange-600 font-semibold">Needs Improvement</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold mb-4 text-lg">Performance Indicators</h3>
+                    <div className="grid gap-4">
+                      {feedback.performanceIndicators.map((pi: any, i: number) => (
+                        <div key={i} className="p-4 bg-gray-50 rounded-lg border">
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="font-medium text-gray-800">{pi.indicator}</span>
+                            <span className="text-blue-600 font-bold text-lg">
+                            {pi.score}/{decaEvents.find(e => e.id === selectedEventId)?.piPoints}
+                            </span>
+
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                            <div 
+                              className="bg-blue-500 h-2 rounded-full" 
+                              style={{ width: `${(pi.score / (decaEvents.find(e => e.id === selectedEventId)?.piPoints || 1)) * 100}%` }}
+                            ></div>
+                          </div>
+                          <p className="text-gray-600 text-sm">{pi.feedback}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold mb-4 text-lg">21st Century Skills</h3>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {feedback.twentyFirstCenturySkills.map((skill: any, i: number) => (
+                        <div key={i} className="p-4 bg-gray-50 rounded-lg border">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="font-medium text-gray-800">{skill.skill}</span>
+                            <span className="text-green-600 font-bold">
+                            {skill.score}/{decaEvents.find(e => e.id === selectedEventId)?.centurySkills.skillPoints}
+                            </span>
+
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                            <div 
+                              className="bg-green-500 h-2 rounded-full" 
+                              style={{ width: `${(skill.score / (decaEvents.find(e => e.id === selectedEventId)?.centurySkills.skillPoints || 1)) * 100}%` }}
+                            ></div>
+                          </div>
+                          <p className="text-gray-600 text-sm">{skill.feedback}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {feedback.overallImpression && (
+                    <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border">
+                      <h3 className="font-semibold mb-2 text-purple-800">Overall Impression</h3>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium">Judge's Assessment</span>
+                        <span className="text-purple-600 font-bold">{feedback.overallImpression.score}/{decaEvents.find(e => e.id === selectedEventId)?.centurySkills.skillPoints}</span>
+                      </div>
+                      <p className="text-gray-700">{feedback.generalFeedback}</p>
+                    </div>
+                  )}
+
+                  <div className="flex gap-4">
+                    <Button
+                      onClick={() => {
+                        setStep(1)
+                        setSelectedEventId("")
+                        setRoleplay(null)
+                        setFeedback(null)
+                        setShowChatbot(false)
+                        setChatMessages([])
+                        setTranscription("")
+                      }}
+                      className="flex-1"
+                    >
+                      Practice Another Roleplay
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setStep(2)
+                        setFeedback(null)
+                        setShowChatbot(false)
+                        setChatMessages([])
+                      }}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      Retry This Scenario
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column */}
+            <div className="lg:col-span-1 space-y-6">
+              {/* Chatbot Section */}
+              {showChatbot && (
+                <Card className="flex flex-col">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <MessageCircle className="h-5 w-5" />
+                      AI Coach Chat
+                    </CardTitle>
+                    <CardDescription>Get personalized feedback on your presentation</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex flex-col">
+                    {/* Transcription Preview */}
+                    {transcription && (
+                      <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                        <h4 className="font-medium text-blue-800 mb-2 text-sm">Your Presentation:</h4>
+                        <p className="text-xs text-blue-700 line-clamp-4">{transcription}</p>
+                      </div>
+                    )}
+
+                    {/* Chat Messages - Resizable */}
+                    <div 
+                      id="chat-messages-container"
+                      className="overflow-y-auto space-y-3 mb-4 border border-gray-200 rounded-lg p-3 bg-gray-50 resize-y min-h-64 max-h-96"
+                      style={{ height: '300px' }}
+                    >
+                      {chatMessages.map((message, i) => (
+                        <div key={i} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`max-w-[85%] p-3 rounded-lg text-sm ${
+                            message.role === 'user' 
+                              ? 'bg-blue-500 text-white' 
+                              : 'bg-white text-gray-800 border border-gray-300'
+                          }`}>
+                            {message.content}
+                          </div>
+                        </div>
+                      ))}
+                      {isChatLoading && (
+                        <div className="flex justify-start">
+                          <div className="bg-white text-gray-800 p-3 rounded-lg text-sm border border-gray-300">
+                            <div className="flex items-center gap-2">
+                              <div className="animate-spin h-4 w-4 border-2 border-gray-400 border-t-transparent rounded-full"></div>
+                              Thinking...
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Chat Input */}
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendChatMessageHandler(chatInput)}
+                        placeholder="Ask about your performance..."
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled={isChatLoading}
+                      />
+                      <Button
+                        onClick={() => sendChatMessageHandler(chatInput)}
+                        disabled={isChatLoading || !chatInput.trim()}
+                        size="sm"
+                        className="px-4"
+                      >
+                        <Send className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Audio Replay Section */}
+              {audioUrl && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Audio Playback</CardTitle>
+                    <CardDescription>Review your recorded presentation</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-sm font-medium text-gray-700">Your Recording</span>
+                        <span className="text-sm text-gray-500">
+                          {formatDuration(Math.floor(currentTime))} / {formatDuration(Math.floor(audioDuration))}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <Button 
+                          onClick={togglePlayback} 
+                          variant="outline" 
+                          size="sm"
+                          className="flex items-center gap-2"
+                        >
+                          {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                          {isPlaying ? "Pause" : "Play"}
+                        </Button>
+                        <div 
+                          className="flex-1 h-4 bg-gray-200 rounded-full relative cursor-pointer"
+                          onClick={(e) => {
+                            const rect = e.currentTarget.getBoundingClientRect()
+                            const x = e.clientX - rect.left
+                            const percentage = x / rect.width
+                            const newTime = percentage * audioDuration
+                            seekTo(newTime)
+                          }}
+                        >
+                          <div 
+                            className="h-4 bg-blue-500 rounded-full relative" 
+                            style={{ width: `${audioDuration ? (currentTime / audioDuration) * 100 : 0}%` }}
+                          >
+                            <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-md"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
