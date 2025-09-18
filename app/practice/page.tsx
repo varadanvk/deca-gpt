@@ -154,27 +154,37 @@ const loadAllPerformanceIndicators = async (eventId: string): Promise<PI[]> => {
 
 
 // NEW: Use LLM to intelligently select the most relevant PIs based on scenario
+// NEW: Use LLM to intelligently select the most relevant PIs based on scenario with randomization
 const selectMostRelevantPIs = async (
   eventScenario: string, 
   eventName: string,
   allPIs: PI[], 
-  numPIsNeeded: number
+  numPIsNeeded: number,
+  attemptNumber: number = 0
 ): Promise<string[]> => {
   try {
-    console.log(`Using LLM to select ${numPIsNeeded} most relevant PIs from ${allPIs.length} candidates`)
+    console.log(`Using LLM to select ${numPIsNeeded} most relevant PIs from ${allPIs.length} candidates (attempt ${attemptNumber + 1})`)
     
-    const piList = allPIs.map((pi, index) => 
+    // Shuffle PIs to ensure variety across attempts
+    const shuffledPIs = [...allPIs].sort(() => Math.random() - 0.5)
+    
+    const piList = shuffledPIs.map((pi, index) => 
       `${index + 1}. ${pi.name}\n   Definition: ${pi.definition}\n   Category: ${pi.category}`
     ).join('\n\n')
 
-    const prompt = `You are an expert DECA competition designer. Given this roleplay scenario and list of available performance indicators, select the ${numPIsNeeded} MOST RELEVANT performance indicators for this specific scenario.
+    // Add variety instruction based on attempt number
+const varietyInstruction = attemptNumber > 0 
+? `\n\nIMPORTANT: This is attempt ${attemptNumber + 1} for this event. Select DIFFERENT performance indicators than you might have chosen before to provide variety in practice scenarios.` 
+: ""
+
+const prompt = `You are an expert DECA competition designer. Given this roleplay scenario and list of available performance indicators, select the ${numPIsNeeded} MOST RELEVANT performance indicators for this specific scenario.
 
 EVENT: ${eventName}
 
 SCENARIO:
 ${eventScenario}
 
-AVAILABLE PERFORMANCE INDICATORS (${allPIs.length} total):
+AVAILABLE PERFORMANCE INDICATORS (${shuffledPIs.length} total):
 ${piList}
 
 Your task:
@@ -182,6 +192,7 @@ Your task:
 2. Select the ${numPIsNeeded} performance indicators that are MOST directly relevant to this scenario
 3. Choose PIs that would allow a student to demonstrate the key competencies needed for this roleplay
 4. Prioritize PIs that align with the scenario's business context and challenges
+5. Ensure variety - don't always pick the most obvious choices${varietyInstruction}
 
 Return ONLY a JSON array of the exact PI names (not numbers), like this:
 ["Performance Indicator Name 1", "Performance Indicator Name 2", "Performance Indicator Name 3"]
@@ -196,12 +207,12 @@ IMPORTANT: Return only the JSON array with no additional text or formatting.`
         messages: [
           {
             role: 'system',
-            content: 'You are an expert DECA competition designer. Always return only valid JSON arrays of performance indicator names.'
+            content: 'You are an expert DECA competition designer. Always return only valid JSON arrays of performance indicator names. Provide variety in your selections.'
           },
           { role: 'user', content: prompt }
         ],
         max_tokens: 500,
-        temperature: 0.3
+        temperature: 0.7 + (attemptNumber * 0.1) // Increase temperature for more variety on retries
       })
     })
 
@@ -237,9 +248,10 @@ IMPORTANT: Return only the JSON array with no additional text or formatting.`
   } catch (error) {
     console.error('Error in LLM PI selection:', error)
     
-    // Fallback: return first N PI names if LLM fails
-    console.log('Using fallback PI selection')
-    return allPIs.slice(0, numPIsNeeded).map(pi => pi.name)
+    // Fallback: return random selection of PI names
+    console.log('Using randomized fallback PI selection')
+    const shuffledPIs = [...allPIs].sort(() => Math.random() - 0.5)
+    return shuffledPIs.slice(0, numPIsNeeded).map(pi => pi.name)
   }
 }
 
@@ -451,8 +463,8 @@ const generateRoleplayScenario = async (
     const selectedEvent = decaEvents.find(e => e.id === eventId)
     const numPIsNeeded = selectedEvent?.numPIs || 5
 
-    console.log(`Using LLM to select ${numPIsNeeded} most relevant PIs...`)
-    const selectedPIs = await selectMostRelevantPIs(eventScenario, eventName, allPIs, numPIsNeeded)
+console.log(`Using LLM to select ${numPIsNeeded} most relevant PIs...`)
+const selectedPIs = await selectMostRelevantPIs(eventScenario, eventName, allPIs, numPIsNeeded, retryCount)
 
     if (!selectedPIs || selectedPIs.length === 0) {
       throw new Error(`LLM failed to select relevant PIs for ${eventId}`)
@@ -461,7 +473,12 @@ const generateRoleplayScenario = async (
     console.log(`LLM selected these PIs:`, selectedPIs)
 
     // Step 3: Generate the roleplay scenario
-    const prompt = `You are a DECA competition scenario writer. (ALSO DONT INCLUDE Performance Indicators in the actual Roleplay Scenario)(note for formatting: add linespace formating where needed to signify new paragraph)
+    // Step 3: Generate the roleplay scenario with variety
+const varietyInstruction = retryCount > 0 
+  ? `\n\nIMPORTANT: Create a UNIQUE scenario different from previous attempts. Use different business contexts, challenges, and situations to provide fresh practice experiences.`
+  : ""
+
+const prompt = `You are a DECA competition scenario writer. (ALSO DONT INCLUDE Performance Indicators in the actual Roleplay Scenario)(note for formatting: add linespace formating where needed to signify new paragraph)
 
 Create a roleplay scenario for the ${eventName} (${eventId}) that specifically targets these selected performance indicators:
 
@@ -469,7 +486,7 @@ SELECTED PERFORMANCE INDICATORS:
 ${selectedPIs.map((pi, i) => `${i + 1}. ${pi}`).join('\n')}
 
 EVENT CONTEXT:
-${eventScenario}
+${eventScenario}${varietyInstruction}
 
 Return ONLY valid JSON with this exact structure:
 {
@@ -630,8 +647,8 @@ function groupEventsByCluster(events: typeof decaEvents) {
   )
 }
 
-// Real audio recording hook with enhanced playback
-function useAudioRecorder() {
+// Fixed audio recording hook with presentation time limit
+function useAudioRecorder(selectedEventId: string) {
   const [isRecording, setIsRecording] = useState(false)
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
@@ -642,12 +659,17 @@ function useAudioRecorder() {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null)
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
   const [durationInterval, setDurationInterval] = useState<NodeJS.Timeout | null>(null)
+  const [showTimeUpModal, setShowTimeUpModal] = useState(false)
   
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       const recorder = new MediaRecorder(stream)
       const chunks: BlobPart[] = []
+      
+      // Get presentation time limit for this event
+      const selectedEvent = decaEvents.find(e => e.id === selectedEventId)
+      const maxRecordingTime = selectedEvent ? selectedEvent.presentationTime * 60 : 600 // Default 10 minutes
       
       recorder.ondataavailable = (e) => chunks.push(e.data)
       recorder.onstop = () => {
@@ -665,13 +687,19 @@ function useAudioRecorder() {
       
       const interval = setInterval(() => {
         setDuration(prev => {
-          if (prev >= 600) { // 10 minutes max
+          const newDuration = prev + 1
+          
+          // Check if we've reached the presentation time limit
+          if (newDuration >= maxRecordingTime) {
+            // Stop recording automatically
             recorder.stop()
             setIsRecording(false)
+            setShowTimeUpModal(true)
             clearInterval(interval)
-            return prev
+            return maxRecordingTime
           }
-          return prev + 1
+          
+          return newDuration
         })
       }, 1000)
       setDurationInterval(interval)
@@ -699,10 +727,10 @@ function useAudioRecorder() {
       const audio = new Audio(audioUrl)
       audio.onended = () => setIsPlaying(false)
       audio.onloadedmetadata = () => {
-        setAudioDuration(audio.duration)
+        setAudioDuration(audio.duration || 0)
       }
       audio.ontimeupdate = () => {
-        setCurrentTime(audio.currentTime)
+        setCurrentTime(audio.currentTime || 0)
       }
       setAudioElement(audio)
       audio.play()
@@ -719,10 +747,14 @@ function useAudioRecorder() {
   }
 
   const seekTo = (time: number) => {
-    if (audioElement) {
-      audioElement.currentTime = time
-      setCurrentTime(time)
+    if (audioElement && !isNaN(time) && isFinite(time)) {
+      audioElement.currentTime = Math.max(0, Math.min(time, audioDuration))
+      setCurrentTime(audioElement.currentTime)
     }
+  }
+
+  const closeTimeUpModal = () => {
+    setShowTimeUpModal(false)
   }
   
   return {
@@ -733,10 +765,12 @@ function useAudioRecorder() {
     isPlaying,
     currentTime,
     audioDuration,
+    showTimeUpModal,
     startRecording,
     stopRecording,
     togglePlayback,
-    seekTo
+    seekTo,
+    closeTimeUpModal
   }
 }
 
@@ -813,12 +847,39 @@ const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
 }
 
 // Fixed AI feedback generation - use your API endpoint
-const generateAIFeedback = async (transcript: string, roleplay: any, eventId: string): Promise<any> => {
+// Fixed AI feedback generation with variety
+const generateAIFeedback = async (transcript: string, roleplay: any, eventId: string, attemptNumber: number = 0): Promise<any> => {
   try {
     const selectedEvent = decaEvents.find(e => e.id === eventId)
     if (!selectedEvent) throw new Error("Event not found")
 
-    const prompt = `You are an expert DECA judge evaluating a roleplay presentation. 
+    // Add variety in feedback approach based on attempt number
+    const feedbackStyles = [
+      "Focus on specific examples from their presentation and provide detailed improvement suggestions.",
+      "Emphasize the business application of their responses and real-world relevance.",
+      "Concentrate on presentation delivery, confidence, and professional communication style.",
+      "Analyze the depth of business knowledge demonstrated and strategic thinking shown.",
+      "Evaluate problem-solving approach and practical implementation of solutions."
+    ]
+    
+    const selectedStyle = feedbackStyles[attemptNumber % feedbackStyles.length]
+    
+    // Randomize scoring approach slightly
+    const scoringApproaches = [
+      "Be particularly strict on business terminology and professional language use.",
+      "Focus heavily on whether they provided concrete examples and real-world applications.",
+      "Emphasize the importance of addressing all performance indicators thoroughly.",
+      "Pay special attention to presentation flow, organization, and time management.",
+      "Prioritize depth of analysis and going beyond surface-level responses."
+    ]
+    
+    const selectedApproach = scoringApproaches[Math.floor(Math.random() * scoringApproaches.length)]
+
+    const varietyInstruction = attemptNumber > 0 
+      ? `\n\nVARIETY INSTRUCTION: This is evaluation attempt ${attemptNumber + 1}. ${selectedStyle} ${selectedApproach} Provide fresh insights and different areas of focus compared to previous evaluations.`
+      : `\n\nFOCUS AREA: ${selectedStyle} ${selectedApproach}`
+
+    const prompt = `You are an expert DECA judge evaluating a roleplay presentation.${varietyInstruction}
 
 SCORING SYSTEM:
 - Performance Indicators: ${selectedEvent.numPIs} indicators, each scored 0-${selectedEvent.piPoints} points
@@ -837,40 +898,84 @@ ${roleplay.twentyFirstCenturySkills.map((skill: string, i: number) => `${i + 1}.
 STUDENT'S PRESENTATION TRANSCRIPT:
 "${transcript}"
 
+EVALUATION CRITERIA (Be thorough and realistic - most students don't get perfect scores):
+
+**Performance Indicator Analysis:**
+- Did they DEFINE each PI clearly and accurately?
+- Did they EXPLAIN the importance/relevance of each PI?
+- Did they CONNECT each PI specifically to the scenario?
+- Did they go ABOVE AND BEYOND with examples, graphs, outside knowledge?
+- If they just stated PIs without explanation, give minimal points
+
+**Business Knowledge & Application:**
+- Did they demonstrate understanding of relevant business concepts?
+- Did they provide accurate, well-supported solutions?
+- Did they show depth of analysis beyond surface-level answers?
+- Did they add value beyond just repeating the prompt?
+
+**Presentation Quality:**
+- Estimate presentation time based on word count (longer = better scores)
+- Presentations under 200 words should score under 20/100 total
+- Presentations scoring 75+ should be minimum 4+ minutes (800+ words)
+- Professional language and delivery
+- Organization and flow
+- Confidence and engagement
+
+**Penalties:**
+- Deduct 5 points per inappropriate/unprofessional word
+- Heavily penalize vague responses without specific examples
+- Lower scores for insufficient depth or missed PIs
+
 Based on the transcript, evaluate how well the student addressed each performance indicator and demonstrated each 21st century skill. Be realistic - most students don't get perfect scores. Consider:
 - Did they address the scenario requirements?
 - How well did they demonstrate business knowledge?
 - Was their presentation clear and professional?
 - Did they provide specific examples or solutions?
 - How confident and engaging was their delivery?
+-For every cuss word or bad word deduct 5 points from the score
+- If the length of presentation transcript is less than 200 words, then give it under 20 points out of one hundred
+- estimate the time of the presentation by using the words used, presentations that are 10 minutes long should receive more credit compared to presentations that are shorter
+- presentations that get scores above 75 should have at a minimum time of 4 minutes or higher
+- Take into account 
+-Did you address all the performance indicators (PIs) listed in the case?
+-For each PI make sure they Define the PI, Explain the Importance of the PI, then connect the PI to the prompt and then finally they need to go Above and Beyond. 
+-To go above and beyond they can pull outside examples, explain graphs and much more. 
+-Did you show understanding of business concepts (marketing, finance, management, hospitality, etc.)?
+-If they just state the PI and do not explain do not give them points, there needs to be explanation
+-Did you provide relevant, accurate, and well-supported solutions?
+-Judges look for depth of analysis, not just surface-level answers.
+-Make sure that the presentation includes descriptions of the performance indicators and definitions, not just repeating the performance indicators. Make sure they are adding value to the prompt and not just repeating the prompt.
 
-Provide scores and specific feedback for each category. Return ONLY valid JSON:
+Based on the transcript, evaluate how well the student performed. Provide varied, specific feedback focusing on different aspects each time.
+
+Return ONLY valid JSON:
 
 {
   "performanceIndicators": [
     {
       "indicator": "exact PI name",
       "score": number_between_0_and_${selectedEvent.piPoints},
-      "feedback": "specific feedback on how they performed on this PI based on transcript"
+      "feedback": "specific feedback on how they performed on this PI based on transcript with varied focus areas"
     }
   ],
   "twentyFirstCenturySkills": [
     {
       "skill": "exact skill name", 
       "score": number_between_0_and_${selectedEvent.centurySkills.skillPoints},
-      "feedback": "specific feedback on this skill based on transcript"
+      "feedback": "specific feedback on this skill based on transcript with different emphasis each evaluation"
     }
   ],
   "overallImpression": {
     "score": number_between_0_and_${selectedEvent.centurySkills.skillPoints},
-    "feedback": "overall assessment of presentation quality and professionalism"
+    "feedback": "overall assessment with unique perspective and varied focus areas"
   },
-  "generalFeedback": "2-3 sentences summarizing strengths and areas for improvement"
+  "generalFeedback": "2-3 sentences with fresh insights and different improvement suggestions each time"
 }`
+
 
     // Use your API endpoint instead of direct OpenAI
 // Use OpenAI API instead of custom endpoint
-    const response = await fetch('/api/openai', {
+        const response = await fetch('/api/openai', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -881,14 +986,16 @@ Provide scores and specific feedback for each category. Return ONLY valid JSON:
         messages: [
           {
             role: 'system',
-            content: 'You are an expert DECA judge who provides accurate, constructive feedback. Always return valid JSON.'
+            content: `You are an expert DECA judge who provides accurate, constructive feedback with varied perspectives. Focus on different aspects each evaluation: ${selectedStyle} Always return valid JSON with realistic scores and specific improvement suggestions.`
           },
           { role: 'user', content: prompt }
         ],
         max_tokens: 2000,
-        temperature: 0.3
+        temperature: 0.4 + (attemptNumber * 0.1), // Increase variety with attempts
+        top_p: 0.9 + (Math.random() * 0.1) // Add slight randomization
       })
     })
+
 
     if (!response.ok) {
       const errorText = await response.text()
@@ -934,20 +1041,33 @@ Provide scores and specific feedback for each category. Return ONLY valid JSON:
       throw new Error('Failed to parse AI feedback response')
     }
 
-  } catch (error) {
-    console.error('Error generating AI feedback:', error)
-    
-    // Generate realistic fallback scores (60-85% range typically)
-    const selectedEvent = decaEvents.find(e => e.id === eventId)
-    if (!selectedEvent) throw new Error("Event not found")
+} catch (error) {
+  console.error('Error generating AI feedback:', error)
+  
+  // Generate realistic fallback scores with variety (60-85% range typically)
+  const selectedEvent = decaEvents.find(e => e.id === eventId)
+  if (!selectedEvent) throw new Error("Event not found")
 
-    const generateScore = (max: number) => Math.floor(Math.random() * (max * 0.25) + (max * 0.6))
+  // Add randomization to fallback scoring
+  const baseScore = 0.6 + (Math.random() * 0.25) // 60-85% range
+  const generateScore = (max: number) => Math.floor(Math.random() * (max * 0.25) + (max * baseScore))
 
-    const piScores = roleplay.performanceIndicators.map((indicator: string) => ({
-      indicator,
-      score: generateScore(selectedEvent.piPoints),
-      feedback: `Based on your presentation, this indicator was addressed with room for improvement. Consider providing more specific examples and detailed analysis.`
-    }))
+  // Vary feedback messages based on attempt
+  const feedbackVariations = [
+    "Consider providing more specific examples and detailed analysis in your responses.",
+    "Focus on strengthening your business knowledge and professional presentation delivery.",
+    "Work on connecting performance indicators more clearly to the scenario requirements.",
+    "Enhance your responses with real-world applications and deeper business insights.",
+    "Improve the organization and flow of your presentation for better impact."
+  ]
+  
+  const selectedFeedback = feedbackVariations[attemptNumber % feedbackVariations.length]
+
+  const piScores = roleplay.performanceIndicators.map((indicator: string, index: number) => ({
+    indicator,
+    score: generateScore(selectedEvent.piPoints),
+    feedback: `Based on your presentation, this indicator could be strengthened. ${selectedFeedback} ${index % 2 === 0 ? 'Consider defining the concept more clearly.' : 'Provide more concrete examples to support your points.'}`
+  }))
 
     const skillScores = roleplay.twentyFirstCenturySkills.map((skill: string) => ({
       skill,
@@ -1035,7 +1155,7 @@ export default function DECAPracticePage() {
   const [selectedEventId, setSelectedEventId] = useState("")
   const [roleplay, setRoleplay] = useState<any>(null)
   const [feedback, setFeedback] = useState<any>(null)
-  const { isRecording, audioUrl, audioBlob, duration, isPlaying, currentTime, audioDuration, startRecording, stopRecording, togglePlayback, seekTo } = useAudioRecorder()
+  const { isRecording, audioUrl, audioBlob, duration, isPlaying, currentTime, audioDuration, showTimeUpModal, startRecording, stopRecording, togglePlayback, seekTo, closeTimeUpModal } = useAudioRecorder(selectedEventId)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [transcriptionStatus, setTranscriptionStatus] = useState("")
   const [showPreparation, setShowPreparation] = useState(false)
@@ -1043,11 +1163,15 @@ export default function DECAPracticePage() {
   const [isGenerating, setIsGenerating] = useState(false)
   
   // Timer states
-  const [prepTimeLeft, setPrepTimeLeft] = useState(0)
-  const [prepTimerActive, setPrepTimerActive] = useState(false)
-  const [timerVisible, setTimerVisible] = useState(true)
-  const [showTimerTooltip, setShowTimerTooltip] = useState(false)
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+// Timer states
+const [prepTimeLeft, setPrepTimeLeft] = useState(0)
+const [prepTimerActive, setPrepTimerActive] = useState(false)
+const [timerVisible, setTimerVisible] = useState(true)
+const [showTimerTooltip, setShowTimerTooltip] = useState(false)
+const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+const [showTwoMinuteWarning, setShowTwoMinuteWarning] = useState(false)
+const [twoMinuteWarningShown, setTwoMinuteWarningShown] = useState(false)
+const [eventAttemptCount, setEventAttemptCount] = useState(0) // ADD THIS LINE
 
   // Chatbot states
   const [transcription, setTranscription] = useState("")
@@ -1057,23 +1181,30 @@ export default function DECAPracticePage() {
   const [showChatbot, setShowChatbot] = useState(false)
 
   // Timer effect
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-    if (prepTimerActive && prepTimeLeft > 0) {
-      interval = setInterval(() => {
-        setPrepTimeLeft(prev => {
-          if (prev <= 1) {
-            setPrepTimerActive(false)
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    }
-    return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [prepTimerActive, prepTimeLeft])
+// Timer effect
+useEffect(() => {
+  let interval: NodeJS.Timeout | null = null
+  if (prepTimerActive && prepTimeLeft > 0) {
+    interval = setInterval(() => {
+      setPrepTimeLeft(prev => {
+        // Show 2-minute warning when exactly 2 minutes (120 seconds) remain
+        if (prev === 120 && !twoMinuteWarningShown) {
+          setShowTwoMinuteWarning(true)
+          setTwoMinuteWarningShown(true)
+        }
+        
+        if (prev <= 1) {
+          setPrepTimerActive(false)
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }
+  return () => {
+    if (interval) clearInterval(interval)
+  }
+}, [prepTimerActive, prepTimeLeft, twoMinuteWarningShown])
 
   const formatPrepTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -1104,6 +1235,10 @@ export default function DECAPracticePage() {
     setShowConfirmDialog(false)
     setPrepTimerActive(false)
     startRecording()
+  }
+
+  const closeTwoMinuteWarning = () => {
+  setShowTwoMinuteWarning(false)
   }
 
   const sendChatMessageHandler = async (message: string) => {
@@ -1168,6 +1303,9 @@ export default function DECAPracticePage() {
 // Add debugging to your handleSubmitEvent function
 const handleSubmitEvent = async () => {
   if (!selectedEventId) return
+  
+  // Increment attempt count for this event
+  setEventAttemptCount(prev => prev + 1)
   
   console.log("🎯 handleSubmitEvent called with eventId:", selectedEventId)
   
@@ -1242,7 +1380,7 @@ const handleSubmitEvent = async () => {
     setTimeout(() => setPreparationStep(2), 1500)
   }
 }
-  const handleSubmitRecording = async () => {
+const handleSubmitRecording = async () => {
   if (!audioBlob) return
   
   setIsSubmitting(true)
@@ -1255,8 +1393,8 @@ const handleSubmitEvent = async () => {
     
     setTranscriptionStatus("Analyzing your presentation...")
     
-    // Generate AI-powered feedback based on transcript
-    const aiGeneratedFeedback = await generateAIFeedback(transcript, roleplay, selectedEventId)
+    // Generate AI-powered feedback based on transcript with attempt tracking
+    const aiGeneratedFeedback = await generateAIFeedback(transcript, roleplay, selectedEventId, eventAttemptCount)
     
     setFeedback(aiGeneratedFeedback)
     setShowChatbot(true)
@@ -1269,31 +1407,35 @@ const handleSubmitEvent = async () => {
   }
 }
 
-  const handleStartRoleplay = () => {
-    setPreparationStep(3)
-    
-    const selectedEvent = decaEvents.find(e => e.id === selectedEventId)
-    const prepTime = selectedEvent?.prepTime || 10
-    setPrepTimeLeft(prepTime * 60)
+const handleStartRoleplay = () => {
+  setPreparationStep(3)
+  
+  const selectedEvent = decaEvents.find(e => e.id === selectedEventId)
+  const prepTime = selectedEvent?.prepTime || 10
+  setPrepTimeLeft(prepTime * 60)
+  
+  // Reset 2-minute warning state
+  setTwoMinuteWarningShown(false)
+  setShowTwoMinuteWarning(false)
+  
+  setTimeout(() => {
+    setStep(2)
+    setShowPreparation(false)
+    setPreparationStep(0)
+    setPrepTimerActive(true)
+    setTimerVisible(true)
     
     setTimeout(() => {
-      setStep(2)
-      setShowPreparation(false)
-      setPreparationStep(0)
-      setPrepTimerActive(true)
-      setTimerVisible(true)
-      
+      setShowTimerTooltip(true)
       setTimeout(() => {
-        setShowTimerTooltip(true)
+        setTimerVisible(false)
         setTimeout(() => {
-          setTimerVisible(false)
-          setTimeout(() => {
-            setShowTimerTooltip(false)
-          }, 300)
-        }, 2000)
-      }, 1000)
-    }, 500)
-  }
+          setShowTimerTooltip(false)
+        }, 300)
+      }, 2000)
+    }, 1000)
+  }, 500)
+}
 
   const groupedEvents = groupEventsByCluster(decaEvents)
 
@@ -1399,7 +1541,10 @@ const handleSubmitEvent = async () => {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="event">Event</Label>
-                    <Select value={selectedEventId} onValueChange={setSelectedEventId}>
+                    <Select value={selectedEventId} onValueChange={(value) => {
+                        setSelectedEventId(value)
+                        setEventAttemptCount(0) // Reset attempt count when changing events
+                      }}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select an event" />
                       </SelectTrigger>
@@ -1551,6 +1696,42 @@ const handleSubmitEvent = async () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Time Up Modal */}
+                  {showTimeUpModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                      <div className="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl text-center">
+                        <h3 className="text-xl font-bold mb-3 text-red-600">⏰ Your Time is Up!</h3>
+                        <p className="text-gray-700 mb-4">
+                          Your presentation time has ended. The recording has been automatically stopped.
+                        </p>
+                        <Button 
+                          onClick={closeTimeUpModal}
+                          className="w-full bg-blue-500 hover:bg-blue-600"
+                        >
+                          Continue
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {showTwoMinuteWarning && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 max-w-sm mx-4 shadow-xl text-center">
+                      <h3 className="text-xl font-bold mb-3 text-yellow-600">⚠️ 2 Minutes Remaining!</h3>
+                      <p className="text-gray-700 mb-4">
+                        You have 2 minutes left in your preparation time. Use this time to finalize your thoughts and prepare to record.
+                      </p>
+                      <Button 
+                        onClick={closeTwoMinuteWarning}
+                        className="w-full bg-yellow-500 hover:bg-yellow-600"
+                      >
+                        Continue Preparing
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
 
                   {audioUrl && (
                     <div className="space-y-4">
@@ -1722,6 +1903,7 @@ const handleSubmitEvent = async () => {
                         setShowChatbot(false)
                         setChatMessages([])
                         setTranscription("")
+                        setEventAttemptCount(0)
                       }}
                       className="flex-1"
                     >
@@ -1733,12 +1915,12 @@ const handleSubmitEvent = async () => {
                         setFeedback(null)
                         setShowChatbot(false)
                         setChatMessages([])
-                      }}
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      Retry This Scenario
-                    </Button>
+                        }}
+                          variant="outline"
+                          className="flex-1"
+                        >
+                          Retry This Scenario
+                        </Button>
                   </div>
                 </CardContent>
               </Card>
