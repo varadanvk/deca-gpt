@@ -291,7 +291,7 @@ useEffect(() => {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent mb-4">
-            DECA PI Flashcards
+            PI Flashcards
           </h1>
           <p className="text-gray-600 text-lg">
             Master your Performance Indicators with interactive flashcards
@@ -307,7 +307,7 @@ useEffect(() => {
             {/* Event Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Filter by DECA Event
+                Filter by Event
               </label>
               <select
                 value={selectedEvent}

@@ -1739,7 +1739,7 @@ const handleStartRoleplay = () => {
         showPreparation && preparationStep !== 3 ? 'opacity-0' : 'opacity-100'
       }`}>
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-blue-600 mb-2">DECA Roleplay Practice</h1>
+          <h1 className="text-4xl font-bold text-blue-600 mb-2">Roleplay Practice</h1>
           <p className="text-gray-600">Perfect your roleplay skills with AI-powered feedback</p>
         </div>
 
@@ -1748,7 +1748,7 @@ const handleStartRoleplay = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Select Your Event</CardTitle>
-                <CardDescription>Choose your DECA competitive event to get a roleplay scenario</CardDescription>
+                <CardDescription>Choose your competitive event to get a roleplay scenario</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">

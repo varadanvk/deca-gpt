@@ -41,10 +41,10 @@ export default function Homepage() {
           <div className="text-center space-y-8">
             <div className="space-y-4">
               <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
-                DECAGPT
+                AVDECAGPT
               </h1>
               <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">
-                Perfect your DECA roleplay skills with AI-powered practice scenarios and detailed feedback
+                Perfect your ROLEPLAY skills with AI-powered practice scenarios and detailed feedback
               </p>
             </div>
 
@@ -92,7 +92,7 @@ export default function Homepage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600">
-                    Get realistic DECA roleplay scenarios tailored to your chosen event
+                    Get realistic roleplay scenarios tailored to your chosen event
                   </p>
                 </CardContent>
               </Card>
