@@ -1390,26 +1390,27 @@ const handleStartRoleplay = () => {
       {/* Preparation Screen Overlay */}
       {showPreparation && (
         <div 
-          className={`fixed inset-0 z-50 flex items-center justify-center transition-opacity duration-500 ${
+          className={`fixed inset-0 z-50 overflow-y-auto transition-opacity duration-500 ${
             preparationStep === 0 ? 'opacity-0' : preparationStep >= 1 ? 'opacity-100' : 'opacity-0'
           }`}
           style={{ backgroundColor: '#000111' }}
         >
-          <div 
-            className={`text-white text-center space-y-8 transition-opacity duration-1000 ${
-              preparationStep >= 1 ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <div className="mb-12">
-              <img 
-                src="/logo.png" 
-                alt="DECA Logo" 
-                className="mx-auto h-72 w-auto"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none'
-                }}
-              />
-            </div>
+          <div className="min-h-screen flex items-center justify-center px-4 py-8">
+            <div 
+              className={`text-white text-center space-y-8 transition-opacity duration-1000 w-full max-w-4xl ${
+                preparationStep >= 1 ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <div className="mb-12">
+                <img 
+                  src="/logo.png" 
+                  alt="DECA Logo" 
+                  className="mx-auto h-72 w-auto"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none'
+                  }}
+                />
+              </div>
             
             <h2 className="text-5xl font-bold mb-16 underline">{selectedEventId} Roleplay Instructions</h2>
             
@@ -1465,6 +1466,7 @@ const handleStartRoleplay = () => {
               </button>
             </div>
           </div>
+                 </div>
         </div>
       )}
 
