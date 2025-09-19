@@ -853,7 +853,7 @@ const finalValidation = validateScenarioLength(roleplay.situation)
         instructionalArea: "Business Operations",
         twentyFirstCenturySkills: selectedEvent?.centurySkills?.skills || ["Critical thinking", "Communication", "Problem solving", "Leadership"],
         performanceIndicators: fallbackPIs,
-        situation: `You are to assume the role of ${businessContext.roleTitle} at ${businessContext.companyName}, ${businessContext.industry} located in ${businessContext.location}. You are meeting with the ${businessContext.judgeRole} (judge) to discuss ${businessContext.challengeTheme}. The company ${businessContext.companySize} and faces unique challenges in today's competitive market. Present your analysis and strategic recommendations for addressing this business opportunity.`
+        situation: `You are to assume the role of ${businessContext.roleTitle} at ${businessContext.companyName}, ${businessContext.industry} located in ${businessContext.location}. You are meeting with the ${businessContext.judgeRole} (judge) to discuss ${businessContext.challengeTheme}. The company has ${businessContext.size} and faces unique challenges in today's competitive market. Present your analysis and strategic recommendations for addressing this business opportunity.`
       }
     } catch (fallbackError) {
       console.error('Even enhanced fallback failed:', fallbackError)
