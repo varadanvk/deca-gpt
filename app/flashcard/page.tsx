@@ -346,6 +346,7 @@ useEffect(() => {
           </div>
 
           {/* Action Buttons */}
+{/* Action Buttons */}
           <div className="flex flex-wrap gap-3 items-center">
             <button
               onClick={shuffleCards}
@@ -379,8 +380,10 @@ useEffect(() => {
                 </button>
               </>
             )}
-          </div>
-        </div>
+            <div className="bg-gradient-to-r from-orange-100 to-yellow-100 border border-orange-200 text-orange-800 px-4 py-2 rounded-lg text-sm font-medium">
+              Learn Mode with relevant PIs coming soon! (similar to Knowt)
+            </div>
+          </div>        </div>
 
         {/* Flashcard */}
         {filteredPIs.length > 0 && currentPI ? (
