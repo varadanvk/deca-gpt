@@ -282,6 +282,30 @@ const loadEventScenario = async (eventId: string): Promise<string> => {
   return `You are to assume the role of a business professional in a dynamic competitive environment. You have been tasked with analyzing a complex business situation and presenting strategic recommendations to senior leadership. Your presentation should demonstrate strong analytical thinking, clear communication, and practical business acumen.`
 }
 
+// Load judge scenario from file
+const loadJudgeScenario = async (eventId: string): Promise<string> => {
+  try {
+    const filePath = `/roleplay-data/${eventId} Judge.txt`
+    console.log('Attempting to load judge scenario from:', filePath)
+    const response = await fetch(filePath)
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    
+    const fileContent = await response.text()
+    console.log('Successfully loaded judge scenario for:', eventId)
+    return fileContent
+  } catch (error) {
+    console.error('Error loading judge file:', error)
+    console.error('Attempted file path:', `/roleplay-data/${eventId} Judge.txt`)
+  }
+  
+  // Fallback to generic judge role if file loading fails
+  console.warn('Using fallback judge role for event:', eventId)
+  return `You are an experienced DECA judge evaluating this roleplay scenario. You should ask probing questions to test the participant's knowledge and provide constructive feedback based on their demonstration of the performance indicators.`
+}
+
 
 // Define PI interface
 interface PI {
@@ -435,13 +459,108 @@ console.log("AI Result:", result)
 
 
 
+// Generate random business context for scenario variety
+const generateRandomBusinessContext = (eventId: string) => {
+  const restaurantContexts = [
+    {
+      companyName: "Coastal Eats", industry: "fast-casual dining", location: "Marina District, San Francisco",
+      size: "12 employees (3 full-time managers, 9 part-time staff)", roleTitle: "Operations Manager",
+      judgeRole: "Regional Director", challengeTheme: "implementing sustainable packaging solutions while maintaining cost efficiency"
+    },
+    {
+      companyName: "Urban Bistro Group", industry: "restaurant management", location: "Downtown Portland",
+      size: "25 employees across 2 locations", roleTitle: "District Manager", 
+      judgeRole: "Vice President of Operations", challengeTheme: "developing a mobile ordering system to compete with major chains"
+    },
+    {
+      companyName: "Valley Fresh Kitchen", industry: "health-focused quick service", location: "Palo Alto, California",
+      size: "18 employees (4 managers, 14 associates)", roleTitle: "General Manager",
+      judgeRole: "Franchise Owner", challengeTheme: "launching a corporate catering program targeting tech companies"
+    },
+    {
+      companyName: "Heritage Grill", industry: "family dining", location: "Austin, Texas",
+      size: "32 employees", roleTitle: "Assistant Manager",
+      judgeRole: "Operating Partner", challengeTheme: "integrating AI-powered inventory management to reduce food waste"
+    },
+    {
+      companyName: "Metro Food Hub", industry: "food service management", location: "Chicago, Illinois",
+      size: "45 employees across 3 concepts", roleTitle: "Brand Manager",
+      judgeRole: "Chief Operating Officer", challengeTheme: "developing a loyalty program that increases customer retention by 25%"
+    }
+  ];
 
+  const retailContexts = [
+    {
+      companyName: "Nexus Retail Solutions", industry: "specialty retail", location: "Minneapolis, Minnesota",
+      size: "35 employees across 2 stores", roleTitle: "Store Operations Manager",
+      judgeRole: "Regional Vice President", challengeTheme: "implementing omnichannel shopping experience with buy-online-pickup-in-store"
+    },
+    {
+      companyName: "Summit Outdoor Gear", industry: "outdoor recreation retail", location: "Denver, Colorado",
+      size: "28 employees", roleTitle: "Merchandising Manager",
+      judgeRole: "Store Owner", challengeTheme: "developing exclusive private label products to differentiate from big-box competitors"
+    },
+    {
+      companyName: "Catalyst Fashion", industry: "apparel retail", location: "Nashville, Tennessee", 
+      size: "22 employees", roleTitle: "Visual Merchandising Coordinator",
+      judgeRole: "District Manager", challengeTheme: "creating sustainable fashion initiative targeting Gen Z consumers"
+    }
+  ];
+
+  const businessContexts = [
+    {
+      companyName: "Pinnacle Marketing Group", industry: "digital marketing", location: "Atlanta, Georgia",
+      size: "40 employees", roleTitle: "Account Manager",
+      judgeRole: "Client Services Director", challengeTheme: "developing data-driven marketing strategy for B2B clients in competitive markets"
+    },
+    {
+      companyName: "Meridian Financial Services", industry: "financial planning", location: "Phoenix, Arizona",
+      size: "15 financial advisors", roleTitle: "Associate Advisor",
+      judgeRole: "Managing Partner", challengeTheme: "launching digital-first advisory services for millennial clients"
+    },
+    {
+      companyName: "Velocity Logistics", industry: "supply chain management", location: "Cincinnati, Ohio",
+      size: "55 employees", roleTitle: "Operations Analyst",
+      judgeRole: "Operations Director", challengeTheme: "optimizing last-mile delivery during peak seasonal demand"
+    }
+  ];
+
+  // Select appropriate context pool based on event
+  let contextPool;
+  if (eventId.includes('QSRM') || eventId.includes('RFSM') || eventId.includes('FMS')) {
+    contextPool = restaurantContexts;
+  } else if (eventId.includes('RMS') || eventId.includes('AAM') || eventId.includes('BSM')) {
+    contextPool = retailContexts;
+  } else {
+    contextPool = businessContexts;
+  }
+
+  // Add some cross-pollination for variety (20% chance to use different context type)
+  if (Math.random() < 0.2) {
+    const allContexts = [...restaurantContexts, ...retailContexts, ...businessContexts];
+    contextPool = allContexts;
+  }
+
+  const randomIndex = Math.floor(Math.random() * contextPool.length);
+  return contextPool[randomIndex];
+};
+
+// Word count validation function
+const validateScenarioLength = (scenario: string): { isValid: boolean; wordCount: number; minWords: number; maxWords: number } => {
+  const wordCount = scenario.trim().split(/\s+/).filter(word => word.length > 0).length;
+  const minWords = 300;
+  const maxWords = 500;
+  
+  return {
+    isValid: wordCount >= minWords && wordCount <= maxWords,
+    wordCount,
+    minWords,
+    maxWords
+  };
+};
 
 
 // Debugged generateRoleplayScenario function
-// Updated generateRoleplayScenario function
-// Updated generateRoleplayScenario function with better JSON parsing
-// Updated generateRoleplayScenario function with intelligent PI selection
 const generateRoleplayScenario = async (
   eventId: string,
   eventName: string,
@@ -462,11 +581,11 @@ const generateRoleplayScenario = async (
     console.log(`Loaded ${allPIs.length} available PIs for analysis`)
 
     // Step 2: Use LLM to intelligently select the most relevant PIs
-    const selectedEvent = decaEvents.find(e => e.id === eventId)
+    const selectedEvent = decaEvents.find(e => e.id === eventId) // ✅ FIXED: use eventId parameter
     const numPIsNeeded = selectedEvent?.numPIs || 5
 
-console.log(`Using LLM to select ${numPIsNeeded} most relevant PIs...`)
-const selectedPIs = await selectMostRelevantPIs(eventScenario, eventName, allPIs, numPIsNeeded, retryCount)
+    console.log(`Using LLM to select ${numPIsNeeded} most relevant PIs...`)
+    const selectedPIs = await selectMostRelevantPIs(eventScenario, eventName, allPIs, numPIsNeeded, retryCount)
 
     if (!selectedPIs || selectedPIs.length === 0) {
       throw new Error(`LLM failed to select relevant PIs for ${eventId}`)
@@ -474,21 +593,44 @@ const selectedPIs = await selectMostRelevantPIs(eventScenario, eventName, allPIs
 
     console.log(`LLM selected these PIs:`, selectedPIs)
 
-    // Step 3: Generate the roleplay scenario
-    // Step 3: Generate the roleplay scenario with variety
-const varietyInstruction = retryCount > 0 
-  ? `\n\nIMPORTANT: Create a UNIQUE scenario different from previous attempts. Use different business contexts, challenges, and situations to provide fresh practice experiences.`
-  : ""
+    // Step 3: Generate random business context for variety
+    const businessContext = generateRandomBusinessContext(eventId)
+    
+    // Step 4: Create variety seed based on attempt count and time
+    const varietySeed = Date.now() + (retryCount * 1000) + Math.random() * 10000
 
-const prompt = `You are a DECA competition scenario writer. (DO NOT INCLUDE Performance Indicators OR ANY CODES IN THE FORMAT LIKE THIS(EC:013) in the actual Roleplay Scenario)(note for formatting: add linespace formating where needed to signify new paragraph)
+const prompt = `You are a DECA competition scenario writer. (DO NOT INCLUDE Performance Indicators OR ANY CODES IN THE FORMAT LIKE THIS(EC:013) in the actual Roleplay Scenario)(note for formatting: add linespace formatting where needed to signify new paragraph)
 
-Create a roleplay scenario for the ${eventName} (${eventId}) that specifically targets these selected performance indicators:
+CRITICAL VARIETY REQUIREMENTS:
+- Use these specific business details: ${JSON.stringify(businessContext)}
+- Create a scenario that is FUNDAMENTALLY DIFFERENT from typical examples
+- Use creative business challenges that go beyond basic HR/social media issues
+- Incorporate modern business trends and realistic contemporary challenges
+- Variety Seed: ${varietySeed} (use this to ensure uniqueness)
 
-SELECTED PERFORMANCE INDICATORS:
+FORMATTING REQUIREMENTS:
+- If the example prompts have bullet points to convey a list, make sure this generated roleplay also has a list and points with new lines and bullets listed starting like this " - "
+- Use proper paragraph spacing and line breaks for readability
+- The scenario MUST be between 300-500 words
+
+EVENT: ${eventName} (${eventId})
+
+SELECTED PERFORMANCE INDICATORS (must be directly testable in scenario):
 ${selectedPIs.map((pi, i) => `${i + 1}. ${pi}`).join('\n')}
 
-EVENT CONTEXT:
-${eventScenario}${varietyInstruction}
+BUSINESS CONTEXT TO USE:
+- Company: ${businessContext.companyName}
+- Industry: ${businessContext.industry}
+- Location: ${businessContext.location}
+- Size: ${businessContext.size}
+- Current Challenge Theme: ${businessContext.challengeTheme}
+
+SCENARIO VARIETY REQUIREMENTS:
+${retryCount > 0 ? `This is attempt ${retryCount + 1} - create something COMPLETELY different from previous attempts.` : ''}
+- Avoid overused scenarios (social media policy violations, basic customer complaints)
+- Use contemporary business challenges (sustainability, digital transformation, supply chain, etc.)
+- Create realistic but engaging business situations
+- Make the challenge directly require the selected performance indicators
 
 Return ONLY valid JSON with this exact structure:
 {
@@ -510,12 +652,30 @@ The judge may ask follow-up questions, which you should answer in detail.
 After you have explained your recommendations and answered the judge's questions, the judge will conclude the roleplay by thanking you for your work."
 }
 
+AVOID these overused scenarios:
+- Social media policy violations
+- Basic customer service complaints  
+- Simple menu additions
+- Generic employee handbook violations
+- Standard disciplinary meetings
+
+FOCUS on contemporary business challenges like:
+- Digital transformation initiatives
+- Sustainability and ESG compliance
+- Supply chain disruptions
+- Market expansion strategies
+- Technology integration
+- Competitive positioning
+- Strategic partnerships
+- Innovation management
+
 CRITICAL REQUIREMENTS:
 - Use EXACTLY the performance indicators provided above
 - Make the scenario specifically designed to test those PIs
-- Ensure the business challenge naturally requires those competencies`
+- Ensure the business challenge naturally requires those competencies
+- WORD COUNT: The scenario MUST be 300-500 words`
 
-    console.log(`Generating roleplay scenario with selected PIs...`)
+    console.log(`Generating unique roleplay scenario with business context...`)
 
     const response = await fetch('/api/openai', {
       method: "POST",
@@ -525,12 +685,12 @@ CRITICAL REQUIREMENTS:
         messages: [
           {
             role: "system",
-            content: "You are a DECA competition designer. Return only valid JSON format with the exact performance indicators provided."
+            content: "You are a DECA competition designer specializing in creating unique, contemporary business scenarios. Always use the provided business context exactly. Focus on modern business challenges and avoid overused scenarios."
           },
           { role: "user", content: prompt }
         ],
         max_tokens: 1500,
-        temperature: 0.7,
+        temperature: 0.9 + (retryCount * 0.1), // Higher temperature for more variety
       }),
     })
 
@@ -549,21 +709,99 @@ CRITICAL REQUIREMENTS:
     }
 
     // Parse JSON response
-    let roleplay = null
-    try {
-      roleplay = JSON.parse(content.trim())
-    } catch {
-      const match = content.match(/\{[\s\S]*\}/)
-      if (match) {
-        try {
-          roleplay = JSON.parse(match[0])
-        } catch {}
-      }
-    }
+// Parse JSON response
+let roleplay = null
+let attemptCount = 0
+const maxAttempts = 3
 
-    if (!roleplay) {
-      throw new Error("Failed to parse JSON from API response")
+while (!roleplay && attemptCount < maxAttempts) {
+  try {
+    const jsonContent = content.trim()
+    const match = jsonContent.match(/\{[\s\S]*\}/)
+    
+    if (match) {
+      roleplay = JSON.parse(match[0])
+      
+      // Validate word count
+      if (roleplay && roleplay.situation) {
+        const validation = validateScenarioLength(roleplay.situation)
+        
+        if (!validation.isValid) {
+          console.log(`Scenario word count (${validation.wordCount}) is outside range ${validation.minWords}-${validation.maxWords}. Retrying...`)
+          
+          // If word count is invalid, try to regenerate
+          const adjustmentPrompt = `The previous scenario was ${validation.wordCount} words, but it needs to be between ${validation.minWords}-${validation.maxWords} words. 
+          
+          ${validation.wordCount < validation.minWords ? 
+            'Please EXPAND the scenario with more specific details, context, and business requirements.' : 
+            'Please CONDENSE the scenario while keeping all essential elements.'
+          }
+          
+          Maintain the same business context and performance indicators, but adjust the length appropriately.`
+          
+          const adjustmentResponse = await fetch('/api/openai', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: "gpt-4.1-nano",
+              messages: [
+                {
+                  role: "system",
+                  content: "You are a DECA competition designer. Adjust scenario length while maintaining quality and requirements."
+                },
+                { role: "user", content: `${prompt}\n\nADJUSTMENT NEEDED: ${adjustmentPrompt}` }
+              ],
+              max_tokens: 1500,
+              temperature: 0.7,
+            }),
+          })
+          
+          if (adjustmentResponse.ok) {
+            const adjustmentData = await adjustmentResponse.json()
+            const adjustmentContent = adjustmentData.choices?.[0]?.message?.content
+            
+            if (adjustmentContent) {
+              const adjustmentMatch = adjustmentContent.match(/\{[\s\S]*\}/)
+              if (adjustmentMatch) {
+                const adjustedRoleplay = JSON.parse(adjustmentMatch[0])
+                const newValidation = validateScenarioLength(adjustedRoleplay.situation)
+                
+                if (newValidation.isValid) {
+                  console.log(`Word count adjustment successful: ${newValidation.wordCount} words`)
+                  roleplay = adjustedRoleplay
+                  break
+                } else {
+                  console.log(`Word count adjustment failed: ${newValidation.wordCount} words`)
+                }
+              }
+            }
+          }
+          
+          // If adjustment failed, continue with original but log warning
+          if (!roleplay || !validateScenarioLength(roleplay.situation).isValid) {
+            console.warn(`Using scenario with ${validation.wordCount} words (outside target range)`)
+            // Keep the original roleplay even if word count is off
+          }
+        } else {
+          console.log(`Scenario word count validation passed: ${validation.wordCount} words`)
+        }
+      }
+      break
     }
+  } catch (parseError) {
+    console.error(`Parse attempt ${attemptCount + 1} failed:`, parseError)
+    attemptCount++
+    
+    if (attemptCount >= maxAttempts) {
+      throw new Error("Failed to parse JSON after multiple attempts")
+    }
+  }
+}
+
+if (!roleplay) {
+  throw new Error("Failed to parse JSON from API response")
+}
+
 
     // Validate and ensure we use the LLM-selected PIs
     roleplay.performanceIndicators = selectedPIs.slice(0, numPIsNeeded)
@@ -579,8 +817,11 @@ CRITICAL REQUIREMENTS:
       ]
     }
 
-    console.log(`Successfully generated roleplay with intelligently selected PIs for ${eventId}`)
+const finalValidation = validateScenarioLength(roleplay.situation)
+    console.log(`Successfully generated unique roleplay for ${eventId} (${finalValidation.wordCount} words)`)
     return roleplay
+
+
 
   } catch (error) {
     console.error(`Error generating roleplay scenario for ${eventId}:`, error)
@@ -591,19 +832,19 @@ CRITICAL REQUIREMENTS:
       return await generateRoleplayScenario(eventId, eventName, eventScenario, retryCount + 1)
     }
 
-    // Final fallback - try to load PIs normally and use first N
-    console.log('Using final fallback scenario generation')
+    // Fallback with random context
+    console.log('Using enhanced fallback scenario generation')
+    const businessContext = generateRandomBusinessContext(eventId)
+    const selectedEvent = decaEvents.find(e => e.id === eventId)
+    
     try {
       const allPIs = await loadAllPerformanceIndicators(eventId)
-      const selectedEvent = decaEvents.find(e => e.id === eventId)
       const fallbackPIs = allPIs.length > 0 
         ? allPIs.slice(0, selectedEvent?.numPIs || 5).map(pi => pi.name)
         : [
             "Analyze business situations effectively",
             "Develop strategic recommendations", 
-            "Present findings clearly and persuasively",
-            "Consider ethical implications in decision making",
-            "Evaluate implementation feasibility"
+            "Present findings clearly and persuasively"
           ].slice(0, selectedEvent?.numPIs || 5)
 
       return {
@@ -612,10 +853,10 @@ CRITICAL REQUIREMENTS:
         instructionalArea: "Business Operations",
         twentyFirstCenturySkills: selectedEvent?.centurySkills?.skills || ["Critical thinking", "Communication", "Problem solving", "Leadership"],
         performanceIndicators: fallbackPIs,
-        situation: `You are to assume the role of a ${eventName.toLowerCase()} professional working with a retail company. You are meeting with a supervisor (judge) to discuss a business challenge. The judge will begin the roleplay by asking for your recommendations. You must respond with clear, professional ideas that address the performance indicators. After answering follow-up questions, the judge will conclude the roleplay by thanking you for your work.`
+        situation: `You are to assume the role of ${businessContext.roleTitle} at ${businessContext.companyName}, ${businessContext.industry} located in ${businessContext.location}. You are meeting with the ${businessContext.judgeRole} (judge) to discuss ${businessContext.challengeTheme}. The company ${businessContext.companySize} and faces unique challenges in today's competitive market. Present your analysis and strategic recommendations for addressing this business opportunity.`
       }
     } catch (fallbackError) {
-      console.error('Even fallback failed:', fallbackError)
+      console.error('Even enhanced fallback failed:', fallbackError)
       const selectedEvent = decaEvents.find(e => e.id === eventId)
       return {
         eventName,
@@ -632,7 +873,6 @@ CRITICAL REQUIREMENTS:
     }
   }
 }
-
 
 
 function groupEventsByCluster(events: typeof decaEvents) {
@@ -830,7 +1070,7 @@ const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
 }
     // Fallback to direct API call (requires NEXT_PUBLIC_OPENAI_API_KEY)
 // ULTRA-STRICT VERSION - Starts with 0s and only awards points for explicit evidence
-const generateAIFeedback = async (transcript: string, roleplay: any, eventId: string, attemptNumber: number = 0): Promise<any> => {
+const generateAIFeedback = async (transcript: string, roleplay: any, eventId: string, attemptNumber: number = 0, judgeContext?: string): Promise<any> => {
   try {
     const selectedEvent = decaEvents.find(e => e.id === eventId)
     if (!selectedEvent) throw new Error("Event not found")
@@ -846,6 +1086,13 @@ const generateAIFeedback = async (transcript: string, roleplay: any, eventId: st
       return count + (transcript.match(regex) || []).length
     }, 0)
 
+const judgeContextSection = judgeContext ? `
+JUDGE ROLE CONTEXT:
+${judgeContext}
+
+As the judge, you should evaluate based on how well the participant addressed the specific business scenario and questions that would be asked in this roleplay context.
+` : '';
+
     const prompt = `You are a constructive DECA judge providing balanced, educational feedback to help students improve.
 
 GRADING PHILOSOPHY:
@@ -855,9 +1102,14 @@ GRADING PHILOSOPHY:
 - Be encouraging while identifying areas for growth
 - Focus on what students did well AND what they can improve
 
+${judgeContextSection}
+
 EVENT: ${roleplay.eventName}
 PERFORMANCE INDICATORS: ${roleplay.performanceIndicators.join(', ')}
 21ST CENTURY SKILLS: ${roleplay.twentyFirstCenturySkills.join(', ')}
+
+ROLEPLAY SCENARIO:
+${roleplay.situation}
 
 TRANSCRIPT TO EVALUATE (${wordCount} words):
 "${transcript}"
@@ -1052,19 +1304,19 @@ Return ONLY valid JSON:
 // Fixed chat message function - use your API endpoint
 const sendChatMessage = async (messages: Array<{role: 'user' | 'assistant', content: string}>, context: string): Promise<string> => {
   try {
-    const systemPrompt = `You are an expert DECA judge and coach providing personalized feedback on roleplay performances. 
+const systemPrompt = `You are an expert DECA judge and coach providing personalized feedback on roleplay performances. You should take on the role characteristics described in the judge context when appropriate.
 
 Context: ${context}
 
 Your role is to:
-1. Analyze the student's presentation based on DECA performance indicators
-2. Provide specific, actionable feedback for improvement
-3. Answer questions about their performance
-4. Offer coaching advice for future competitions
-5. Be encouraging but honest about areas needing improvement
+1. Act as the judge character from the scenario when discussing the roleplay
+2. Analyze the student's presentation based on DECA performance indicators
+3. Provide specific, actionable feedback for improvement
+4. Answer questions about their performance from the judge's perspective
+5. Offer coaching advice for future competitions
+6. Be encouraging but honest about areas needing improvement
 
-Keep responses concise but insightful, focusing on specific aspects of their performance.`
-
+When discussing the roleplay, respond as if you were the actual judge character (owner, manager, etc.) who would have been asking the questions and evaluating the presentation. Keep responses concise but insightful, focusing on specific aspects of their performance.`
 const response = await fetch('/api/openai', {
       method: 'POST',
       headers: {
@@ -1205,11 +1457,18 @@ useEffect(() => {
     }, 100)
 
     // Create context for the AI
+// Load judge context if not already available
+    const judgeContext = await loadJudgeScenario(selectedEventId).catch(() => 
+      'You are an experienced DECA judge providing feedback on roleplay performance.'
+    )
+    
+    // Create context for the AI
     const context = `
     Roleplay Event: ${roleplay?.eventName}
     Performance Indicators: ${roleplay?.performanceIndicators?.join(', ')}
     21st Century Skills: ${roleplay?.twentyFirstCenturySkills?.join(', ')}
     Scenario: ${roleplay?.situation}
+    Judge Role Context: ${judgeContext}
     Student's Presentation Transcript: ${transcription}
     Overall Score: ${feedback?.totalScore}/100
     `
@@ -1246,7 +1505,6 @@ useEffect(() => {
 
 
 // Add debugging to your handleSubmitEvent function
-// Add debugging to your handleSubmitEvent function
 const handleSubmitEvent = async () => {
   if (!selectedEventId) return
   
@@ -1276,11 +1534,12 @@ const handleSubmitEvent = async () => {
     
     console.log("🤖 About to call generateRoleplayScenario...")
     
-    // Generate roleplay scenario using AI
+    // Generate roleplay scenario using AI with attempt count for variety
     const generatedRoleplay = await generateRoleplayScenario(
       selectedEventId,
       selectedEvent?.name || "Selected Event",
       eventScenario,
+      eventAttemptCount - 1 // Pass as retry count (0-indexed)
     )
     
     console.log("🎉 Generated roleplay received:", generatedRoleplay)
@@ -1304,8 +1563,10 @@ const handleSubmitEvent = async () => {
     console.error('💥 Error in handleSubmitEvent:', error)
     setIsGenerating(false)
     
-    // Fallback scenario
+    // Enhanced fallback scenario with random context
     const selectedEvent = decaEvents.find(e => e.id === selectedEventId)
+    const businessContext = generateRandomBusinessContext(selectedEventId)
+    
     const fallbackRoleplay = {
       eventName: selectedEvent?.name || "Selected Event",
       cluster: selectedEvent?.cluster || "Business",
@@ -1318,10 +1579,10 @@ const handleSubmitEvent = async () => {
         "Consider ethical implications",
         "Evaluate implementation feasibility"
       ],
-      situation: "You are working in a dynamic business environment that requires strategic thinking and effective communication.\n\nPresent your analysis and recommendations for the given business scenario, demonstrating your understanding of key concepts and ability to apply them practically."
+      situation: `You are to assume the role of ${businessContext.roleTitle} at ${businessContext.companyName}, ${businessContext.industry} located in ${businessContext.location}. You are meeting with the ${businessContext.judgeRole} (judge) to discuss ${businessContext.challengeTheme}. The company has ${businessContext.size} and faces unique challenges in today's competitive market. Present your analysis and recommendations for addressing this business opportunity.`
     }
     
-    console.log("🆘 Setting fallback roleplay:", fallbackRoleplay)
+    console.log("🆘 Setting enhanced fallback roleplay:", fallbackRoleplay)
     setRoleplay(fallbackRoleplay)
     setTimeout(() => setPreparationStep(2), 1500)
   }
@@ -1340,7 +1601,11 @@ const handleSubmitRecording = async () => {
     setTranscriptionStatus("Analyzing your presentation...")
     
     // Generate AI-powered feedback based on transcript with attempt tracking
-    const aiGeneratedFeedback = await generateAIFeedback(transcript, roleplay, selectedEventId, eventAttemptCount)
+// Load judge context for more accurate grading
+    const judgeContext = await loadJudgeScenario(selectedEventId)
+    
+    // Generate AI-powered feedback based on transcript with attempt tracking
+    const aiGeneratedFeedback = await generateAIFeedback(transcript, roleplay, selectedEventId, eventAttemptCount, judgeContext)
     
     setFeedback(aiGeneratedFeedback)
     setShowChatbot(true)
