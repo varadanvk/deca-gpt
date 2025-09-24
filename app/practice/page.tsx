@@ -155,8 +155,6 @@ const loadAllPerformanceIndicators = async (eventId: string): Promise<PI[]> => {
 }
 
 
-// NEW: Use LLM to intelligently select the most relevant PIs based on scenario
-// NEW: Use LLM to intelligently select the most relevant PIs based on scenario with randomization
 const selectMostRelevantPIs = async (
   eventScenario: string, 
   eventName: string,
@@ -175,31 +173,26 @@ const selectMostRelevantPIs = async (
     ).join('\n\n')
 
     // Add variety instruction based on attempt number
-const varietyInstruction = attemptNumber > 0 
-? `\n\nIMPORTANT: This is attempt ${attemptNumber + 1} for this event. Select DIFFERENT performance indicators than you might have chosen before to provide variety in practice scenarios.` 
-: ""
+    const varietyInstruction = attemptNumber > 0 
+      ? `\n\nIMPORTANT: This is attempt ${attemptNumber + 1} for this event. Select DIFFERENT performance indicators than you might have chosen before to provide variety in practice scenarios.` 
+      : ""
 
-const prompt = `You are an expert DECA competition designer. Given this roleplay scenario and list of available performance indicators, select the ${numPIsNeeded} MOST RELEVANT performance indicators for this specific scenario.
+    const prompt = `
+    You are a DECA competition expert selecting the most relevant performance indicators for a roleplay scenario.
 
-EVENT: ${eventName}
+    EVENT: ${eventName}
+    SCENARIO CONTEXT: ${eventScenario}
 
-SCENARIO:
-${eventScenario}
+    Available Performance Indicators:
+    ${piList}
 
-AVAILABLE PERFORMANCE INDICATORS (${shuffledPIs.length} total):
-${piList}
+    ${varietyInstruction}
 
-Your task:
-1. Analyze the scenario to understand what business skills/knowledge areas it tests
-2. Select the ${numPIsNeeded} performance indicators that are MOST directly relevant to this scenario
-3. Choose PIs that would allow a student to demonstrate the key competencies needed for this roleplay
-4. Prioritize PIs that align with the scenario's business context and challenges
-5. Ensure variety - don't always pick the most obvious choices${varietyInstruction}
+    Select the ${numPIsNeeded} most relevant performance indicators that would be directly testable in this business scenario.
 
-Return ONLY a JSON array of the exact PI names (not numbers), like this:
-["Performance Indicator Name 1", "Performance Indicator Name 2", "Performance Indicator Name 3"]
-
-IMPORTANT: Return only the JSON array with no additional text or formatting.`
+    Return ONLY a JSON array of the exact performance indicator names:
+    ["PI Name 1", "PI Name 2", "PI Name 3"]
+    `
 
     const response = await fetch('/api/openai', {
       method: 'POST',
@@ -560,7 +553,8 @@ const validateScenarioLength = (scenario: string): { isValid: boolean; wordCount
 };
 
 
-// Debugged generateRoleplayScenario function
+
+// Fixed generateRoleplayScenario function
 const generateRoleplayScenario = async (
   eventId: string,
   eventName: string,
@@ -581,7 +575,7 @@ const generateRoleplayScenario = async (
     console.log(`Loaded ${allPIs.length} available PIs for analysis`)
 
     // Step 2: Use LLM to intelligently select the most relevant PIs
-    const selectedEvent = decaEvents.find(e => e.id === eventId) // ✅ FIXED: use eventId parameter
+    const selectedEvent = decaEvents.find(e => e.id === eventId)
     const numPIsNeeded = selectedEvent?.numPIs || 5
 
     console.log(`Using LLM to select ${numPIsNeeded} most relevant PIs...`)
@@ -601,6 +595,45 @@ const generateRoleplayScenario = async (
 
 const prompt = `You are a DECA competition scenario writer. (DO NOT INCLUDE Performance Indicators OR ANY CODES IN THE FORMAT LIKE THIS(EC:013) in the actual Roleplay Scenario)(note for formatting: add linespace formatting where needed to signify new paragraph)
 
+SYSTEM/OUTPUT CONTRACT (DO NOT VIOLATE):
+- Return ONLY a single JSON object as final output. No prose, no backticks.
+- Do not add keys not specified in the schema.
+- Do not include trailing commas or invalid JSON.
+- Use plain quotation marks " " only (no smart quotes).
+- Escape any internal quotation marks inside JSON string values.
+
+CRITICAL ANALYSIS REQUIREMENT:
+You MUST CAREFULLY ANALYZE the example roleplay scenarios in the provided Event.txt file content below. Study the STRUCTURE, LENGTH, QUALITY, CONTENT, business context types, and specific wording patterns used in these examples. Then incorporate those exact stylistic elements, formatting patterns, and business context approaches into your generated scenario.
+DO NOT USE ANY EM DASHES AT ALL IN GENERATING THIS SCENARIO(—)!!
+
+EXTRACTION & STYLE TRANSFER STEPS (FOLLOW IN ORDER):
+1) Skim all example scenarios to infer a reusable outline: 
+   - Role assignment sentence (who the competitor is) 
+   - Organization and setting details 
+   - Specific operational or financial facts needed for decision making 
+   - The explicit challenge or task 
+   - Meeting/role-play flow (who starts, what they ask, Q&A, closing/thanks) 
+2) Note surface markers to mimic: sentence length, paragraph spacing, bullet list formatting " - ", neutral professional tone, and judge/competitor references.
+3) Identify event type from EVENT: ${eventName} (${eventId}) and adapt role, setting, and judge identity consistent with that event’s norms.
+4) Constrain length to 300–500 words and preserve the example’s narrative rhythm and clarity.
+
+EXAMPLE EVENT SCENARIOS TO ANALYZE AND EMULATE:
+${eventScenario}
+
+ANALYSIS INSTRUCTIONS:
+- Examine how the example scenarios are structured and formatted
+- Note the specific business terminology and context used
+- Observe the sentence structure and professional tone
+- Study how challenges are presented and framed
+- Match the complexity level and detail depth
+- Replicate the formatting style (bullet points, spacing, etc.)
+- Use similar business context types and industry focuses
+
+CROSS-EVENT GENERALIZATION GUIDELINES:
+- If the examples include meeting flow cues like “You will meet…” or “The judge will begin…”, include the same flow for the generated event.
+- If the event typically uses a client or judge persona (owner, manager, CEO, restaurant manager, hotel owner), mirror that persona and title relevant to the event cluster.
+- When examples provide concrete numbers or constraints (budgets, rates, capacities), generate similarly specific and realistic figures aligned with the businessContext.
+
 CRITICAL VARIETY REQUIREMENTS:
 - Use these specific business details: ${JSON.stringify(businessContext)}
 - Create a scenario that is FUNDAMENTALLY DIFFERENT from typical examples
@@ -609,8 +642,9 @@ CRITICAL VARIETY REQUIREMENTS:
 - Variety Seed: ${varietySeed} (use this to ensure uniqueness)
 
 FORMATTING REQUIREMENTS:
+- Mirror the formatting style found in the example scenarios
 - If the example prompts have bullet points to convey a list, make sure this generated roleplay also has a list and points with new lines and bullets listed starting like this " - "
-- Use proper paragraph spacing and line breaks for readability
+- Use proper paragraph spacing and line breaks for readability exactly as shown in examples
 - The scenario MUST be between 300-500 words
 
 EVENT: ${eventName} (${eventId})
@@ -631,6 +665,28 @@ ${retryCount > 0 ? `This is attempt ${retryCount + 1} - create something COMPLET
 - Use contemporary business challenges (sustainability, digital transformation, supply chain, etc.)
 - Create realistic but engaging business situations
 - Make the challenge directly require the selected performance indicators
+- Follow the EXACT style, tone, and structure patterns from the example scenarios above
+
+COMPULSORY MEETING/FLOW CUES (MATCH EXAMPLES):
+- Include where the meeting takes place (office, manager’s office, conference room, etc.).
+- Specify who begins the role-play and the initial prompt they give.
+- Indicate that after your presentation and Q&A, the judge concludes by thanking you.
+
+DATA & SPECIFICITY REQUIREMENTS:
+- Include at least 3 concrete, decision-relevant facts (e.g., rates, capacities, constraints, timelines, budget figures) aligned to ${businessContext.industry} and ${businessContext.challengeTheme}.
+- Where appropriate, provide a short bulleted list using " - " to enumerate options, risks, or recommendations.
+
+PI ALIGNMENT CHECK (INTERNAL TO YOU, DO NOT OUTPUT AS BULLETS):
+- Design the scenario so each selected performance indicator can be directly demonstrated during the role-play.
+- Ensure the main decision cannot be resolved without applying those PIs.
+
+JSON FIELD POPULATION RULES:
+- "eventName" must equal "${eventName}".
+- "cluster" must be "${selectedEvent?.cluster || 'Business Event Category'}".
+- "instructionalArea" must be the applicable business area for the event; infer from examples if not provided (e.g., Finance, Marketing, Hospitality/Tourism, Human Resources, Operations).
+- "twentyFirstCenturySkills" should be an array of 4 skills relevant to the task (e.g., Critical Thinking, Collaboration, Creativity, Communication) OR use ${'${twentyFirstCenturySkills ?? ["Critical Thinking","Collaboration","Creativity","Communication"]}'}.
+- "performanceIndicators" must exactly mirror the items listed above in SELECTED PERFORMANCE INDICATORS (copy text only, strip numbering).
+- "situation" must contain the full roleplay scenario (300–500 words), with the style/flow/formatting matched to the examples and NO em dashes.
 
 Return ONLY valid JSON with this exact structure:
 {
@@ -639,17 +695,7 @@ Return ONLY valid JSON with this exact structure:
   "instructionalArea": "Business Area",
   "twentyFirstCenturySkills": ["Skill1", "Skill2", "Skill3", "Skill4"],
   "performanceIndicators": ["PI1", "PI2", "PI3", "PI4", "PI5"],
-  "situation": "A DECA-style roleplay scenario between 300-500 words that directly relates to the selected performance indicators. The situation must follow this format:
-
-You are to assume the role of a [job/professional role relevant to ${eventName}] at [company/organization relevant to ${eventName}]. 
-You are meeting with [the judge's role, e.g., a client, supervisor, coworker, or new employee] to discuss [a realistic business challenge that requires the selected performance indicators].
-
-The judge will begin the roleplay by asking you about [the challenge]. 
-You must respond by addressing the judge's concerns and explaining your ideas clearly and professionally. 
-Be sure to demonstrate your knowledge of the instructional area and cover the assigned performance indicators during your explanation. 
-The judge may ask follow-up questions, which you should answer in detail.
-
-After you have explained your recommendations and answered the judge's questions, the judge will conclude the roleplay by thanking you for your work."
+  "situation": "A DECA-style roleplay scenario between 300-500 words that EXACTLY MATCHES the style, structure, and formatting of the example scenarios provided above. Use the same professional tone, business context approach, and formatting patterns observed in the examples."
 }
 
 AVOID these overused scenarios:
@@ -673,7 +719,15 @@ CRITICAL REQUIREMENTS:
 - Use EXACTLY the performance indicators provided above
 - Make the scenario specifically designed to test those PIs
 - Ensure the business challenge naturally requires those competencies
-- WORD COUNT: The scenario MUST be 300-500 words`
+- WORD COUNT: The scenario MUST be 300-500 words
+- STYLE MATCHING: Must closely replicate the writing style, structure, and formatting from the example scenarios above
+
+FINAL VALIDATION (BEFORE YOU OUTPUT):
+- Confirm word count is 300–500 for "situation".
+- Confirm no em dashes are present.
+- Confirm "performanceIndicators" exactly equals the selected list (order preserved, numbering removed).
+- Confirm JSON parses as a single object with the exact fields and no extras.
+`
 
     console.log(`Generating unique roleplay scenario with business context...`)
 
@@ -888,18 +942,13 @@ function groupEventsByCluster(events: typeof decaEvents) {
     {},
   )
 }
-
-// Fixed audio recording hook with presentation time limit
+// Simplified audio recording hook (replace the existing useAudioRecorder function)
 function useAudioRecorder(selectedEventId: string) {
   const [isRecording, setIsRecording] = useState(false)
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
   const [duration, setDuration] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(0)
-  const [audioDuration, setAudioDuration] = useState(0)
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null)
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
   const [durationInterval, setDurationInterval] = useState<NodeJS.Timeout | null>(null)
   const [showTimeUpModal, setShowTimeUpModal] = useState(false)
   
@@ -961,39 +1010,6 @@ function useAudioRecorder(selectedEventId: string) {
       }
     }
   }
-  
-  const togglePlayback = () => {
-    if (!audioUrl) return
-    
-    if (!audioElement) {
-      const audio = new Audio(audioUrl)
-      audio.onended = () => setIsPlaying(false)
-      audio.onloadedmetadata = () => {
-        setAudioDuration(audio.duration || 0)
-      }
-      audio.ontimeupdate = () => {
-        setCurrentTime(audio.currentTime || 0)
-      }
-      setAudioElement(audio)
-      audio.play()
-      setIsPlaying(true)
-    } else {
-      if (isPlaying) {
-        audioElement.pause()
-        setIsPlaying(false)
-      } else {
-        audioElement.play()
-        setIsPlaying(true)
-      }
-    }
-  }
-
-  const seekTo = (time: number) => {
-    if (audioElement && !isNaN(time) && isFinite(time)) {
-      audioElement.currentTime = Math.max(0, Math.min(time, audioDuration))
-      setCurrentTime(audioElement.currentTime)
-    }
-  }
 
   const closeTimeUpModal = () => {
     setShowTimeUpModal(false)
@@ -1004,14 +1020,9 @@ function useAudioRecorder(selectedEventId: string) {
     audioUrl,
     audioBlob,
     duration,
-    isPlaying,
-    currentTime,
-    audioDuration,
     showTimeUpModal,
     startRecording,
     stopRecording,
-    togglePlayback,
-    seekTo,
     closeTimeUpModal
   }
 }
@@ -1186,14 +1197,14 @@ Return ONLY valid JSON:
       feedbackData = JSON.parse(jsonMatch[0])
 
       // Apply reasonable minimum scores for effort
-      feedbackData.performanceIndicators.forEach((pi: any) => {
+      feedbackData.performanceIndicators.forEach((pi: { indicator: string; score: number; feedback: string }) => {
         // Ensure minimum score of 20% if any relevant content is present
         if (pi.score < Math.floor(selectedEvent.piPoints * 0.2) && wordCount > 10) {
           pi.score = Math.floor(selectedEvent.piPoints * 0.2)
         }
       })
 
-      feedbackData.twentyFirstCenturySkills.forEach((skill: any) => {
+      feedbackData.twentyFirstCenturySkills.forEach((skill: { skill: string; score: number; feedback: string }) => {
         // Ensure minimum score of 20% if any relevant content is present
         if (skill.score < Math.floor(selectedEvent.centurySkills.skillPoints * 0.2) && wordCount > 10) {
           skill.score = Math.floor(selectedEvent.centurySkills.skillPoints * 0.2)
@@ -1209,18 +1220,18 @@ Return ONLY valid JSON:
       }
 
       if (penaltyMultiplier < 1.0) {
-        feedbackData.performanceIndicators.forEach((pi: any) => {
+        feedbackData.performanceIndicators.forEach((pi: { indicator: string; score: number; feedback: string }) => {
           pi.score = Math.floor(pi.score * penaltyMultiplier)
         })
-        feedbackData.twentyFirstCenturySkills.forEach((skill: any) => {
+        feedbackData.twentyFirstCenturySkills.forEach((skill: { skill: string; score: number; feedback: string }) => {
           skill.score = Math.floor(skill.score * penaltyMultiplier)
         })
         feedbackData.overallImpression.score = Math.floor(feedbackData.overallImpression.score * penaltyMultiplier)
       }
 
       // Calculate totals
-      const piTotal = feedbackData.performanceIndicators.reduce((sum: number, pi: any) => sum + pi.score, 0)
-      const skillTotal = feedbackData.twentyFirstCenturySkills.reduce((sum: number, skill: any) => sum + skill.score, 0)
+      const piTotal = feedbackData.performanceIndicators.reduce((sum: number, pi: { indicator: string; score: number; feedback: string }) => sum + pi.score, 0)
+      const skillTotal = feedbackData.twentyFirstCenturySkills.reduce((sum: number, skill: { skill: string; score: number; feedback: string }) => sum + skill.score, 0)
       const overallTotal = feedbackData.overallImpression.score
       
       const totalPossible = 
@@ -1302,21 +1313,35 @@ Return ONLY valid JSON:
 }
 
 // Fixed chat message function - use your API endpoint
+// Fixed chat message function - use your API endpoint
 const sendChatMessage = async (messages: Array<{role: 'user' | 'assistant', content: string}>, context: string): Promise<string> => {
   try {
-const systemPrompt = `You are an expert DECA judge and coach providing personalized feedback on roleplay performances. You should take on the role characteristics described in the judge context when appropriate.
+const systemPrompt = `You are a strict DECA judge and coach. You ONLY discuss business, finance, marketing, DECA competition topics, and the specific roleplay scenario AND IF SOMEONE ASKS ABOUT ANYTHING ELSE, SAYY A VARIATION OF "Sorry, I am unable to help blah blah blah". You REFUSE to answer questions about anything else.
 
 Context: ${context}
+
+STRICT GUIDELINES:
+1. ONLY answer questions about: business concepts, finance, marketing, DECA competition advice, and THIS specific roleplay scenario
+2. For score explanations, reference specific aspects from the judge scenario and event requirements
+3. If asked about non-business topics, respond: "I only provide feedback on business, finance, marketing, and DECA-related topics. Please ask about your roleplay performance."
+4. Use **text** for bold formatting and • for bullet points
+5. Keep responses focused and professional
+
+Format your responses with:
+- **Bold text** using double asterisks for emphasis
+- • Bullet points for lists
+- Reference specific judge expectations when explaining scores
 
 Your role is to:
 1. Act as the judge character from the scenario when discussing the roleplay
 2. Analyze the student's presentation based on DECA performance indicators
-3. Provide specific, actionable feedback for improvement
+3. Provide specific, actionable feedback for improvement based on judge scenario requirements
 4. Answer questions about their performance from the judge's perspective
-5. Offer coaching advice for future competitions
-6. Be encouraging but honest about areas needing improvement
+5. Offer coaching advice for future DECA competitions
+6. Be strict but constructive about areas needing improvement
 
-When discussing the roleplay, respond as if you were the actual judge character (owner, manager, etc.) who would have been asking the questions and evaluating the presentation. Keep responses concise but insightful, focusing on specific aspects of their performance.`
+When discussing scores, always reference what the judge was looking for based on the scenario context and performance indicators. Stay strictly within business and DECA topics.`
+
 const response = await fetch('/api/openai', {
       method: 'POST',
       headers: {
@@ -1353,7 +1378,7 @@ export default function DECAPracticePage() {
   const [selectedEventId, setSelectedEventId] = useState("")
   const [roleplay, setRoleplay] = useState<any>(null)
   const [feedback, setFeedback] = useState<any>(null)
-  const { isRecording, audioUrl, audioBlob, duration, isPlaying, currentTime, audioDuration, showTimeUpModal, startRecording, stopRecording, togglePlayback, seekTo, closeTimeUpModal } = useAudioRecorder(selectedEventId)
+  const { isRecording, audioUrl, audioBlob, duration, showTimeUpModal, startRecording, stopRecording, closeTimeUpModal } = useAudioRecorder(selectedEventId)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [transcriptionStatus, setTranscriptionStatus] = useState("")
   const [showPreparation, setShowPreparation] = useState(false)
@@ -1377,6 +1402,14 @@ const [eventAttemptCount, setEventAttemptCount] = useState(0) // ADD THIS LINE
   const [chatInput, setChatInput] = useState("")
   const [isChatLoading, setIsChatLoading] = useState(false)
   const [showChatbot, setShowChatbot] = useState(false)
+  const [isTranscriptExpanded, setIsTranscriptExpanded] = useState(false)
+
+  // Audio playback states
+  const [currentTime, setCurrentTime] = useState(0)
+  const [audioDuration, setAudioDuration] = useState(0)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
+
 
   // Timer effect
 // Timer effect
@@ -1439,7 +1472,54 @@ useEffect(() => {
   setShowTwoMinuteWarning(false)
   }
 
-  const sendChatMessageHandler = async (message: string) => {
+  // Audio playback functions
+  const togglePlayback = () => {
+    if (!audioElement) {
+      if (audioUrl) {
+        const audio = new Audio(audioUrl)
+        audio.addEventListener('loadedmetadata', () => {
+          setAudioDuration(audio.duration)
+        })
+        audio.addEventListener('timeupdate', () => {
+          setCurrentTime(audio.currentTime)
+        })
+        audio.addEventListener('ended', () => {
+          setIsPlaying(false)
+          setCurrentTime(0)
+        })
+        setAudioElement(audio)
+        audio.play()
+        setIsPlaying(true)
+      }
+    } else {
+      if (isPlaying) {
+        audioElement.pause()
+        setIsPlaying(false)
+      } else {
+        audioElement.play()
+        setIsPlaying(true)
+      }
+    }
+  }
+
+  const seekTo = (time: number) => {
+    if (audioElement) {
+      audioElement.currentTime = time
+      setCurrentTime(time)
+    }
+  }
+
+  // Clean up audio element when component unmounts
+  useEffect(() => {
+    return () => {
+      if (audioElement) {
+        audioElement.pause()
+        audioElement.src = ''
+      }
+    }
+  }, [audioElement])
+
+const sendChatMessageHandler = async (message: string) => {
     if (!message.trim() || isChatLoading) return
 
     const userMessage = { role: 'user' as const, content: message }
@@ -1456,26 +1536,55 @@ useEffect(() => {
       }
     }, 100)
 
-    // Create context for the AI
-// Load judge context if not already available
+    // Load judge context and event scenario for comprehensive context
     const judgeContext = await loadJudgeScenario(selectedEventId).catch(() => 
       'You are an experienced DECA judge providing feedback on roleplay performance.'
     )
     
-    // Create context for the AI
+    const eventScenario = await loadEventScenario(selectedEventId).catch(() => 
+      'Standard DECA business roleplay scenario.'
+    )
+    
+    // Create comprehensive context for the AI
     const context = `
-    Roleplay Event: ${roleplay?.eventName}
+    DECA Event: ${roleplay?.eventName} (${selectedEventId})
+    Event Cluster: ${roleplay?.cluster}
     Performance Indicators: ${roleplay?.performanceIndicators?.join(', ')}
     21st Century Skills: ${roleplay?.twentyFirstCenturySkills?.join(', ')}
-    Scenario: ${roleplay?.situation}
-    Judge Role Context: ${judgeContext}
-    Student's Presentation Transcript: ${transcription}
+    
+    ROLEPLAY SCENARIO: ${roleplay?.situation}
+    
+    JUDGE ROLE & EXPECTATIONS: ${judgeContext}
+    
+    EVENT REQUIREMENTS: ${eventScenario}
+    
+    STUDENT'S PRESENTATION TRANSCRIPT: ${transcription}
+    
+    SCORING RESULTS:
     Overall Score: ${feedback?.totalScore}/100
+    Performance Indicators Scores: ${feedback?.performanceIndicators?.map((pi: any) => `${pi.indicator}: ${pi.score}/${decaEvents.find(e => e.id === selectedEventId)?.piPoints}`).join(', ')}
+    21st Century Skills Scores: ${feedback?.twentyFirstCenturySkills?.map((skill: any) => `${skill.skill}: ${skill.score}/${decaEvents.find(e => e.id === selectedEventId)?.centurySkills.skillPoints}`).join(', ')}
+    
+    Judge's Overall Impression: ${feedback?.overallImpression?.feedback}
+    General Feedback: ${feedback?.generalFeedback}
     `
 
     try {
       const response = await sendChatMessage(updatedMessages, context)
-      const assistantMessage = { role: 'assistant' as const, content: response }
+      
+      // Format the response for better display
+      const formattedResponse = response
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Convert **text** to <strong>
+        .replace(/^• /gm, '<li>') // Convert bullet points
+        .replace(/\n• /g, '</li>\n<li>') // Handle multiple bullets
+        .replace(/<li>(.*?)(?=\n|$)/g, '<li>$1</li>') // Close li tags
+      
+      // Wrap multiple list items in ul tags
+      const finalResponse = formattedResponse.includes('<li>') 
+        ? formattedResponse.replace(/(<li>[\s\S]*<\/li>)/, '<ul>$1</ul>')
+        : formattedResponse
+      
+      const assistantMessage = { role: 'assistant' as const, content: finalResponse }
       setChatMessages([...updatedMessages, assistantMessage])
       
       // Scroll to bottom after adding assistant message
@@ -1487,7 +1596,7 @@ useEffect(() => {
       }, 100)
     } catch (error) {
       console.error('Chat error:', error)
-      const errorMessage = { role: 'assistant' as const, content: "I'm sorry, I encountered an error. Please try again." }
+      const errorMessage = { role: 'assistant' as const, content: "I'm sorry, I encountered an error. Please ask me about your DECA roleplay performance or business-related topics." }
       setChatMessages([...updatedMessages, errorMessage])
       
       // Scroll to bottom after adding error message
@@ -1501,7 +1610,6 @@ useEffect(() => {
       setIsChatLoading(false)
     }
   }
-
 
 
 // Add debugging to your handleSubmitEvent function
@@ -1710,6 +1818,10 @@ const handleStartRoleplay = () => {
                       <div className="flex items-start space-x-4">
                         <div className="w-3 h-3 bg-white rounded-full mt-2 flex-shrink-0"></div>
                         <p>You will receive a 2-minute warning before your time runs out</p>
+                      </div>
+                      <div className="flex items-start space-x-4">
+                        <div className="w-3 h-3 bg-white rounded-full mt-2 flex-shrink-0"></div>
+                        <p>When describing visuals, describe them just as you would in an in-person roleplay</p>
                       </div>
                     </div>
                   );
@@ -1946,43 +2058,24 @@ const handleStartRoleplay = () => {
                 )}
 
 
-                  {audioUrl && (
+{/* Audio Replay Section */}
+{audioUrl && (
                     <div className="space-y-4">
                       <div className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex items-center justify-between mb-4">
                           <span className="text-sm font-medium text-gray-700">Recording Complete</span>
                           <span className="text-sm text-gray-500">
-                            {formatDuration(Math.floor(currentTime))} / {formatDuration(Math.floor(audioDuration))}
+                            Duration: {formatDuration(duration)}
                           </span>
                         </div>
-                        <div className="flex items-center gap-4">
-                          <Button 
-                            onClick={togglePlayback} 
-                            variant="outline" 
-                            size="sm"
-                            className="flex items-center gap-2"
-                          >
-                            {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                            {isPlaying ? "Pause" : "Play"}
-                          </Button>
-                          <div 
-                            className="flex-1 h-4 bg-gray-200 rounded-full relative cursor-pointer"
-                            onClick={(e) => {
-                              const rect = e.currentTarget.getBoundingClientRect()
-                              const x = e.clientX - rect.left
-                              const percentage = x / rect.width
-                              const newTime = percentage * audioDuration
-                              seekTo(newTime)
-                            }}
-                          >
-                            <div 
-                              className="h-4 bg-blue-500 rounded-full relative" 
-                              style={{ width: `${audioDuration ? (currentTime / audioDuration) * 100 : 0}%` }}
-                            >
-                              <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-md"></div>
-                            </div>
-                          </div>
-                        </div>
+                        <audio 
+                          controls 
+                          src={audioUrl}
+                          className="w-full"
+                          controlsList="noplaybackrate"
+                        >
+                          Your browser does not support the audio element.
+                        </audio>
                       </div>
                       
                       <div className="text-center">
@@ -2001,18 +2094,6 @@ const handleStartRoleplay = () => {
                           )}
                         </Button>
                       </div>
-                    </div>
-                  )}
-
-                  {isSubmitting && (
-                    <div className="space-y-2 text-center">
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
-                        <div 
-                          className="bg-blue-500 h-2.5 rounded-full transition-all duration-300 animate-pulse" 
-                          style={{ width: "60%" }}
-                        />
-                      </div>
-                      <p className="text-sm text-gray-600">{transcriptionStatus}</p>
                     </div>
                   )}
                 </div>
@@ -2140,71 +2221,122 @@ const handleStartRoleplay = () => {
             </div>
 
             {/* Right Column */}
+{/* Right Column */}
             <div className="lg:col-span-1 space-y-6">
               {/* Chatbot Section */}
               {showChatbot && (
-                <Card className="flex flex-col">
-                  <CardHeader>
+                <Card className="flex flex-col h-[600px]">
+                  <CardHeader className="flex-shrink-0 pb-3">
                     <CardTitle className="text-lg flex items-center gap-2">
                       <MessageCircle className="h-5 w-5" />
-                      AI Coach Chat
+                      AI Judge Coach
                     </CardTitle>
-                    <CardDescription>Get personalized feedback on your presentation</CardDescription>
+                    <CardDescription>Get strict business-focused feedback on your DECA performance</CardDescription>
                   </CardHeader>
-                  <CardContent className="flex flex-col">
-                    {/* Transcription Preview */}
+                  <CardContent className="flex flex-col flex-1 min-h-0">
+                    {/* Expandable Transcription Preview */}
                     {transcription && (
-                      <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                        <h4 className="font-medium text-blue-800 mb-2 text-sm">Your Presentation:</h4>
-                        <p className="text-xs text-blue-700 line-clamp-4">{transcription}</p>
+                      <div className="mb-4 border border-blue-200 rounded-lg flex-shrink-0">
+                        <button
+                          onClick={() => setIsTranscriptExpanded(!isTranscriptExpanded)}
+                          className="w-full p-3 bg-blue-50 hover:bg-blue-100 transition-colors duration-200 rounded-t-lg border-b border-blue-200 flex items-center justify-between"
+                        >
+                          <h4 className="font-medium text-blue-800 text-sm">Your Presentation Transcript</h4>
+                          <div className={`transform transition-transform duration-200 ${isTranscriptExpanded ? 'rotate-180' : ''}`}>
+                            ▼
+                          </div>
+                        </button>
+                        
+                        <div className={`transition-all duration-300 overflow-hidden ${
+                          isTranscriptExpanded ? 'max-h-60' : 'max-h-16'
+                        }`}>
+                          <div className={`p-3 bg-white ${
+                            isTranscriptExpanded ? 'overflow-y-auto max-h-56' : 'overflow-hidden'
+                          }`}>
+                            <p className={`text-xs text-blue-700 ${
+                              isTranscriptExpanded ? '' : 'line-clamp-3'
+                            }`}>
+                              {transcription}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     )}
 
-                    {/* Chat Messages - Resizable */}
+                    {/* Chat Messages - Fixed height container */}
                     <div 
                       id="chat-messages-container"
-                      className="overflow-y-auto space-y-3 mb-4 border border-gray-200 rounded-lg p-3 bg-gray-50 resize-y min-h-64 max-h-96"
-                      style={{ height: '300px' }}
+                      className="flex-1 overflow-y-auto space-y-3 mb-4 border border-gray-200 rounded-lg p-3 bg-gray-50 min-h-0"
+                      style={{ scrollBehavior: 'smooth' }}
                     >
+                      {chatMessages.length === 0 && (
+                        <div className="text-center text-gray-500 py-8">
+                          <MessageCircle className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                          <p className="text-sm font-medium">Ask me about your DECA performance!</p>
+                          <div className="mt-4 space-y-2 text-xs text-left max-w-xs mx-auto">
+                            <div className="p-2 bg-white rounded border border-gray-200">
+                              "Why did I get this score on the first performance indicator?"
+                            </div>
+                            <div className="p-2 bg-white rounded border border-gray-200">
+                              "What business concepts should I improve?"
+                            </div>
+                            <div className="p-2 bg-white rounded border border-gray-200">
+                              "How can I better address the judge's expectations?"
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
                       {chatMessages.map((message, i) => (
                         <div key={i} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                           <div className={`max-w-[85%] p-3 rounded-lg text-sm ${
                             message.role === 'user' 
                               ? 'bg-blue-500 text-white' 
-                              : 'bg-white text-gray-800 border border-gray-300'
+                              : 'bg-white text-gray-800 border border-gray-300 shadow-sm'
                           }`}>
-                            {message.content}
+                            <div 
+                              className="whitespace-pre-wrap"
+                              dangerouslySetInnerHTML={{ 
+                                __html: message.role === 'assistant' ? message.content : message.content 
+                              }}
+                            />
                           </div>
                         </div>
                       ))}
+                      
                       {isChatLoading && (
                         <div className="flex justify-start">
-                          <div className="bg-white text-gray-800 p-3 rounded-lg text-sm border border-gray-300">
+                          <div className="bg-white text-gray-800 p-3 rounded-lg text-sm border border-gray-300 shadow-sm">
                             <div className="flex items-center gap-2">
-                              <div className="animate-spin h-4 w-4 border-2 border-gray-400 border-t-transparent rounded-full"></div>
-                              Thinking...
+                              <div className="animate-spin h-4 w-4 border-2 border-blue-400 border-t-transparent rounded-full"></div>
+                              <span>Analyzing from judge's perspective...</span>
                             </div>
                           </div>
                         </div>
                       )}
                     </div>
 
-                    {/* Chat Input */}
-                    <div className="flex gap-2">
+                    {/* Chat Input - Fixed at bottom */}
+                    <div className="flex gap-2 flex-shrink-0">
                       <input
                         type="text"
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && sendChatMessageHandler(chatInput)}
-                        placeholder="Ask about your performance..."
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault()
+                            sendChatMessageHandler(chatInput)
+                          }
+                        }}
+                        placeholder="Ask about business concepts, DECA tips, or your roleplay..."
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         disabled={isChatLoading}
                       />
                       <Button
                         onClick={() => sendChatMessageHandler(chatInput)}
                         disabled={isChatLoading || !chatInput.trim()}
                         size="sm"
-                        className="px-4"
+                        className="px-4 flex-shrink-0"
                       >
                         <Send className="h-4 w-4" />
                       </Button>
@@ -2221,41 +2353,21 @@ const handleStartRoleplay = () => {
                     <CardDescription>Review your recorded presentation</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="bg-gray-50 p-4 rounded-lg">
+<div className="bg-gray-50 p-4 rounded-lg">
                       <div className="flex items-center justify-between mb-4">
                         <span className="text-sm font-medium text-gray-700">Your Recording</span>
                         <span className="text-sm text-gray-500">
-                          {formatDuration(Math.floor(currentTime))} / {formatDuration(Math.floor(audioDuration))}
+                          Duration: {formatDuration(duration)}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <Button 
-                          onClick={togglePlayback} 
-                          variant="outline" 
-                          size="sm"
-                          className="flex items-center gap-2"
-                        >
-                          {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                          {isPlaying ? "Pause" : "Play"}
-                        </Button>
-                        <div 
-                          className="flex-1 h-4 bg-gray-200 rounded-full relative cursor-pointer"
-                          onClick={(e) => {
-                            const rect = e.currentTarget.getBoundingClientRect()
-                            const x = e.clientX - rect.left
-                            const percentage = x / rect.width
-                            const newTime = percentage * audioDuration
-                            seekTo(newTime)
-                          }}
-                        >
-                          <div 
-                            className="h-4 bg-blue-500 rounded-full relative" 
-                            style={{ width: `${audioDuration ? (currentTime / audioDuration) * 100 : 0}%` }}
-                          >
-                            <div className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-md"></div>
-                          </div>
-                        </div>
-                      </div>
+                      <audio 
+                        controls 
+                        src={audioUrl}
+                        className="w-full"
+                        controlsList="noplaybackrate"
+                      >
+                        Your browser does not support the audio element.
+                      </audio>
                     </div>
                   </CardContent>
                 </Card>
