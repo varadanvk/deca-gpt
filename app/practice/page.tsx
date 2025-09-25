@@ -951,61 +951,70 @@ function useAudioRecorder(selectedEventId: string) {
   const [showTimeUpModal, setShowTimeUpModal] = useState(false)
   
   const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      const recorder = new MediaRecorder(stream)
-      const chunks: BlobPart[] = []
-      
-      // Get presentation time limit for this event
-      const selectedEvent = decaEvents.find(e => e.id === selectedEventId)
-      const maxRecordingTime = selectedEvent ? selectedEvent.presentationTime * 60 : 600 // Default 10 minutes
-      
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          chunks.push(e.data)
-        }
-      }
-      
-      recorder.onstop = () => {
-        if (chunks.length > 0) {
-          const blob = new Blob(chunks, { type: 'audio/webm' })
-          const url = URL.createObjectURL(blob)
-          setAudioUrl(url)
-          setAudioBlob(blob)
-        }
-        stream.getTracks().forEach(track => track.stop())
-      }
-      
-      recorder.start(1000) // Record in 1-second chunks
-      setMediaRecorder(recorder)
-      setIsRecording(true)
-      setDuration(0)
-      
-      const interval = setInterval(() => {
-        setDuration(prev => {
-          const newDuration = prev + 1
-          
-          // Check if we've reached the presentation time limit
-          if (newDuration >= maxRecordingTime) {
-            // Stop recording automatically
-            if (recorder.state === 'recording') {
-              recorder.stop()
-            }
-            setIsRecording(false)
-            setShowTimeUpModal(true)
-            clearInterval(interval)
-            return maxRecordingTime
-          }
-          
-          return newDuration
-        })
-      }, 1000)
-      setDurationInterval(interval)
-    } catch (error) {
-      console.error('Error starting recording:', error)
-      alert('Could not access microphone. Please ensure microphone permissions are granted.')
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    
+    // Fix: Use compatible audio format for mobile/Safari
+    const options = {
+      mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/mp4') 
+        ? 'audio/mp4'
+        : 'audio/webm'
     }
+    
+    const recorder = new MediaRecorder(stream, options)
+    const chunks: BlobPart[] = []
+    
+    const selectedEvent = decaEvents.find(e => e.id === selectedEventId)
+    const maxRecordingTime = selectedEvent ? selectedEvent.presentationTime * 60 : 600
+    
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) {
+        chunks.push(e.data)
+      }
+    }
+    
+    recorder.onstop = () => {
+      if (chunks.length > 0) {
+        // Fix: Create blob with proper MIME type
+        const blob = new Blob(chunks, { type: options.mimeType })
+        const url = URL.createObjectURL(blob)
+        setAudioUrl(url)
+        setAudioBlob(blob)
+      }
+      stream.getTracks().forEach(track => track.stop())
+    }
+    
+    // Fix: Record in smaller chunks for better mobile compatibility
+    recorder.start(100) // 100ms chunks instead of 1000ms
+    setMediaRecorder(recorder)
+    setIsRecording(true)
+    setDuration(0)
+    
+    const interval = setInterval(() => {
+      setDuration(prev => {
+        const newDuration = prev + 1
+        
+        if (newDuration >= maxRecordingTime) {
+          if (recorder.state === 'recording') {
+            recorder.stop()
+          }
+          setIsRecording(false)
+          setShowTimeUpModal(true)
+          clearInterval(interval)
+          return maxRecordingTime
+        }
+        
+        return newDuration
+      })
+    }, 1000)
+    setDurationInterval(interval)
+  } catch (error) {
+    console.error('Error starting recording:', error)
+    alert('Could not access microphone. Please ensure microphone permissions are granted.')
   }
+}
   
   const stopRecording = () => {
     if (mediaRecorder && mediaRecorder.state === 'recording') {
@@ -1066,7 +1075,6 @@ function useAudioRecorder(selectedEventId: string) {
 // OpenAI Whisper transcription function
 const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
   try {
-    // Validate the blob
     if (!audioBlob || audioBlob.size === 0) {
       throw new Error('Invalid audio blob - no data recorded')
     }
@@ -1074,20 +1082,35 @@ const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
     console.log('Audio blob size:', audioBlob.size, 'bytes')
     console.log('Audio blob type:', audioBlob.type)
     
+    // Fix: Check file size limit (25MB for Whisper)
+    const maxSize = 25 * 1024 * 1024; // 25MB
+    if (audioBlob.size > maxSize) {
+      throw new Error('Audio file too large - please record a shorter response')
+    }
+    
     const formData = new FormData()
-    formData.append('file', audioBlob, 'recording.webm')
+    
+    // Fix: Convert to compatible format and ensure proper filename
+    const fileName = audioBlob.type.includes('mp4') ? 'recording.mp4' : 'recording.webm'
+    formData.append('file', audioBlob, fileName)
     formData.append('model', 'whisper-1')
     formData.append('language', 'en')
     formData.append('response_format', 'text')
     
     console.log('Transcribing audio with OpenAI Whisper...')
     
-    // Try API route first (recommended approach)
+    // Fix: Add timeout for long transcriptions
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 60000) // 60 second timeout
+    
     try {
       const response = await fetch('/api/transcribe', {
         method: 'POST',
-        body: formData
+        body: formData,
+        signal: controller.signal
       })
+      
+      clearTimeout(timeoutId)
       
       if (response.ok) {
         const transcription = await response.text()
@@ -1096,22 +1119,27 @@ const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
       } else {
         const errorText = await response.text()
         console.error('API route failed:', response.status, errorText)
+        throw new Error(`Transcription failed: ${response.status}`)
       }
     } catch (apiError) {
-      console.warn('API route failed, trying direct call:', apiError)
+      clearTimeout(timeoutId)
+      if (apiError instanceof Error && apiError.name === 'AbortError') {
+        throw new Error('Transcription timeout - please try a shorter recording')
+      }
+      throw apiError
     }
-    
-    // Fallback - return empty string or throw error
-    throw new Error('Transcription service unavailable')
     
 } catch (error) {
   console.error('Error transcribing audio:', error)
   
-  // Check if it's a blob issue specifically
   const errorMessage = error instanceof Error ? error.message : String(error)
   
   if (errorMessage.includes('Invalid audio blob')) {
     return "Recording error - please try recording again with a longer response."
+  } else if (errorMessage.includes('too large')) {
+    return "Recording too long - please record a shorter response (under 9 minutes)."
+  } else if (errorMessage.includes('timeout')) {
+    return "Transcription timeout - please try a shorter recording or check your connection."
   }
   
   return "Transcription unavailable - please check your audio recording and try again."
@@ -2227,18 +2255,22 @@ const handleSubmitRecording = async () => {
 } catch (error) {
   console.error('Error processing recording:', error)
   
-  // More specific error messages
   const errorMessage = error instanceof Error ? error.message : String(error)
   
   if (errorMessage.includes('Transcription too short')) {
     alert('Your recording appears to be too short or unclear. Please try recording a longer response.')
   } else if (errorMessage.includes('Invalid audio blob')) {
     alert('There was an issue with your audio recording. Please try recording again.')
+  } else if (errorMessage.includes('too large')) {
+    alert('Your recording is too long. Please keep responses under 9 minutes.')
+  } else if (errorMessage.includes('timeout')) {
+    alert('Transcription is taking too long. Please try a shorter recording.')
   } else {
-    alert('Error processing your audio. Please try again.')
+    alert('Error processing your audio. Please try again or use a different device.')
   }
 } finally {
   setIsSubmitting(false)
+  setTranscriptionStatus("")
 }
 }
 
@@ -2571,7 +2603,6 @@ const handleStartRoleplay = () => {
                   </div>
                 )}
 
-{/* Audio Replay Section */}
 {audioUrl && (
   <div className="space-y-4">
     <div className="bg-gray-50 p-4 rounded-lg">
@@ -2581,23 +2612,32 @@ const handleStartRoleplay = () => {
           <span className="text-sm text-gray-500">
             Duration: {formatDuration(duration)}
           </span>
+
           <a
             href={audioUrl}
-            download="deca-roleplay-recording.webm"
+            download={`deca-roleplay-recording.${audioBlob?.type.includes('mp4') ? 'mp4' : 'webm'}`}
             className="text-sm text-blue-600 hover:text-blue-700 underline"
           >
             Download
           </a>
         </div>
       </div>
+      {/* Fix: Add both audio element and fallback for mobile */}
       <audio 
         controls 
         src={audioUrl}
         className="w-full"
         controlsList="nodownload noplaybackrate"
+        preload="metadata"
+        playsInline // Important for iOS
       >
         Your browser does not support the audio element.
       </audio>
+      
+      {/* Fix: Add mobile fallback message */}
+      <div className="mt-2 text-xs text-gray-500 text-center">
+        If audio doesn't play, try downloading the file above
+      </div>
     </div>
     
     <div className="text-center">
@@ -2618,6 +2658,7 @@ const handleStartRoleplay = () => {
     </div>
   </div>
 )}
+
                 </div>
               </CardContent>
             </Card>
