@@ -154,7 +154,6 @@ const loadAllPerformanceIndicators = async (eventId: string): Promise<PI[]> => {
   }
 }
 
-
 const selectMostRelevantPIs = async (
   eventScenario: string, 
   eventName: string,
@@ -942,7 +941,6 @@ function groupEventsByCluster(events: typeof decaEvents) {
     {},
   )
 }
-// Simplified audio recording hook (replace the existing useAudioRecorder function)
 function useAudioRecorder(selectedEventId: string) {
   const [isRecording, setIsRecording] = useState(false)
   const [audioUrl, setAudioUrl] = useState<string | null>(null)
@@ -962,16 +960,23 @@ function useAudioRecorder(selectedEventId: string) {
       const selectedEvent = decaEvents.find(e => e.id === selectedEventId)
       const maxRecordingTime = selectedEvent ? selectedEvent.presentationTime * 60 : 600 // Default 10 minutes
       
-      recorder.ondataavailable = (e) => chunks.push(e.data)
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunks.push(e.data)
+        }
+      }
+      
       recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'audio/wav' })
-        const url = URL.createObjectURL(blob)
-        setAudioUrl(url)
-        setAudioBlob(blob)
+        if (chunks.length > 0) {
+          const blob = new Blob(chunks, { type: 'audio/webm' })
+          const url = URL.createObjectURL(blob)
+          setAudioUrl(url)
+          setAudioBlob(blob)
+        }
         stream.getTracks().forEach(track => track.stop())
       }
       
-      recorder.start()
+      recorder.start(1000) // Record in 1-second chunks
       setMediaRecorder(recorder)
       setIsRecording(true)
       setDuration(0)
@@ -983,7 +988,9 @@ function useAudioRecorder(selectedEventId: string) {
           // Check if we've reached the presentation time limit
           if (newDuration >= maxRecordingTime) {
             // Stop recording automatically
-            recorder.stop()
+            if (recorder.state === 'recording') {
+              recorder.stop()
+            }
             setIsRecording(false)
             setShowTimeUpModal(true)
             clearInterval(interval)
@@ -1014,6 +1021,15 @@ function useAudioRecorder(selectedEventId: string) {
   const closeTimeUpModal = () => {
     setShowTimeUpModal(false)
   }
+
+  const resetAudio = () => {
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl)
+    }
+    setAudioUrl(null)
+    setAudioBlob(null)
+    setDuration(0)
+  }
   
   return {
     isRecording,
@@ -1023,7 +1039,10 @@ function useAudioRecorder(selectedEventId: string) {
     showTimeUpModal,
     startRecording,
     stopRecording,
-    closeTimeUpModal
+    closeTimeUpModal,
+    resetAudio,
+    setAudioUrl,
+    setAudioBlob
   }
 }
 
@@ -1047,6 +1066,14 @@ function useAudioRecorder(selectedEventId: string) {
 // OpenAI Whisper transcription function
 const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
   try {
+    // Validate the blob
+    if (!audioBlob || audioBlob.size === 0) {
+      throw new Error('Invalid audio blob - no data recorded')
+    }
+    
+    console.log('Audio blob size:', audioBlob.size, 'bytes')
+    console.log('Audio blob type:', audioBlob.type)
+    
     const formData = new FormData()
     formData.append('file', audioBlob, 'recording.webm')
     formData.append('model', 'whisper-1')
@@ -1066,6 +1093,9 @@ const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
         const transcription = await response.text()
         console.log('Transcription successful via API route:', transcription.substring(0, 100) + '...')
         return transcription.trim()
+      } else {
+        const errorText = await response.text()
+        console.error('API route failed:', response.status, errorText)
       }
     } catch (apiError) {
       console.warn('API route failed, trying direct call:', apiError)
@@ -1074,10 +1104,18 @@ const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
     // Fallback - return empty string or throw error
     throw new Error('Transcription service unavailable')
     
-  } catch (error) {
-    console.error('Error transcribing audio:', error)
-    return "Transcription unavailable - please check your audio recording and try again."
+} catch (error) {
+  console.error('Error transcribing audio:', error)
+  
+  // Check if it's a blob issue specifically
+  const errorMessage = error instanceof Error ? error.message : String(error)
+  
+  if (errorMessage.includes('Invalid audio blob')) {
+    return "Recording error - please try recording again with a longer response."
   }
+  
+  return "Transcription unavailable - please check your audio recording and try again."
+}
 }
     // Fallback to direct API call (requires NEXT_PUBLIC_OPENAI_API_KEY)
 // ULTRA-STRICT VERSION - Starts with 0s and only awards points for explicit evidence
@@ -1257,17 +1295,17 @@ Return ONLY valid JSON:
         }
       }
 
-    } catch (parseError) {
-      console.error('Error parsing AI feedback:', parseError, "Content:", content)
-      throw new Error('Failed to parse AI feedback response')
-    }
+} catch (parseError) {
+  console.error('Error parsing AI feedback:', parseError, "Content:", content)
+  throw new Error('Failed to parse AI feedback response')
+}
 
-  } catch (error) {
-    console.error('Error generating AI feedback:', error)
-    
-    // Balanced fallback with reasonable scores
-    const selectedEvent = decaEvents.find(e => e.id === eventId)
-    if (!selectedEvent) throw new Error("Event not found")
+} catch (error) {
+  console.error('Error generating AI feedback:', error)
+  
+  // Balanced fallback with reasonable scores
+  const selectedEvent = decaEvents.find(e => e.id === eventId)
+  if (!selectedEvent) throw new Error("Event not found")
 
     const wordCount = transcript.trim().split(/\s+/).filter(word => word.length > 0).length
     const baseScore = wordCount > 10 ? Math.floor(selectedEvent.piPoints * 0.3) : 1
@@ -1367,10 +1405,10 @@ const response = await fetch('/api/openai', {
     const data = await response.json()
     return data.choices?.[0]?.message?.content || "I'm sorry, I couldn't process your question right now. Please try again."
     
-  } catch (error) {
-    console.error('Chat API error:', error)
-    return "I'm experiencing some technical difficulties. Please try asking your question again."
-  }
+} catch (error) {
+  console.error('Chat API error:', error)
+  return "I'm experiencing some technical difficulties. Please try asking your question again."
+}
 }
 
 export default function DECAPracticePage() {
@@ -1378,12 +1416,14 @@ export default function DECAPracticePage() {
   const [selectedEventId, setSelectedEventId] = useState("")
   const [roleplay, setRoleplay] = useState<any>(null)
   const [feedback, setFeedback] = useState<any>(null)
-  const { isRecording, audioUrl, audioBlob, duration, showTimeUpModal, startRecording, stopRecording, closeTimeUpModal } = useAudioRecorder(selectedEventId)
+  const { isRecording, audioUrl, audioBlob, duration, showTimeUpModal, startRecording, stopRecording, closeTimeUpModal, resetAudio, setAudioUrl, setAudioBlob } = useAudioRecorder(selectedEventId)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [transcriptionStatus, setTranscriptionStatus] = useState("")
   const [showPreparation, setShowPreparation] = useState(false)
   const [preparationStep, setPreparationStep] = useState(0)
   const [isGenerating, setIsGenerating] = useState(false)
+  
+
   
   // Timer states
 // Timer states
@@ -1472,6 +1512,7 @@ useEffect(() => {
   setShowTwoMinuteWarning(false)
   }
 
+
   // Audio playback functions
   const togglePlayback = () => {
     if (!audioElement) {
@@ -1510,14 +1551,18 @@ useEffect(() => {
   }
 
   // Clean up audio element when component unmounts
-  useEffect(() => {
-    return () => {
-      if (audioElement) {
-        audioElement.pause()
-        audioElement.src = ''
-      }
+useEffect(() => {
+  return () => {
+    if (audioElement) {
+      audioElement.pause()
+      audioElement.src = ''
     }
-  }, [audioElement])
+    // Clean up audio URL when component unmounts
+    if (audioUrl) {
+      URL.revokeObjectURL(audioUrl)
+    }
+  }
+}, [audioElement, audioUrl])
 
 const sendChatMessageHandler = async (message: string) => {
     if (!message.trim() || isChatLoading) return
@@ -1696,7 +1741,16 @@ const handleSubmitEvent = async () => {
   }
 }
 const handleSubmitRecording = async () => {
-  if (!audioBlob) return
+  if (!audioBlob) {
+    alert('No audio recording found. Please record your response or upload an audio file first.')
+    return
+  }
+  
+  // Additional validation
+  if (audioBlob.size === 0) {
+    alert('Audio recording is empty. Please try recording again or upload a valid audio file.')
+    return
+  }
   
   setIsSubmitting(true)
   setTranscriptionStatus("Transcribing your audio...")
@@ -1704,12 +1758,17 @@ const handleSubmitRecording = async () => {
   try {
     // Transcribe audio
     const transcript = await transcribeAudio(audioBlob)
+    
+    // Check if transcription is meaningful
+    if (!transcript || transcript.trim().length < 10) {
+      throw new Error('Transcription too short or empty')
+    }
+    
     setTranscription(transcript)
     
     setTranscriptionStatus("Analyzing your presentation...")
     
-    // Generate AI-powered feedback based on transcript with attempt tracking
-// Load judge context for more accurate grading
+    // Load judge context for more accurate grading
     const judgeContext = await loadJudgeScenario(selectedEventId)
     
     // Generate AI-powered feedback based on transcript with attempt tracking
@@ -1718,12 +1777,22 @@ const handleSubmitRecording = async () => {
     setFeedback(aiGeneratedFeedback)
     setShowChatbot(true)
     setStep(3)
-  } catch (error) {
-    console.error('Error processing recording:', error)
-    alert('Error processing your recording. Please try again.')
-  } finally {
-    setIsSubmitting(false)
+} catch (error) {
+  console.error('Error processing recording:', error)
+  
+  // More specific error messages
+  const errorMessage = error instanceof Error ? error.message : String(error)
+  
+  if (errorMessage.includes('Transcription too short')) {
+    alert('Your recording appears to be too short or unclear. Please try recording a longer response or upload a clearer audio file.')
+  } else if (errorMessage.includes('Invalid audio blob')) {
+    alert('There was an issue with your audio file. Please try recording again or upload a different audio file.')
+  } else {
+    alert('Error processing your audio. Please try again.')
   }
+} finally {
+  setIsSubmitting(false)
+}
 }
 
 const handleStartRoleplay = () => {
@@ -1794,7 +1863,7 @@ const handleStartRoleplay = () => {
                   <p>Generating your unique roleplay scenario...</p>
                 </div>
               </div>
-            ) : (
+) : (
               <>
                 {(() => {
                   const selectedEvent = decaEvents.find(e => e.id === selectedEventId);
@@ -1843,10 +1912,9 @@ const handleStartRoleplay = () => {
               </button>
             </div>
           </div>
-                 </div>
         </div>
-      )}
-
+      </div>
+    )}
       <div className={`container mx-auto py-8 px-4 transition-opacity duration-500 ${
         showPreparation && preparationStep !== 3 ? 'opacity-0' : 'opacity-100'
       }`}>
@@ -1966,35 +2034,34 @@ const handleStartRoleplay = () => {
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <h3 className="font-semibold mb-4">Record Your Response</h3>
-                    <div className="flex justify-center gap-4">
-                      {!isRecording ? (
-                        <Button 
-                          onClick={handleStartRecordingClick} 
-                          className={`px-8 py-3 transition-all ${
-                            prepTimerActive && prepTimeLeft > 0
-                              ? 'bg-gray-400 hover:bg-gray-500 text-white'
-                              : 'bg-red-500 hover:bg-red-600'
-                          }`}
-                        >
-                          <Mic className="mr-2 h-5 w-5" /> Start Recording
-                        </Button>
-                      ) : (
-                        <div className="flex items-center gap-4">
-                          <div className="flex items-center gap-2 text-red-600">
-                            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                            <span className="font-mono text-lg">{formatDuration(duration)}</span>
-                          </div>
-                          <Button onClick={stopRecording} variant="outline" className="border-red-500 text-red-600 hover:bg-red-50">
-                            <Square className="mr-2 h-4 w-4" /> Stop Recording
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
+<div className="space-y-4">
+  <div className="text-center">
+    <h3 className="font-semibold mb-4">Record Your Response</h3>
+    <div className="flex flex-col items-center gap-3">
+      {!isRecording ? (
+        <Button 
+          onClick={handleStartRecordingClick} 
+          className={`px-8 py-3 transition-all ${
+            prepTimerActive && prepTimeLeft > 0
+              ? 'bg-gray-400 hover:bg-gray-500 text-white'
+              : 'bg-red-500 hover:bg-red-600'
+          }`}
+        >
+          <Mic className="mr-2 h-5 w-5" /> Start Recording
+        </Button>
+      ) : (
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 text-red-600">
+            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+            <span className="font-mono text-lg">{formatDuration(duration)}</span>
+          </div>
+          <Button onClick={stopRecording} variant="outline" className="border-red-500 text-red-600 hover:bg-red-50">
+            <Square className="mr-2 h-4 w-4" /> Stop Recording
+          </Button>
+        </div>
+      )}
+    </div>
+  </div>
                   {showConfirmDialog && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                       <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
@@ -2057,45 +2124,53 @@ const handleStartRoleplay = () => {
                   </div>
                 )}
 
-
 {/* Audio Replay Section */}
 {audioUrl && (
-                    <div className="space-y-4">
-                      <div className="bg-gray-50 p-4 rounded-lg">
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="text-sm font-medium text-gray-700">Recording Complete</span>
-                          <span className="text-sm text-gray-500">
-                            Duration: {formatDuration(duration)}
-                          </span>
-                        </div>
-                        <audio 
-                          controls 
-                          src={audioUrl}
-                          className="w-full"
-                          controlsList="noplaybackrate"
-                        >
-                          Your browser does not support the audio element.
-                        </audio>
-                      </div>
-                      
-                      <div className="text-center">
-                        <Button 
-                          onClick={handleSubmitRecording} 
-                          disabled={isSubmitting}
-                          className="px-8 py-3"
-                        >
-                          {isSubmitting ? (
-                            <>
-                              <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                              Processing...
-                            </>
-                          ) : (
-                            "Submit Response"
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+  <div className="space-y-4">
+    <div className="bg-gray-50 p-4 rounded-lg">
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-sm font-medium text-gray-700">Recording Complete</span>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-gray-500">
+            Duration: {formatDuration(duration)}
+          </span>
+          <a
+            href={audioUrl}
+            download="deca-roleplay-recording.webm"
+            className="text-sm text-blue-600 hover:text-blue-700 underline"
+          >
+            Download
+          </a>
+        </div>
+      </div>
+      <audio 
+        controls 
+        src={audioUrl}
+        className="w-full"
+        controlsList="nodownload noplaybackrate"
+      >
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+    
+    <div className="text-center">
+      <Button 
+        onClick={handleSubmitRecording} 
+        disabled={isSubmitting}
+        className="px-8 py-3"
+      >
+        {isSubmitting ? (
+          <>
+            <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+            Processing...
+          </>
+        ) : (
+          "Submit Response"
+        )}
+      </Button>
+    </div>
+  </div>
+)}
                 </div>
               </CardContent>
             </Card>
@@ -2187,8 +2262,8 @@ const handleStartRoleplay = () => {
                     </div>
                   )}
 
-                  <div className="flex gap-4">
-                    <Button
+        <div className="flex gap-4">
+<Button
                       onClick={() => {
                         setStep(1)
                         setSelectedEventId("")
@@ -2198,23 +2273,25 @@ const handleStartRoleplay = () => {
                         setChatMessages([])
                         setTranscription("")
                         setEventAttemptCount(0)
+                        resetAudio() // Use the resetAudio function from the hook
                       }}
                       className="flex-1"
                     >
                       Practice Another Roleplay
                     </Button>
-                    <Button
+                <Button
                       onClick={() => {
                         setStep(2)
                         setFeedback(null)
                         setShowChatbot(false)
                         setChatMessages([])
-                        }}
-                          variant="outline"
-                          className="flex-1"
-                        >
-                          Retry This Scenario
-                        </Button>
+                        resetAudio() // Use the resetAudio function from the hook
+                      }}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      Retry This Scenario
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
