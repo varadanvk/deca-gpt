@@ -115,6 +115,7 @@ const getPerformanceIndicatorsFile = (eventId: string): string => {
 }
 
 
+
 // Load event scenario from file
 // Load event scenario from file
 // Load event scenario from public files using fetch
@@ -153,6 +154,8 @@ const loadAllPerformanceIndicators = async (eventId: string): Promise<PI[]> => {
     return []
   }
 }
+
+
 
 const selectMostRelevantPIs = async (
   eventScenario: string, 
@@ -1920,13 +1923,105 @@ export default function DECAPracticePage() {
   const [transcriptionStatus, setTranscriptionStatus] = useState("")
   const [showPreparation, setShowPreparation] = useState(false)
   const [preparationStep, setPreparationStep] = useState(0)
-  const [isGenerating, setIsGenerating] = useState(false)
-  
+  const [isGenerating, setIsGenerating] = useState(false)  
+
+    const [micTestRecording, setMicTestRecording] = useState(false)
+  const [micTestAudio, setMicTestAudio] = useState<string | null>(null)
+  const [micTestRecorder, setMicTestRecorder] = useState<MediaRecorder | null>(null)
+  const [micLevel, setMicLevel] = useState(0)
+
+  // Microphone test functions
+// Microphone test functions
+const startMicTest = async () => {
+  try {
+    console.log('Requesting microphone access for test...')
+    
+    const stream = await navigator.mediaDevices.getUserMedia({ 
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      }
+    })
+    
+    console.log('Microphone access granted for test')
+    
+    const options = {
+      mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
+        ? 'audio/webm;codecs=opus'
+        : MediaRecorder.isTypeSupported('audio/mp4') 
+        ? 'audio/mp4'
+        : 'audio/webm'
+    }
+    
+    const recorder = new MediaRecorder(stream, options)
+    const chunks: BlobPart[] = []
+    
+    recorder.ondataavailable = (e) => {
+      if (e.data.size > 0) chunks.push(e.data)
+    }
+    
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: options.mimeType })
+      const url = URL.createObjectURL(blob)
+      setMicTestAudio(url)
+      stream.getTracks().forEach(track => track.stop())
+      setMicLevel(0)
+    }
+    
+    setMicTestRecorder(recorder)
+    recorder.start(100)
+    setMicTestRecording(true)
+    
+    let levelInterval: NodeJS.Timeout | null = null
+    levelInterval = setInterval(() => {
+      setMicLevel(Math.random() * 80 + 20)
+    }, 100)
+    
+    setTimeout(() => {
+      if (recorder.state === 'recording') {
+        recorder.stop()
+        setMicTestRecording(false)
+        if (levelInterval) clearInterval(levelInterval)
+      }
+    }, 5000)
+    
+  } catch (error) {
+    console.error('Microphone test failed:', error)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    
+    if (errorMessage.includes('Permission denied') || errorMessage.includes('NotAllowedError')) {
+      alert('Microphone permission denied. Please allow microphone access and try again.')
+    } else {
+      alert('Could not access microphone. Please check your microphone and try again.')
+    }
+  }
+}
+
+const stopMicTest = () => {
+  if (micTestRecorder && micTestRecorder.state === 'recording') {
+    micTestRecorder.stop()
+    setMicTestRecording(false)
+  }
+}
+
+const resetMicTest = () => {
+  if (micTestAudio) {
+    URL.revokeObjectURL(micTestAudio)
+  }
+  setMicTestAudio(null)
+  setMicLevel(0)
+}
+
+const proceedWithRecording = () => {
+  setShowMicTest(false)
+  resetMicTest()
+  startRecording()
+}
 
   
   // Timer states
-// Timer states
-const [prepTimeLeft, setPrepTimeLeft] = useState(0)
+  const [prepTimeLeft, setPrepTimeLeft] = useState(0)
 const [prepTimerActive, setPrepTimerActive] = useState(false)
 const [timerVisible, setTimerVisible] = useState(true)
 const [showTimerTooltip, setShowTimerTooltip] = useState(false)
@@ -1949,8 +2044,8 @@ const [eventAttemptCount, setEventAttemptCount] = useState(0) // ADD THIS LINE
   const [isPlaying, setIsPlaying] = useState(false)
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null)
 
+const [showMicTest, setShowMicTest] = useState(false)
 
-  // Timer effect
 // Timer effect
 useEffect(() => {
   let interval: NodeJS.Timeout | null = null
@@ -1993,19 +2088,21 @@ useEffect(() => {
     setShowTimerTooltip(false)
   }
 
-  const handleStartRecordingClick = () => {
-    if (prepTimerActive && prepTimeLeft > 0) {
-      setShowConfirmDialog(true)
-    } else {
-      startRecording()
-    }
+const handleStartRecordingClick = () => {
+  if (prepTimerActive && prepTimeLeft > 0) {
+    setShowConfirmDialog(true)
+  } else {
+    // Show mic test modal first
+    setShowMicTest(true)
   }
+}
 
-  const handleConfirmRecording = () => {
-    setShowConfirmDialog(false)
-    setPrepTimerActive(false)
-    startRecording()
-  }
+const handleConfirmRecording = () => {
+  setShowConfirmDialog(false)
+  setPrepTimerActive(false)
+  // Show mic test modal before starting recording
+  setShowMicTest(true)
+}
 
   const closeTwoMinuteWarning = () => {
   setShowTwoMinuteWarning(false)
@@ -2633,6 +2730,120 @@ const handleStartRoleplay = () => {
                     </div>
                   </div>
                 )}
+
+
+{/* Microphone Test Modal */}
+{showMicTest && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-lg p-6 max-w-md mx-4 shadow-xl">
+      <h3 className="text-lg font-semibold mb-4 text-gray-800">Test Your Microphone</h3>
+      
+      <div className="space-y-4">
+        <p className="text-gray-600 text-sm">
+          Let's test your microphone to ensure good audio quality for your presentation.
+        </p>
+        
+        {/* Microphone Level Indicator */}
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">Microphone Level</span>
+            <span className="text-gray-600">{Math.round(micLevel)}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-3">
+            <div 
+              className={`h-3 rounded-full transition-all duration-150 ${
+                micLevel > 70 ? 'bg-red-500' : 
+                micLevel > 30 ? 'bg-green-500' : 
+                'bg-yellow-500'
+              }`}
+              style={{ width: `${micLevel}%` }}
+            ></div>
+          </div>
+          <p className="text-xs text-gray-500">
+            Speak normally - the bar should move but not stay in the red
+          </p>
+        </div>
+
+        {/* Test Recording Controls */}
+        <div className="text-center space-y-3">
+          {!micTestRecording && !micTestAudio && (
+            <Button 
+              onClick={startMicTest}
+              className="bg-blue-500 hover:bg-blue-600"
+            >
+              <Mic className="mr-2 h-4 w-4" /> 
+              Record 5-Second Test
+            </Button>
+          )}
+          
+          {micTestRecording && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-center gap-2 text-red-600">
+                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                <span>Recording test...</span>
+              </div>
+              <Button 
+                onClick={stopMicTest}
+                variant="outline" 
+                className="border-red-500 text-red-600"
+              >
+                <Square className="mr-2 h-4 w-4" /> Stop Test
+              </Button>
+            </div>
+          )}
+          
+          {micTestAudio && (
+            <div className="space-y-3">
+              <div className="bg-gray-50 p-3 rounded border">
+                <p className="text-sm font-medium mb-2">Test Recording:</p>
+                <audio 
+                  controls 
+                  src={micTestAudio}
+                  className="w-full"
+                  controlsList="nodownload"
+                >
+                  Your browser does not support audio playback.
+                </audio>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={resetMicTest}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Test Again
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Modal Actions */}
+      <div className="flex gap-3 justify-end mt-6 pt-4 border-t">
+        <Button 
+          variant="outline" 
+          onClick={() => {
+            setShowMicTest(false)
+            resetMicTest()
+          }}
+        >
+          Cancel
+        </Button>
+        <Button 
+          onClick={proceedWithRecording}
+          className="bg-red-500 hover:bg-red-600"
+          disabled={!micTestAudio}
+        >
+          <Mic className="mr-2 h-4 w-4" />
+          START ROLEPLAY
+        </Button>
+      </div>
+    </div>
+  </div>
+)}
+
+
 
 {audioUrl && (
   <div className="space-y-4">
