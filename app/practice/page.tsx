@@ -1119,14 +1119,21 @@ const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
 }
     // Fallback to direct API call (requires NEXT_PUBLIC_OPENAI_API_KEY)
 // ULTRA-STRICT VERSION - Starts with 0s and only awards points for explicit evidence
-const generateAIFeedback = async (transcript: string, roleplay: any, eventId: string, attemptNumber: number = 0, judgeContext?: string): Promise<any> => {
+const generateAIFeedback = async (transcript: string, roleplay: any, eventId: string, attemptNumber: number = 0, judgeContext?: string, audioDurationSeconds?: number): Promise<any> => {
   try {
     const selectedEvent = decaEvents.find(e => e.id === eventId)
     if (!selectedEvent) throw new Error("Event not found")
 
-    // Calculate word count for automatic penalties
+    // Calculate word count for logging
     const wordCount = transcript.trim().split(/\s+/).filter(word => word.length > 0).length
-    console.log(`Balanced grading mode: Word count: ${wordCount}, transcript: "${transcript}"`)
+    
+    // Use audio duration if provided, otherwise estimate from word count (average 150 words per minute)
+    const durationSeconds = audioDurationSeconds || Math.round((wordCount / 150) * 60)
+    const durationMinutes = Math.floor(durationSeconds / 60)
+    const durationSecondsRemainder = durationSeconds % 60
+    
+    console.log(`Duration-based grading: ${durationMinutes}:${durationSecondsRemainder.toString().padStart(2, '0')} (${durationSeconds} seconds), transcript: "${transcript}"`)
+
 
     // Count inappropriate words
     const inappropriateWords = ['fuck', 'shit', 'damn', 'hell', 'ass', 'bitch', 'crap']
@@ -1142,14 +1149,19 @@ ${judgeContext}
 As the judge, you should evaluate based on how well the participant addressed the specific business scenario and questions that would be asked in this roleplay context.
 ` : '';
 
-    const prompt = `You are a constructive DECA judge providing balanced, educational feedback to help students improve.
+// ADDED: Expanded prompt instructions to detect and credit DECA (D/E/C + Above & Beyond) and handle rare visual-optional PIs
+const prompt = `You are a constructive DECA judge providing balanced, educational feedback to help students improve.
 
-GRADING PHILOSOPHY:
-- Give credit for effort and partial understanding
-- Provide constructive feedback that encourages improvement
-- Award points for basic attempts and clear effort
-- Be encouraging while identifying areas for growth
-- Focus on what students did well AND what they can improve
+CRITICAL SCORING REQUIREMENTS:
+- Score 0-1 points if the performance indicator was not addressed AT ALL or only names/greetings given
+- Score 2-3 points ONLY if there is minimal business knowledge demonstrated (not just attempting to speak)
+- Score 4-6 points for weak attempts that show some understanding but major gaps
+- Score 7-10 points for adequate responses with relevant examples and clear understanding  
+- Score 11-15 points for solid responses that comprehensively address the PI with depth
+- Score 16+ points only for exceptional mastery with comprehensive expertise
+- Be ruthlessly honest about inadequate responses - a greeting or name introduction gets 0-1 points
+- If the transcript shows no business knowledge whatsoever, reflect this with very low scores (0-2)
+- Apply the same strict standards to 21st Century Skills - no participation points
 
 ${judgeContextSection}
 
@@ -1160,20 +1172,83 @@ PERFORMANCE INDICATORS: ${roleplay.performanceIndicators.join(', ')}
 ROLEPLAY SCENARIO:
 ${roleplay.situation}
 
-TRANSCRIPT TO EVALUATE (${wordCount} words):
+
+TRANSCRIPT ANALYSIS REQUIREMENTS:
+- Quote EXACTLY what the student said from the transcript - do not paraphrase or invent content
+- If the transcript contains only names/greetings with no business content, explicitly state this
+- Do not award points for content that was not actually said
+- Use phrases like "You said: '[exact quote]'"
+- If no relevant business content was provided, state "You provided no business content related to this indicator"
+- Be brutally honest about what was actually demonstrated vs. completely absent
+
+TRANSCRIPT TO EVALUATE (${durationMinutes}:${durationSecondsRemainder.toString().padStart(2, '0')} duration):
 "${transcript}"
 
-SCORING APPROACH:
-- Award partial credit for basic understanding and effort
-- Give 30-50% of points for basic attempts that show understanding
-- Give 60-80% for solid responses with examples
-- Reserve 90%+ for exceptional responses with depth and expertise
-- Consider the learning context - this is practice, not final assessment
+CRITICAL: The above transcript is EXACTLY what the student said. Do not invent or assume any additional content. Base your evaluation solely on what is written above.
 
-MINIMUM SCORING GUIDELINES:
-- If student addresses the topic: minimum 20% of available points
-- If student shows basic understanding: minimum 40% of available points
-- If student provides examples or applications: 60%+ of available points
+
+
+
+EVALUATION INSTRUCTIONS FOR MINIMAL RESPONSES:
+If the transcript contains only names, greetings, or non-business content (like "Hi, my name is..."), you MUST:
+- Score 0-1 points for ALL performance indicators
+- Score 0-1 points for ALL 21st century skills  
+- In feedback, explicitly quote what they said: "You said: '[exact quote]'"
+- State clearly: "This response contains no business content related to [indicator name]"
+- Do NOT invent or assume business knowledge that wasn't demonstrated
+- Do NOT give credit for "attempting" when no attempt was made
+CRITICAL: Base scores ONLY on business content actually present in the transcript. A name introduction earns 0-1 points, not 2-4 points.
+
+
+DECA METHOD EXPECTATIONS (D-E-C + Above & Beyond):
+- For EACH Performance Indicator (PI), detect and note evidence of:
+  • Defining — Did the student clearly define the key term/concept/PI in their own words?
+  • Explaining — Did they accurately explain how it works, why it matters, or its mechanics?
+  • Connecting — Did they connect the concept to the given scenario/client/data and propose an actionable step?
+  • Above & Beyond (Visual/Prop) — Did they present or reference a concrete visual/prop (physical or digital) that supports THIS PI (e.g., brochure, chart, slide, mock-up, sample, QR code, calculator, menu, pricing sheet, website/app screen, storyboard, mini demo)?
+- Treat “visual/prop” broadly: tangible item, handout, live demo, or digital asset explicitly described or “shown” to the judge counts.
+- Do not count vague mentions (“I could show…”) as a used visual unless the student actually introduces/describes a specific artifact tied to the PI.
+- Visual-Optional Exception (rare): If a PI clearly does NOT require a visual (as implied by the event rubric or context in ${judgeContextSection}), the student can still receive full points for that PI WITHOUT a visual provided their Defining/Explaining/Connecting are strong and complete. Otherwise, assume a visual strengthens eligibility for the top score band.
+
+CRITICAL SCORING REQUIREMENTS:
+- Score 0-1 points if the performance indicator was not addressed AT ALL or only mentioned in passing
+- Score 2-4 points for weak attempts with minimal business content
+- Score 5-8 points for basic responses that show some understanding but lack depth
+- Score 9-12 points for solid responses that address the PI with relevant examples
+- Score 13+ points only for exceptional responses with comprehensive depth and expertise
+- Be brutally honest about what was actually said vs. what should have been said
+- If the transcript is just a name introduction or similarly minimal, score 0-1 across all indicators
+- Map DECA to bands as guidance (not a hard cap):
+  • 0-2: No clear D/E/C for the PI.
+  • 3-6: At most one element (D or E or C) weakly present; little scenario relevance.
+  • 7-12: Two or more elements (D/E/C) present with relevant examples; some application.
+  • 13+: All three (D, E, C) are strong AND (unless visual-optional) an Above & Beyond visual/prop meaningfully supports the PI; shows depth, accuracy, and actionable application.
+
+STRICT EVALUATION CRITERIA:
+- Did they specifically address this performance indicator? If no, score very low (0-3)
+- Did they provide relevant business examples or applications? If no, cap at 30%
+- Did they demonstrate genuine understanding of business concepts? Be critical.
+- Was their response substantive and relevant to the scenario? If no, reflect this in scoring.
+- Did they explicitly demonstrate Defining, Explaining, and Connecting for THIS PI? Lack of any should lower the band.
+- Above & Beyond visual/prop: 
+   • If used and clearly tied to THIS PI, treat as a strength for top-band eligibility.
+   • If absent and the PI is NOT visual-optional, do NOT automatically fail—but top-band eligibility may require exceptional depth to compensate.
+   • If the PI is visual-optional (rare), do NOT penalize the absence of a visual if D/E/C are strong and complete.
+- Recognize explicit cues like “I’ll define…”, “Let me explain…”, “Connecting this to your store…”. Credit only when the content actually performs that function (don’t award points for labels without substance).
+- Use only the transcript; do not assume unstated visuals or content.
+
+RECOGNIZING VISUAL/PROP MENTIONS (non-exhaustive):
+- Keywords/phrases that typically indicate Above & Beyond: “brochure/one-pager/handout,” “slide/deck,” “chart/graph,” “mock-up/prototype/sample,” “QR code,” “pricing sheet,” “dashboard/report,” “menu,” “product sample,” “demo,” “website/app screen,” “business card,” “portfolio.”
+- Count it when the student actually presents or clearly describes the artifact and ties it to the PI’s purpose (e.g., a cost-benefit chart to justify pricing strategies).
+
+FEEDBACK FORMAT REQUIREMENTS (JSON SHAPE UNCHANGED):
+- In EVERY "performanceIndicators[i].feedback" string, provide detailed analysis in this format:
+  1. First paragraph: Honest assessment of what they actually said vs. what was required (be specific and critical)
+  2. "DECA Evidence — D: 'You should have defined [specific concept/PI]. What you said: [exact quote or 'only provided names/greeting']'; E: 'You should have explained [specific mechanism/process]. What you said: [exact quote or 'no explanation given']'; C: 'You should have connected this to [specific scenario element]. What you said: [exact quote or 'no connection made']'; A&B: 'You should have presented [specific visual aid]. What you presented: [what they actually presented or 'no visual mentioned']'."
+  3. Final sentence: Constructive but realistic next steps
+- Always include actual quotes from transcript or explicitly state what was missing
+- For 21st Century Skills, be equally critical - assess actual demonstration, not potential
+- In "overallImpression.feedback", provide honest critique that acknowledges severe gaps while ending constructively
 
 Return ONLY valid JSON:
 {
@@ -1181,7 +1256,7 @@ Return ONLY valid JSON:
     {
       "indicator": "exact PI name",
       "score": number_between_0_and_${selectedEvent.piPoints},
-      "feedback": "[Encouraging feedback highlighting what they did well and specific suggestions for improvement]"
+      "feedback": "[Encouraging feedback highlighting what they did well and specific suggestions for improvement. Include: DECA Evidence — D: <...>; E: <...>; C: <...>; A&B: <used/not used + artifact + (visual-optional? yes/no)>]"
     }
   ],
   "twentyFirstCenturySkills": [
@@ -1193,10 +1268,11 @@ Return ONLY valid JSON:
   ],
   "overallImpression": {
     "score": number_between_0_and_${selectedEvent.centurySkills.skillPoints},
-    "feedback": "[Encouraging overall assessment with specific next steps]"
+    "feedback": "[Encouraging overall assessment with specific next steps, including a brief summary of D/E/C consistency and Above & Beyond usage across PIs]"
   },
-  "generalFeedback": "[Balanced feedback highlighting strengths and growth opportunities]"
+  "generalFeedback": "[Balanced feedback highlighting strengths and growth opportunities. Include at least one concrete, high-yield suggestion for a visual/prop the student could bring next time if appropriate.]"
 }`
+
 
     const response = await fetch('/api/openai', {
       method: 'POST',
@@ -1235,26 +1311,34 @@ Return ONLY valid JSON:
       feedbackData = JSON.parse(jsonMatch[0])
 
       // Apply reasonable minimum scores for effort
-      feedbackData.performanceIndicators.forEach((pi: { indicator: string; score: number; feedback: string }) => {
-        // Ensure minimum score of 20% if any relevant content is present
-        if (pi.score < Math.floor(selectedEvent.piPoints * 0.2) && wordCount > 10) {
-          pi.score = Math.floor(selectedEvent.piPoints * 0.2)
-        }
-      })
+      // feedbackData.performanceIndicators.forEach((pi: { indicator: string; score: number; feedback: string }) => {
+      //   // Ensure minimum score of 20% if any relevant content is present
+      //   if (pi.score < Math.floor(selectedEvent.piPoints * 0.2) && durationSeconds > 10) {
+      //     pi.score = Math.floor(selectedEvent.piPoints * 0.2)
+      //   }
+      // })
 
-      feedbackData.twentyFirstCenturySkills.forEach((skill: { skill: string; score: number; feedback: string }) => {
-        // Ensure minimum score of 20% if any relevant content is present
-        if (skill.score < Math.floor(selectedEvent.centurySkills.skillPoints * 0.2) && wordCount > 10) {
-          skill.score = Math.floor(selectedEvent.centurySkills.skillPoints * 0.2)
-        }
-      })
+      // feedbackData.twentyFirstCenturySkills.forEach((skill: { skill: string; score: number; feedback: string }) => {
+      //   // Ensure minimum score of 20% if any relevant content is present
+      //   if (skill.score < Math.floor(selectedEvent.centurySkills.skillPoints * 0.2) && durationSeconds > 10) {
+      //     skill.score = Math.floor(selectedEvent.centurySkills.skillPoints * 0.2)
+      //   }
+      // })
 
-      // Apply only severe length penalties
+      // Apply duration-based penalty: Under 4 minutes = 60% cap
+      // Apply word count penalties - more strict than duration-based
       let penaltyMultiplier = 1.0
       if (wordCount < 20) {
         penaltyMultiplier = 0.3 // 30% for very short responses
+        console.log(`Severe word count penalty: ${wordCount} words < 20, capped at 30%`)
       } else if (wordCount < 50) {
-        penaltyMultiplier = 0.6 // 60% for short responses
+        penaltyMultiplier = 0.6 // 60% for short responses  
+        console.log(`Word count penalty: ${wordCount} words < 50, capped at 60%`)
+      } else if (durationSeconds < 240) {
+        penaltyMultiplier = 0.6 // 60% cap for under 4 minutes (only if word count is acceptable)
+        console.log(`Duration penalty applied: ${durationMinutes}:${durationSecondsRemainder.toString().padStart(2, '0')} < 4:00, capped at 60%`)
+      } else {
+        console.log(`No penalties applied: ${wordCount} words, ${durationMinutes}:${durationSecondsRemainder.toString().padStart(2, '0')} duration`)
       }
 
       if (penaltyMultiplier < 1.0) {
@@ -1288,8 +1372,13 @@ Return ONLY valid JSON:
         totalScore: percentageScore,
         rawTotal: totalScore,
         totalPossible: totalPossible,
+        audioDuration: {
+          seconds: durationSeconds,
+          formatted: `${durationMinutes}:${durationSecondsRemainder.toString().padStart(2, '0')}`
+        },
         penaltiesApplied: {
-          wordCountPenalty: penaltyMultiplier < 1.0,
+          durationPenalty: penaltyMultiplier < 1.0,
+          durationRequired: "4:00",
           badWordPenalty: badWordCount > 0,
           badWordCount: badWordCount
         }
@@ -1303,23 +1392,44 @@ Return ONLY valid JSON:
 } catch (error) {
   console.error('Error generating AI feedback:', error)
   
-  // Balanced fallback with reasonable scores
+  // Fallback with duration consideration
   const selectedEvent = decaEvents.find(e => e.id === eventId)
   if (!selectedEvent) throw new Error("Event not found")
-
+    
+// Determine base score based on transcript quality and content depth
     const wordCount = transcript.trim().split(/\s+/).filter(word => word.length > 0).length
-    const baseScore = wordCount > 10 ? Math.floor(selectedEvent.piPoints * 0.3) : 1
+    let baseScore = 0 // Start at absolute zero
 
-    const piScores = roleplay.performanceIndicators.map((indicator: string) => ({
+    const wordCountTime = transcript.trim().split(/\s+/).filter(word => word.length > 0).length
+    const durationSeconds = audioDurationSeconds || Math.round((wordCountTime / 150) * 60)
+    const durationMinutes = Math.floor(durationSeconds / 60)
+    const durationSecondsRemainder = durationSeconds % 60
+
+    // Only give points if there's substantial business content
+    if (wordCount >= 200 && durationSeconds > 120 && transcript.toLowerCase().includes('business')) {
+      baseScore = Math.floor(selectedEvent.piPoints * 0.15) // 15% for good attempt
+    } else if (wordCount >= 100 && durationSeconds > 60) {
+      baseScore = Math.floor(selectedEvent.piPoints * 0.05) // 5% for minimal attempt
+    } else if (wordCount >= 20 && durationSeconds > 20) {
+      baseScore = 1 // Almost nothing but not zero
+    } else {
+      baseScore = 0 // Truly inadequate gets zero
+    }
+
+const piScores = roleplay.performanceIndicators.map((indicator: string) => ({
       indicator,
       score: baseScore,
-      feedback: `You attempted to address "${indicator}" which shows good effort. To improve, try providing more specific examples and connecting your ideas more directly to the business scenario.`
+      feedback: baseScore === 0 
+        ? `This performance indicator was not addressed at all. Your response "${transcript}" contains no business content related to "${indicator}". You need to demonstrate understanding of this concept with definitions, explanations, and scenario connections to earn points.`
+        : `This performance indicator was not adequately addressed. Your brief response showed no understanding of "${indicator}". Provide comprehensive explanations with business examples and clear connections to the scenario.`
     }))
 
     const skillScores = roleplay.twentyFirstCenturySkills.map((skill: string) => ({
       skill,
-      score: Math.floor(selectedEvent.centurySkills.skillPoints * 0.3),
-      feedback: `Your response showed some elements of "${skill}". Consider expanding your explanation with more detailed reasoning and examples.`
+      score: Math.max(0, baseScore),
+      feedback: baseScore === 0
+        ? `"${skill}" was not demonstrated in your response. Your brief greeting showed no evidence of this skill in a business context.`
+        : `Your response showed minimal evidence of "${skill}". You need to demonstrate this skill through substantive business analysis and detailed reasoning.`
     }))
 
     const totalPossible = 
@@ -1327,7 +1437,13 @@ Return ONLY valid JSON:
       selectedEvent.centurySkills.numSkills * selectedEvent.centurySkills.skillPoints +
       selectedEvent.centurySkills.skillPoints
 
-    const estimatedTotal = (piScores.length * baseScore) + (skillScores.length * Math.floor(selectedEvent.centurySkills.skillPoints * 0.3)) + Math.floor(selectedEvent.centurySkills.skillPoints * 0.3)
+    let estimatedTotal = (piScores.length * baseScore) + (skillScores.length * Math.floor(selectedEvent.centurySkills.skillPoints * 0.3)) + Math.floor(selectedEvent.centurySkills.skillPoints * 0.3)
+    
+    // Apply duration penalty to fallback too
+    if (durationSeconds < 240) {
+      estimatedTotal = Math.floor(estimatedTotal * 0.6)
+    }
+    
     const percentageScore = Math.round((estimatedTotal / totalPossible) * 100)
 
     return {
@@ -1335,14 +1451,21 @@ Return ONLY valid JSON:
       performanceIndicators: piScores,
       twentyFirstCenturySkills: skillScores,
       overallImpression: {
-        score: Math.floor(selectedEvent.centurySkills.skillPoints * 0.3),
-        feedback: `You made a good attempt at the roleplay scenario. Focus on providing more detailed explanations and specific examples to strengthen your response.`
+        score: Math.max(0, baseScore),
+        feedback: baseScore === 0 
+          ? `Your response was insufficient for a DECA roleplay. A simple name introduction does not demonstrate business knowledge or professional communication skills required for competition. You must provide substantive analysis of the business scenario to succeed in DECA.`
+          : `Your response lacked the depth and business knowledge expected in DECA competition. Focus on thoroughly analyzing the scenario, demonstrating understanding of business concepts, and providing detailed recommendations with supporting evidence.`
       },
-      generalFeedback: `Your ${wordCount}-word response shows effort and understanding of the topic. To improve your score, try expanding your answers with specific examples, detailed explanations, and clearer connections to the business scenario.`,
+      generalFeedback: `Your ${durationMinutes}:${durationSecondsRemainder.toString().padStart(2, '0')} response needs significant improvement to meet DECA standards. ${durationSeconds < 240 ? 'Aim for at least 4 minutes of substantive business content. ' : ''}Study the performance indicators thoroughly, practice defining business concepts, and prepare comprehensive responses that demonstrate mastery of the subject matter. DECA judges expect professional-level business knowledge and presentation skills.`,
       rawTotal: estimatedTotal,
       totalPossible: totalPossible,
+      audioDuration: {
+        seconds: durationSeconds,
+        formatted: `${durationMinutes}:${durationSecondsRemainder.toString().padStart(2, '0')}`
+      },
       penaltiesApplied: {
-        wordCountPenalty: wordCount < 50,
+        durationPenalty: durationSeconds < 240,
+        durationRequired: "4:00",
         badWordPenalty: false,
         badWordCount: 0
       }
@@ -1350,7 +1473,6 @@ Return ONLY valid JSON:
   }
 }
 
-// Fixed chat message function - use your API endpoint
 // Fixed chat message function - use your API endpoint
 const sendChatMessage = async (messages: Array<{role: 'user' | 'assistant', content: string}>, context: string): Promise<string> => {
   try {
@@ -1410,6 +1532,324 @@ const response = await fetch('/api/openai', {
   return "I'm experiencing some technical difficulties. Please try asking your question again."
 }
 }
+
+
+const extractSectionResponse = (transcript: string, keywords: string[]): string => {
+  const lower = transcript.toLowerCase();
+  for (const word of keywords) {
+    const idx = lower.indexOf(word);
+    if (idx !== -1) {
+      // grab a ~30 word window around the keyword
+      const words = transcript.split(/\s+/);
+      const start = Math.max(0, idx - 15);
+      const end = Math.min(words.length, start + 30);
+      return words.slice(start, end).join(" ");
+    }
+  }
+  return "No relevant response found.";
+};
+
+
+// Add state for expanded PI cards
+const PICard = ({ pi, eventId, transcription }: { pi: any; eventId: string; transcription: string }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [decaEvidence, setDecaEvidence] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadDecaEvidence = async () => {
+    if (!decaEvidence && !isLoading) {
+      setIsLoading(true);
+      const evidence = await extractDECAEvidence(pi.feedback, pi.indicator, transcription);
+      setDecaEvidence(evidence);
+      setIsLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    if (isExpanded) {
+      loadDecaEvidence();
+    }
+  }, [isExpanded]);
+
+  // Extract DECA evidence from the feedback if it exists
+  const extractDECAEvidence = async (feedback: string, indicator: string, transcript: string) => {
+  const decaMatch = feedback.match(/DECA Evidence[—-]\s*(.*?)(?:\n|$)/);
+  
+  // Create detailed DECA breakdown with LLM-generated examples and official definitions
+  const createDECABreakdown = async (indicator: string, transcript: string) => {
+    try {
+      // First, try to find official definition from PI data
+      const allPIs = await loadAllPerformanceIndicators(eventId);
+      const matchingPI = allPIs.find(pi => pi.name === indicator);
+      const officialDefinition = matchingPI?.definition || "";
+      
+      // Generate LLM examples
+      const prompt = `You are a DECA expert. For the performance indicator "${indicator}", provide specific business examples for each DECA method component.
+
+OFFICIAL DEFINITION (if available): ${officialDefinition}
+
+STUDENT'S ACTUAL RESPONSE: "${transcript.trim()}"
+
+Provide exactly 4 components:
+
+1. DEFINE: Start with the official definition if provided, then explain how a student should define this concept clearly. Include what the student actually said and whether it works.
+
+2. EXPLAIN: Describe how a student should explain the mechanisms, importance, and business applications. Include what the student actually said and analysis.
+
+3. CONNECT: Explain how a student should connect this to specific scenario details with actionable recommendations. Include what the student actually said and analysis.  
+
+4. VISUAL: Describe a specific, relevant visual aid that would support this performance indicator and explain why it's effective.
+
+Format as JSON:
+{
+  "define": "Complete explanation with official definition, expectations, and analysis of actual response",
+  "explain": "Complete explanation of how to explain mechanisms and analysis of actual response", 
+  "connect": "Complete explanation of how to connect to scenario and analysis of actual response",
+  "visual": "Specific visual aid description with explanation of effectiveness"
+}`;
+
+      const response = await fetch('/api/openai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'gpt-4.1-nano',
+          messages: [
+            {
+              role: 'system', 
+              content: 'You are a DECA expert providing detailed, specific examples. Always include official definitions when available and analyze the student\'s actual response.'
+            },
+            { role: 'user', content: prompt }
+          ],
+          max_tokens: 800,
+          temperature: 0.7
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const content = data.choices?.[0]?.message?.content;
+        
+        if (content) {
+          try {
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              const breakdown = JSON.parse(jsonMatch[0]);
+              return {
+  define: breakdown.define || `Official definition needed for "${indicator}". You responded with: "${transcript.trim()}", which lacks a clear definition.`,
+  explain: breakdown.explain || `You should explain the mechanisms of "${indicator}". You responded with: "${transcript.trim()}", which provides no explanation.`,
+  connect: breakdown.connect || `You should connect "${indicator}" to the scenario. You responded with: "${transcript.trim()}", which makes no connection.`,
+  aboveBeyond: breakdown.visual || `A relevant visual aid would strengthen your presentation of "${indicator}". You presented: no visual aid mentioned.`,
+  visualOptional: false,
+
+  // NEW: capture student responses per DECA section
+  studentResponses: {
+    define: extractSectionResponse(transcript, ["define", "definition"]),
+    explain: extractSectionResponse(transcript, ["explain", "explanation"]),
+    connect: extractSectionResponse(transcript, ["connect", "connection"]),
+    aboveBeyond: extractSectionResponse(transcript, ["visual", "prop", "diagram", "chart", "slide"])
+  }
+};
+            }
+          } catch (parseError) {
+            console.error('Error parsing LLM DECA breakdown:', parseError);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error generating LLM DECA breakdown:', error);
+    }
+    
+    // Fallback if LLM fails
+    const actualResponse = transcript.trim();
+    const hasBusinessContent = actualResponse.length > 20 && 
+      !actualResponse.toLowerCase().match(/^(hi|hello|my name is|i am|i'm)/);
+    
+    return {
+      define: `You should clearly define "${indicator}" using official business terminology. You responded with: "${actualResponse}", which ${hasBusinessContent ? 'lacks a clear definition' : 'contains no business content and no definition'}.`,
+      explain: `You should explain how "${indicator}" works, its mechanisms, and business importance. You responded with: "${actualResponse}", which ${hasBusinessContent ? 'provides no explanation of mechanisms or importance' : 'contains no business explanation whatsoever'}.`,
+      connect: `You should connect "${indicator}" to the specific business scenario with actionable recommendations. You responded with: "${actualResponse}", which ${hasBusinessContent ? 'fails to connect to the scenario' : 'makes no connection to the business scenario'}.`,
+      aboveBeyond: `A good example of a relevant visual aid that supports this performance indicator would strengthen your presentation because it provides concrete evidence. You presented: no visual aid mentioned, which misses an opportunity to enhance your presentation with supporting materials.`,
+      visualOptional: false
+    };
+  };
+  
+  if (!decaMatch) {
+    return await createDECABreakdown(indicator, transcript);
+  }
+  
+  const evidence = decaMatch[1];
+  const parts = {
+    define: '',
+    explain: '',
+    connect: '', 
+    aboveBeyond: '',
+    visualOptional: false
+  };
+  
+  const defineMatch = evidence.match(/D:\s*'([^']*)'[^;]*;\s*/);
+  const explainMatch = evidence.match(/E:\s*'([^']*)'[^;]*;\s*/);
+  const connectMatch = evidence.match(/C:\s*'([^']*)'[^;]*;\s*/);
+  const aboveMatch = evidence.match(/A&B:\s*'([^']*)'[^;]*[.;]?\s*/);
+  
+  if (defineMatch) parts.define = defineMatch[1].trim();
+  if (explainMatch) parts.explain = explainMatch[1].trim();  
+  if (connectMatch) parts.connect = connectMatch[1].trim();
+  if (aboveMatch) {
+    parts.aboveBeyond = aboveMatch[1].trim();
+    parts.visualOptional = parts.aboveBeyond.includes('visual-optional: yes');
+  }
+  
+  if (!parts.define && !parts.explain && !parts.connect) {
+    return await createDECABreakdown(indicator, transcript);
+  }
+  
+  return parts;
+};
+
+  
+  return (
+    <div className="p-4 bg-gray-50 rounded-lg border">
+      <div className="flex justify-between items-start mb-2">
+        <span className="font-medium text-gray-800">{pi.indicator}</span>
+        <span className="text-blue-600 font-bold text-lg">
+          {pi.score}/{decaEvents.find(e => e.id === eventId)?.piPoints}
+        </span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+        <div 
+          className="bg-blue-500 h-2 rounded-full" 
+          style={{ width: `${(pi.score / (decaEvents.find(e => e.id === eventId)?.piPoints || 1)) * 100}%` }}
+        ></div>
+      </div>
+      <p className="text-gray-600 text-sm mb-3">{pi.feedback.split('DECA Evidence')[0].trim()}</p>
+      
+      {/* DECA Breakdown Dropdown */}
+      <div className="border-t border-gray-200 pt-3">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="flex items-center justify-between w-full text-left text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200"
+        >
+          <span>"DECA" Method Breakdown</span>
+          <div className={`transform transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}>
+            ▼
+          </div>
+        </button>
+        
+<div className={`mt-3 space-y-3 transition-all duration-300 overflow-hidden ${
+  isExpanded ? 'max-h-[2000px]' : 'max-h-0'
+}`}>
+
+  {isLoading && (
+    <div className="text-center text-gray-500 py-2">
+      <div className="animate-spin h-4 w-4 border-2 border-gray-300 border-t-transparent rounded-full inline-block mr-2"></div>
+      Loading breakdown...
+    </div>
+  )}
+  
+  {decaEvidence && !isLoading && (
+    <>
+<div className="bg-white p-3 rounded border border-gray-200">
+  <div className="flex items-start gap-2">
+    <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs flex-shrink-0">
+      D
+    </div>
+    <div className="flex-1">
+      <p className="font-medium text-sm text-gray-800 mb-1">Define</p>
+      <p className="text-xs text-gray-600">
+        {decaEvidence.define || "Not clearly demonstrated in your response"}
+      </p>
+      <p className="text-xs text-gray-500 italic mt-2">
+        Student's actual response: "{decaEvidence.studentResponses.define}"
+      </p>
+    </div>
+  </div>
+</div>
+
+<div className="bg-white p-3 rounded border border-gray-200">
+  <div className="flex items-start gap-2">
+    <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-bold text-xs flex-shrink-0">
+      E
+    </div>
+    <div className="flex-1">
+      <p className="font-medium text-sm text-gray-800 mb-1">Explain</p>
+      <p className="text-xs text-gray-600">
+        {decaEvidence.explain || "Not clearly demonstrated in your response"}
+      </p>
+      <p className="text-xs text-gray-500 italic mt-2">
+        Student's actual response: "{decaEvidence.studentResponses.define}"
+      </p>
+    </div>
+  </div>
+</div>
+
+<div className="bg-white p-3 rounded border border-gray-200">
+  <div className="flex items-start gap-2">
+    <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-xs flex-shrink-0">
+      C
+    </div>
+    <div className="flex-1">
+      <p className="font-medium text-sm text-gray-800 mb-1">Connect</p>
+      <p className="text-xs text-gray-600">
+        {decaEvidence.connect || "Not clearly demonstrated in your response"}
+      </p>
+      <p className="text-xs text-gray-500 italic mt-2">
+        Student's actual response: "{decaEvidence.studentResponses.define}"
+      </p>
+    </div>
+  </div>
+</div>
+
+      
+<div className="bg-white p-3 rounded border border-gray-200">
+  <div className="flex items-start gap-2">
+    <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center text-orange-700 font-bold text-xs flex-shrink-0">
+      A
+    </div>
+    <div className="flex-1">
+      <p className="font-medium text-sm text-gray-800 mb-1">Above & Beyond (Visual/Prop)</p>
+      <p className="text-xs text-gray-600">
+        {decaEvidence.aboveBeyond?.includes('not used') ? (
+          <>
+            {decaEvidence.visualOptional ? (
+              <span className="text-blue-600">Visual/prop not required for this performance indicator</span>
+            ) : (
+              <>
+                <span className="text-red-600">No visual/prop presented. </span>
+                {decaEvidence.aboveBeyond}
+              </>
+            )}
+          </>
+        ) : (
+          decaEvidence.aboveBeyond || "Not demonstrated in your response"
+        )}
+      </p>
+
+      {/* NEW: Check transcript for any mention of a visual aid */}
+      <p className="text-xs text-gray-500 mt-2 italic">
+        {transcription.toLowerCase().match(/visual|chart|graph|slide|prop|diagram|picture|image/) 
+          ? "The student did verbally describe a visual aid." 
+          : "The student did not verbally describe any relevant visual aid."}
+      </p>
+    </div>
+  </div>
+</div>
+    </>
+  )}
+  
+  {!decaEvidence && !isLoading && (
+    <div className="bg-white p-3 rounded border border-gray-200">
+      <p className="text-xs text-gray-500 italic">
+        DECA method breakdown shows what you should have done for this performance indicator. Use this guidance for your next attempt.
+      </p>
+    </div>
+  )}
+</div>
+      </div>
+    </div>
+  );
+};
+
+// Fixed chat message function - use your API endpoint
 
 export default function DECAPracticePage() {
   const [step, setStep] = useState(1)
@@ -1742,13 +2182,13 @@ const handleSubmitEvent = async () => {
 }
 const handleSubmitRecording = async () => {
   if (!audioBlob) {
-    alert('No audio recording found. Please record your response or upload an audio file first.')
+    alert('No audio recording found. Please record your response first.')
     return
   }
   
   // Additional validation
   if (audioBlob.size === 0) {
-    alert('Audio recording is empty. Please try recording again or upload a valid audio file.')
+    alert('Audio recording is empty. Please try recording again.')
     return
   }
   
@@ -1771,8 +2211,15 @@ const handleSubmitRecording = async () => {
     // Load judge context for more accurate grading
     const judgeContext = await loadJudgeScenario(selectedEventId)
     
-    // Generate AI-powered feedback based on transcript with attempt tracking
-    const aiGeneratedFeedback = await generateAIFeedback(transcript, roleplay, selectedEventId, eventAttemptCount, judgeContext)
+    // Generate AI-powered feedback based on transcript with duration and attempt tracking
+    const aiGeneratedFeedback = await generateAIFeedback(
+      transcript, 
+      roleplay, 
+      selectedEventId, 
+      eventAttemptCount, 
+      judgeContext, 
+      duration // Pass the actual audio duration in seconds
+    )
     
     setFeedback(aiGeneratedFeedback)
     setShowChatbot(true)
@@ -1784,9 +2231,9 @@ const handleSubmitRecording = async () => {
   const errorMessage = error instanceof Error ? error.message : String(error)
   
   if (errorMessage.includes('Transcription too short')) {
-    alert('Your recording appears to be too short or unclear. Please try recording a longer response or upload a clearer audio file.')
+    alert('Your recording appears to be too short or unclear. Please try recording a longer response.')
   } else if (errorMessage.includes('Invalid audio blob')) {
-    alert('There was an issue with your audio file. Please try recording again or upload a different audio file.')
+    alert('There was an issue with your audio recording. Please try recording again.')
   } else {
     alert('Error processing your audio. Please try again.')
   }
@@ -2187,9 +2634,24 @@ const handleStartRoleplay = () => {
                   <CardDescription>Detailed feedback on your roleplay performance</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="text-center bg-gradient-to-r from-blue-50 to-green-50 p-6 rounded-lg">
+<div className="text-center bg-gradient-to-r from-blue-50 to-green-50 p-6 rounded-lg">
                     <div className="text-6xl font-bold text-blue-600 mb-2">{feedback.totalScore}/100</div>
                     <div className="text-gray-600 text-lg">Total Score</div>
+                    
+                    {/* Duration Display */}
+                    {feedback.audioDuration && (
+                      <div className="mt-3 text-sm text-gray-600">
+                        <div className="flex items-center justify-center gap-4">
+                          {/* <span>Duration: <span className="font-mono font-medium">{feedback.audioDuration.formatted}</span></span> */}
+                          {feedback.penaltiesApplied?.durationPenalty && (
+                            <span className="text-orange-600 font-medium">
+                              {/* ⚠️ Under {feedback.penaltiesApplied.durationRequired} (60% cap) */}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    
                     <div className="mt-2">
                       {feedback.totalScore >= 90 ? (
                         <span className="text-green-600 font-semibold">Excellent Performance</span>
@@ -2203,29 +2665,14 @@ const handleStartRoleplay = () => {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="font-semibold mb-4 text-lg">Performance Indicators</h3>
-                    <div className="grid gap-4">
-                      {feedback.performanceIndicators.map((pi: any, i: number) => (
-                        <div key={i} className="p-4 bg-gray-50 rounded-lg border">
-                          <div className="flex justify-between items-start mb-2">
-                            <span className="font-medium text-gray-800">{pi.indicator}</span>
-                            <span className="text-blue-600 font-bold text-lg">
-                            {pi.score}/{decaEvents.find(e => e.id === selectedEventId)?.piPoints}
-                            </span>
-
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-                            <div 
-                              className="bg-blue-500 h-2 rounded-full" 
-                              style={{ width: `${(pi.score / (decaEvents.find(e => e.id === selectedEventId)?.piPoints || 1)) * 100}%` }}
-                            ></div>
-                          </div>
-                          <p className="text-gray-600 text-sm">{pi.feedback}</p>
-                        </div>
-                      ))}
+                    <div>
+                      <h3 className="font-semibold mb-4 text-lg">Performance Indicators</h3>
+                      <div className="grid gap-4">
+                        {feedback.performanceIndicators.map((pi: any, i: number) => (
+                          <PICard key={i} pi={pi} eventId={selectedEventId} transcription={transcription} />
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
                   <div>
                     <h3 className="font-semibold mb-4 text-lg">21st Century Skills</h3>
