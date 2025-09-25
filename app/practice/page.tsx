@@ -1055,6 +1055,28 @@ function useAudioRecorder(selectedEventId: string) {
   }
 }
 
+
+const splitAudioBlob = async (audioBlob: Blob, maxSize: number = 24 * 1024 * 1024): Promise<Blob[]> => {
+  if (audioBlob.size <= maxSize) {
+    return [audioBlob]
+  }
+  
+  const chunks: Blob[] = []
+  const chunkCount = Math.ceil(audioBlob.size / maxSize)
+  const chunkSize = Math.floor(audioBlob.size / chunkCount)
+  
+  for (let i = 0; i < chunkCount; i++) {
+    const start = i * chunkSize
+    const end = i === chunkCount - 1 ? audioBlob.size : (i + 1) * chunkSize
+    chunks.push(audioBlob.slice(start, end))
+  }
+  
+  return chunks
+}
+
+
+
+
 // OpenAI API functions
 // Fixed transcription function - use your API endpoint
 // OpenAI Whisper transcription function
@@ -1082,68 +1104,66 @@ const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
     console.log('Audio blob size:', audioBlob.size, 'bytes')
     console.log('Audio blob type:', audioBlob.type)
     
-    // Fix: Check file size limit (25MB for Whisper)
-    const maxSize = 25 * 1024 * 1024; // 25MB
-    if (audioBlob.size > maxSize) {
-      throw new Error('Audio file too large - please record a shorter response')
+    // Split large files into chunks
+    const audioChunks = await splitAudioBlob(audioBlob)
+    console.log(`Split audio into ${audioChunks.length} chunks`)
+    
+    const transcriptions: string[] = []
+    
+    for (let i = 0; i < audioChunks.length; i++) {
+      const chunk = audioChunks[i]
+      const formData = new FormData()
+      
+      const fileName = chunk.type.includes('mp4') ? `chunk-${i}.mp4` : `chunk-${i}.webm`
+      formData.append('file', chunk, fileName)
+      formData.append('model', 'whisper-1')
+      formData.append('language', 'en')
+      formData.append('response_format', 'text')
+      
+      console.log(`Transcribing chunk ${i + 1}/${audioChunks.length}...`)
+      
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 60000)
+      
+      try {
+        const response = await fetch('/api/transcribe', {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal
+        })
+        
+        clearTimeout(timeoutId)
+        
+        if (response.ok) {
+          const chunkTranscription = await response.text()
+          transcriptions.push(chunkTranscription.trim())
+        } else {
+          throw new Error(`Chunk ${i + 1} transcription failed: ${response.status}`)
+        }
+      } catch (apiError) {
+        clearTimeout(timeoutId)
+        throw apiError
+      }
     }
     
-    const formData = new FormData()
+    // Combine all transcriptions
+    const fullTranscription = transcriptions.join(' ').trim()
+    console.log('Combined transcription successful:', fullTranscription.substring(0, 100) + '...')
+    return fullTranscription
     
-    // Fix: Convert to compatible format and ensure proper filename
-    const fileName = audioBlob.type.includes('mp4') ? 'recording.mp4' : 'recording.webm'
-    formData.append('file', audioBlob, fileName)
-    formData.append('model', 'whisper-1')
-    formData.append('language', 'en')
-    formData.append('response_format', 'text')
+  } catch (error) {
+    console.error('Error transcribing audio:', error)
     
-    console.log('Transcribing audio with OpenAI Whisper...')
+    const errorMessage = error instanceof Error ? error.message : String(error)
     
-    // Fix: Add timeout for long transcriptions
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 60000) // 60 second timeout
-    
-    try {
-      const response = await fetch('/api/transcribe', {
-        method: 'POST',
-        body: formData,
-        signal: controller.signal
-      })
-      
-      clearTimeout(timeoutId)
-      
-      if (response.ok) {
-        const transcription = await response.text()
-        console.log('Transcription successful via API route:', transcription.substring(0, 100) + '...')
-        return transcription.trim()
-      } else {
-        const errorText = await response.text()
-        console.error('API route failed:', response.status, errorText)
-        throw new Error(`Transcription failed: ${response.status}`)
-      }
-    } catch (apiError) {
-      clearTimeout(timeoutId)
-      if (apiError instanceof Error && apiError.name === 'AbortError') {
-        throw new Error('Transcription timeout - please try a shorter recording')
-      }
-      throw apiError
+    if (errorMessage.includes('Invalid audio blob')) {
+      return "Recording error - please try recording again with a longer response."
+    } else if (errorMessage.includes('timeout')) {
+      return "Transcription timeout - please try a shorter recording or check your connection."
     }
     
-} catch (error) {
-  console.error('Error transcribing audio:', error)
-  
-  const errorMessage = error instanceof Error ? error.message : String(error)
-  
-  if (errorMessage.includes('Invalid audio blob')) {
-    return "Recording error - please try recording again with a longer response."
-  } else if (errorMessage.includes('too large')) {
-    return "Recording too long - please record a shorter response (under 9 minutes)."
-  } else if (errorMessage.includes('timeout')) {
-    return "Transcription timeout - please try a shorter recording or check your connection."
+    return "Transcription unavailable - please check your audio recording and try again."
   }
-  
-  return "Transcription unavailable - please check your audio recording and try again."
-}
 }
     // Fallback to direct API call (requires NEXT_PUBLIC_OPENAI_API_KEY)
 // ULTRA-STRICT VERSION - Starts with 0s and only awards points for explicit evidence
@@ -1563,18 +1583,29 @@ const response = await fetch('/api/openai', {
 
 
 const extractSectionResponse = (transcript: string, keywords: string[]): string => {
+  const words = transcript.split(/\s+/);
   const lower = transcript.toLowerCase();
-  for (const word of keywords) {
-    const idx = lower.indexOf(word);
+  
+  // Try to find keywords first
+  for (const keyword of keywords) {
+    const idx = lower.indexOf(keyword.toLowerCase());
     if (idx !== -1) {
-      // grab a ~30 word window around the keyword
-      const words = transcript.split(/\s+/);
-      const start = Math.max(0, idx - 15);
-      const end = Math.min(words.length, start + 30);
+      // Find word positions around the keyword
+      const keywordWordIndex = lower.substring(0, idx).split(/\s+/).length - 1;
+      const start = Math.max(0, keywordWordIndex - 10);
+      const end = Math.min(words.length, keywordWordIndex + 20);
       return words.slice(start, end).join(" ");
     }
   }
-  return "No relevant response found.";
+  
+  // If no keywords found, return a portion of the transcript instead of "No relevant response found"
+  if (words.length > 0) {
+    // Return first 30 words or the entire transcript if shorter
+    const excerpt = words.slice(0, Math.min(30, words.length)).join(" ");
+    return excerpt + (words.length > 30 ? "..." : "");
+  }
+  
+  return "No response provided";
 };
 
 
@@ -1671,11 +1702,11 @@ Format as JSON:
 
   // NEW: capture student responses per DECA section
   studentResponses: {
-    define: extractSectionResponse(transcript, ["define", "definition"]),
-    explain: extractSectionResponse(transcript, ["explain", "explanation"]),
-    connect: extractSectionResponse(transcript, ["connect", "connection"]),
-    aboveBeyond: extractSectionResponse(transcript, ["visual", "prop", "diagram", "chart", "slide"])
-  }
+  define: extractSectionResponse(transcript, ["define", "definition", "is", "means", "refers to"]),
+  explain: extractSectionResponse(transcript, ["explain", "explanation", "because", "works by", "important", "helps"]),
+  connect: extractSectionResponse(transcript, ["connect", "connection", "scenario", "situation", "recommend", "suggest"]),
+  aboveBeyond: extractSectionResponse(transcript, ["visual", "prop", "diagram", "chart", "slide", "show", "present", "display"])
+}
 };
             }
           } catch (parseError) {
